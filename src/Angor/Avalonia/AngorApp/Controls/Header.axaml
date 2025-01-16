@@ -11,7 +11,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
-                    <a:AdvancedImage Stretch="UniformToFill" Source="{Binding $parent[c:Header].BackgroundImageUri}" ClipToBounds="True" />
+                    <a:AdvancedImage Stretch="UniformToFill" Source="{Binding $parent[c:Header].BackgroundImageUri}" />
                     <Panel Height="100" Width="100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="{TemplateBinding IconMargin}">
                         <Ellipse Fill="White" Width="100" Height="100" />
                         <a:AdvancedImage Stretch="UniformToFill" Source="{Binding $parent[c:Header].IconUri}">
@@ -20,9 +20,6 @@
                             </a:AdvancedImage.Clip>
                         </a:AdvancedImage>
                         <Ellipse Stroke="White" StrokeThickness="5" Width="100" Height="100" />
-                        <Panel.Effect>
-                            <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.4" OffsetX="2" OffsetY="2" />
-                        </Panel.Effect>
                     </Panel>
                 </Panel>
             </ControlTemplate>

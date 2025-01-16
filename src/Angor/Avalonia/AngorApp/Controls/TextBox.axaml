@@ -7,8 +7,7 @@
             <Setter Property="InnerRightContent">
                 <Template>
                     <ToggleButton Theme="{StaticResource FluentTextBoxToggleButton}"
-                                  IsChecked="{Binding $parent[TextBox].RevealPassword, Mode=TwoWay}"
-                                  ClipToBounds="True">
+                                  IsChecked="{Binding $parent[TextBox].RevealPassword, Mode=TwoWay}">
                         <Panel>
                             <PathIcon Data="{StaticResource PasswordBoxRevealButtonData}"
                                       Height="8" Width="12"

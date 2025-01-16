@@ -87,10 +87,6 @@
         <Setter Property="Foreground" Value="{StaticResource Level5}" />
     </Style>
 
-    <Style Selector=":is(UserControl)">
-        <Setter Property="ClipToBounds" Value="False" />
-    </Style>
-
     <Style Selector="wizards|WizardControl">
         <Setter Property="Width" Value="500" />
         <Setter Property="MinHeight" Value="300" />

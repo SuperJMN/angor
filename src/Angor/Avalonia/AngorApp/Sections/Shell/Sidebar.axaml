@@ -5,9 +5,8 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:controls="clr-namespace:AngorApp.Controls"
              xmlns:shell="clr-namespace:AngorApp.Sections.Shell"
-             xmlns:angorApp="clr-namespace:AngorApp"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
-             x:Class="AngorApp.Sections.Shell.Sidebar" ClipToBounds="False" x:DataType="shell:IMainViewModel">
+             x:Class="AngorApp.Sections.Shell.Sidebar" x:DataType="shell:IMainViewModel">
 
     <Design.DataContext>
         <shell:MainViewModelDesign />

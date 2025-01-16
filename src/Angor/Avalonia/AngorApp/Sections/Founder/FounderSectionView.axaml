@@ -8,7 +8,7 @@
              x:Class="AngorApp.Sections.Founder.FounderSectionView"
              xmlns:founder="clr-namespace:AngorApp.Sections.Founder"
              xmlns:browse="clr-namespace:AngorApp.Sections.Browse"
-             x:DataType="browse:IBrowseSectionViewModel" ClipToBounds="False">
+             x:DataType="browse:IBrowseSectionViewModel" >
 
     <Design.DataContext>
         <founder:FounderSectionViewModel />

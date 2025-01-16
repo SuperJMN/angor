@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="AngorApp.Sections.Portfolio.PortfolioSectionView"
              xmlns:founder="clr-namespace:AngorApp.Sections.Portfolio"
-             x:DataType="founder:IPortfolioSectionViewModel" ClipToBounds="False">
+             x:DataType="founder:IPortfolioSectionViewModel" >
 
     <Design.DataContext>
         <founder:PortfolioSectionViewModelDesign />

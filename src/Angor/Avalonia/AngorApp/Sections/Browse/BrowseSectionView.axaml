@@ -7,7 +7,7 @@
              xmlns:browse="clr-namespace:AngorApp.Sections.Browse"
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="AngorApp.Sections.Browse.BrowseSectionView"
-             x:DataType="browse:IBrowseSectionViewModel" ClipToBounds="False">
+             x:DataType="browse:IBrowseSectionViewModel">
 
     <Design.DataContext>
         <browse:BrowseSectionViewModelDesign />
@@ -66,7 +66,7 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel ItemWidth="400" ItemHeight="400" />
+                    <UniformGrid Columns="4" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
