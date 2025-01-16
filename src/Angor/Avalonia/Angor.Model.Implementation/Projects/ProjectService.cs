@@ -7,7 +7,7 @@ using DynamicData;
 
 namespace Angor.Model.Implementation.Projects;
 
-public class ProjectService
+public class ProjectService : IProjectService
 {
     private const int MaxProjectCount = 21;
     private readonly IIndexerService indexerService;

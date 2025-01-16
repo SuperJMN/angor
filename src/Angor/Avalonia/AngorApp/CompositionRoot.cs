@@ -1,3 +1,6 @@
+using Angor.Model.Implementation;
+using Angor.Model.Implementation.Projects;
+using Angor.Shared.Services;
 using AngorApp.Sections;
 using AngorApp.Sections.Browse;
 using AngorApp.Sections.Founder;
@@ -8,6 +11,7 @@ using AngorApp.Sections.Wallet;
 using AngorApp.Sections.Wallet.CreateAndRecover;
 using AngorApp.Services;
 using Avalonia.Controls.Notifications;
+using Microsoft.Extensions.Logging.Abstractions;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.Avalonia.Services;
 using Separator = AngorApp.Sections.Shell.Separator;
@@ -32,15 +36,17 @@ public static class CompositionRoot
         var walletFactory = new WalletFactory(new WalletBuilderDesign(), uiServices);
 
         MainViewModel mainViewModel = null!;
+
+        var projectService = new ProjectService(DependencyFactory.GetIndexerService(NullLoggerFactory.Instance), DependencyFactory.GetRelayService(NullLoggerFactory.Instance));
         
         IEnumerable<SectionBase> sections =
         [
             new Section("Home", new HomeSectionViewModel(walletStoreDesign, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
             new Section("Wallet", new WalletSectionViewModel(walletFactory, walletStoreDesign, uiServices), "fa-wallet"),
-            new Section("Browse", new NavigationViewModel(navigator => new BrowseSectionViewModel(walletStoreDesign, navigator, uiServices)), "fa-magnifying-glass"),
+            new Section("Browse", new NavigationViewModel(navigator => new BrowseSectionViewModel(walletStoreDesign, projectService, navigator, uiServices)), "fa-magnifying-glass"),
             new Section("Portfolio", new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
-            new Section("Founder", new FounderSectionViewModel(), "fa-money-bills"),
+            new Section("Founder", new FounderSectionViewModel(projectService), "fa-money-bills"),
             new Separator(),
             new Section("Settings", null, "fa-gear"),
             new CommandSection("Angor Hub", ReactiveCommand.CreateFromTask(() => uiServices.LauncherService.LaunchUri(Constants.AngorHubUri)), "fa-magnifying-glass") { IsPrimary = false }
