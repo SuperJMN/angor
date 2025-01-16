@@ -1,7 +1,7 @@
 using Angor.Shared.Models;
 using Angor.Shared.Services;
 
-namespace Angor.Model.Implementation;
+namespace Angor.Model.Implementation.Projects;
 
 public record ProjectData
 {

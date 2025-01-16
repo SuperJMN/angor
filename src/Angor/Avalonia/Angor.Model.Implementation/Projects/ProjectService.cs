@@ -2,9 +2,10 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Angor.Shared.Models;
 using Angor.Shared.Services;
+using AngorApp.Model;
 using DynamicData;
 
-namespace Angor.Model.Implementation;
+namespace Angor.Model.Implementation.Projects;
 
 public class ProjectService
 {
@@ -18,7 +19,7 @@ public class ProjectService
         this.relayService = relayService;
     }
 
-    public IObservable<IChangeSet<ProjectData, string>> Connect()
+    public IObservable<IChangeSet<IProject, string>> Connect()
     {
         var tuples = Observable.FromAsync(() => indexerService
                 .GetProjectsAsync(null, MaxProjectCount))
@@ -42,10 +43,10 @@ public class ProjectService
                         ProjectInfo = tuple.info,
                         NostrMetadata = tuple.Metadata,
                         IndexerData = projectIndexerData,
-                    });
+                    }).Select(data => data.ToProject());
         });
 
-        return observable.ToObservableChangeSet(x => x.IndexerData.ProjectIdentifier);
+        return observable.ToObservableChangeSet(x => x.Id);
     }
 
     private IObservable<ProjectInfo> ProjectInfos(IEnumerable<ProjectIndexerData> projectIndexerDatas)
