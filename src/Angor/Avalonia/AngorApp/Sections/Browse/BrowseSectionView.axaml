@@ -39,7 +39,7 @@
             </TextBox>
         </c:Pane>
 
-        <ItemsControl ItemsSource="{Binding Projects}" Margin="-20 -20">
+        <ItemsControl ItemsSource="{Binding Projects}" Margin="-15  0 -5 0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <c:Pane Margin="20" IsHeaderVisible="True"

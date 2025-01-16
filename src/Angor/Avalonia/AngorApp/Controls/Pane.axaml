@@ -14,9 +14,14 @@
             <Setter Property="Background" Value="{StaticResource ItemPaneBackground}" />
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="TitlePadding" Value="0 0 0 10" />
+            <Setter Property="Margin" Value="5, 5, 15, 15" />
+            <Setter Property="Effect">
+                <DropShadowEffect BlurRadius="20" Opacity="0.4" />
+            </Setter>
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border x:Name="PART_RootBorder"
+                            
                             ClipToBounds="True"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{TemplateBinding CornerRadius}">
@@ -63,6 +68,7 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="CornerRadius" Value="0" />
             <Setter Property="Effect" Value="{x:Null}" />
+            <Setter Property="Margin" Value="0" />
         </ControlTheme>
         
         <ControlTheme x:Key="Card" TargetType="c:Pane" BasedOn="{StaticResource {x:Type c:Pane}}">
