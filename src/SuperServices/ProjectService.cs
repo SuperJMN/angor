@@ -9,6 +9,7 @@ namespace SuperServices;
 
 public class ProjectService
 {
+    private const int MaxProjectCount = 21;
     private readonly IIndexerService _indexerService;
     private readonly IRelayService _relayService;
 
@@ -21,10 +22,10 @@ public class ProjectService
     public IObservable<IChangeSet<ProjectData, string>> Connect()
     {
         var tuples = Observable.FromAsync(() => _indexerService
-                .GetProjectsAsync(null, 21))
-            .SelectMany(projectIndexerDatas => GetProjectInfo(projectIndexerDatas)
+                .GetProjectsAsync(null, MaxProjectCount))
+            .SelectMany(projectIndexerDatas => ProjectInfos(projectIndexerDatas)
                 .ToList()
-                .SelectMany(projectInfos => GetProjectMetadatas(projectInfos).ToList().Select(metadatas => new
+                .SelectMany(projectInfos => ProjectMetadatas(projectInfos).ToList().Select(metadatas => new
                 {
                     metadatas, projectInfos, projectIndexerDatas
                 })));
@@ -48,25 +49,25 @@ public class ProjectService
         return observable.ToObservableChangeSet(x => x.IndexerData.ProjectIdentifier);
     }
 
-    private IObservable<ProjectInfo> GetProjectInfo(IList<ProjectIndexerData> list)
+    private IObservable<ProjectInfo> ProjectInfos(IEnumerable<ProjectIndexerData> projectIndexerDatas)
     {
         return Observable.Create<ProjectInfo>(observer =>
         {
             _relayService.LookupProjectsInfoByEventIds<ProjectInfo>(
                 observer.OnNext,
                 observer.OnCompleted,
-                list.Select(x => x.NostrEventId).ToArray()
+                projectIndexerDatas.Select(x => x.NostrEventId).ToArray()
             );
 
             return Disposable.Empty;
         });
     }
 
-    private IObservable<(string, ProjectMetadata)> GetProjectMetadatas(IList<ProjectInfo> list)
+    private IObservable<(string, ProjectMetadata)> ProjectMetadatas(IEnumerable<ProjectInfo> projectInfos)
     {
         return Observable.Create<(string, ProjectMetadata)>(observer =>
         {
-            _relayService.LookupNostrProfileForNPub((npub, nostrMetadata) => observer.OnNext((npub, nostrMetadata)), () => observer.OnCompleted(), list.Select(x => x.NostrPubKey).ToArray());
+            _relayService.LookupNostrProfileForNPub((npub, nostrMetadata) => observer.OnNext((npub, nostrMetadata)), observer.OnCompleted, projectInfos.Select(x => x.NostrPubKey).ToArray());
 
             return Disposable.Empty;
         });
