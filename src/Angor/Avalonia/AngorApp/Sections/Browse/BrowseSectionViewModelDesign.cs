@@ -1,7 +1,6 @@
 using System.Linq;
 using AngorApp.Sections.Shell;
 using AngorApp.Sections.Wallet;
-using AngorApp.Sections.Wallet.NoWallet;
 using AngorApp.Services;
 
 namespace AngorApp.Sections.Browse;

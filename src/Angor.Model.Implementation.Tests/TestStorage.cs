@@ -1,7 +1,7 @@
 using Angor.Shared;
 using Angor.Shared.Models;
 
-namespace Angor.Test.Suppa;
+namespace Angor.Model.Implementation.Tests;
 
 public class TestStorage : INetworkStorage
 {

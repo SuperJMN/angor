@@ -3,25 +3,24 @@ using System.Reactive.Linq;
 using Angor.Shared.Models;
 using Angor.Shared.Services;
 using DynamicData;
-using Nostr.Client.Messages.Metadata;
 
-namespace SuperServices;
+namespace Angor.Model.Implementation;
 
 public class ProjectService
 {
     private const int MaxProjectCount = 21;
-    private readonly IIndexerService _indexerService;
-    private readonly IRelayService _relayService;
+    private readonly IIndexerService indexerService;
+    private readonly IRelayService relayService;
 
     public ProjectService(IIndexerService indexerService, IRelayService relayService)
     {
-        _indexerService = indexerService;
-        _relayService = relayService;
+        this.indexerService = indexerService;
+        this.relayService = relayService;
     }
 
     public IObservable<IChangeSet<ProjectData, string>> Connect()
     {
-        var tuples = Observable.FromAsync(() => _indexerService
+        var tuples = Observable.FromAsync(() => indexerService
                 .GetProjectsAsync(null, MaxProjectCount))
             .SelectMany(projectIndexerDatas => ProjectInfos(projectIndexerDatas)
                 .ToList()
@@ -53,7 +52,7 @@ public class ProjectService
     {
         return Observable.Create<ProjectInfo>(observer =>
         {
-            _relayService.LookupProjectsInfoByEventIds<ProjectInfo>(
+            relayService.LookupProjectsInfoByEventIds<ProjectInfo>(
                 observer.OnNext,
                 observer.OnCompleted,
                 projectIndexerDatas.Select(x => x.NostrEventId).ToArray()
@@ -67,7 +66,7 @@ public class ProjectService
     {
         return Observable.Create<(string, ProjectMetadata)>(observer =>
         {
-            _relayService.LookupNostrProfileForNPub((npub, nostrMetadata) => observer.OnNext((npub, nostrMetadata)), observer.OnCompleted, projectInfos.Select(x => x.NostrPubKey).ToArray());
+            relayService.LookupNostrProfileForNPub((npub, nostrMetadata) => observer.OnNext((npub, nostrMetadata)), observer.OnCompleted, projectInfos.Select(x => x.NostrPubKey).ToArray());
 
             return Disposable.Empty;
         });

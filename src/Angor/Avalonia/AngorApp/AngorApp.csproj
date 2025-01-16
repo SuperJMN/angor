@@ -38,6 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Angor.Model\Angor.Model.csproj" />
       <ProjectReference Include="..\AngorApp.Model\AngorApp.Model.csproj" />
     </ItemGroup>
     

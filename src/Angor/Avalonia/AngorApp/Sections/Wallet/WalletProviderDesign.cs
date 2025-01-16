@@ -1,5 +1,4 @@
 using AngorApp.Model;
-using AngorApp.Sections.Wallet.NoWallet;
 using CSharpFunctionalExtensions;
 
 namespace AngorApp.Sections.Wallet;

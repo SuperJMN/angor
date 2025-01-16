@@ -1,7 +1,6 @@
-using AngorApp.Model;
 using CSharpFunctionalExtensions;
 
-namespace AngorApp.Sections.Wallet.NoWallet;
+namespace AngorApp.Model;
 
 public interface IWalletProvider
 {

@@ -5,7 +5,6 @@ using AngorApp.Common.Success;
 using AngorApp.Common.TransactionPreview;
 using AngorApp.Model;
 using AngorApp.Sections.Browse.Details.Invest.Amount;
-using AngorApp.Sections.Wallet.NoWallet;
 using AngorApp.Services;
 using CSharpFunctionalExtensions;
 using Zafiro.Avalonia.Controls.Wizards.Builder;

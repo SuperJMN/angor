@@ -1,5 +1,5 @@
 using System.Linq;
-using AngorApp.Sections.Wallet.NoWallet;
+using AngorApp.Model;
 using AngorApp.Services;
 using Zafiro.Avalonia.Controls.Navigation;
 

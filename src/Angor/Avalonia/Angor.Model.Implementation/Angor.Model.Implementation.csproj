@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Zafiro" Version="14.0.7" />
+      <PackageReference Include="DynamicData" Version="9.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\Angor.Shared.csproj" />
     </ItemGroup>
 
 </Project>

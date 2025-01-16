@@ -3,10 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:amount="clr-namespace:AngorApp.Sections.Browse.Details.Invest.Amount"
-             xmlns:model="clr-namespace:AngorApp.Model;assembly=AngorApp.Model"
-             xmlns:controls="clr-namespace:Zafiro.Avalonia.Controls;assembly=Zafiro.Avalonia"
              xmlns:s="clr-namespace:AngorApp.Controls"
-             xmlns:f="clr-namespace:Zafiro.Avalonia.Converters;assembly=Zafiro.Avalonia"
+             xmlns:model1="clr-namespace:AngorApp.Model;assembly=Angor.Model"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="AngorApp.Sections.Browse.Details.Invest.Amount.StagesBreakdown" x:DataType="amount:IAmountViewModel">
 
@@ -22,7 +20,7 @@
         <!--     </ItemsPanelTemplate> -->
         <!-- </ItemsControl.ItemsPanel> -->
         <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="model:IStage">
+            <DataTemplate DataType="model1:IStage">
                 <s:SectionItem Margin="6" Padding="10">
                     <TextBlock DockPanel.Dock="Top">
                         <TextBlock.Text>
