@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Shared", "Angor\Share
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Model.Implementation", "Angor\Avalonia\Angor.Model.Implementation\Angor.Model.Implementation.csproj", "{539B4D21-F2A9-46A6-84F1-9A51884A62E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Model.Implementation.Tests", "Angor\Avalonia\Angor.Model.Implementation.Tests\Angor.Model.Implementation.Tests.csproj", "{AF74455E-03D4-4D18-937E-6C89A587B932}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Model.Implementation.Tests", "Angor\Avalonia\Angor.Model.Implementation.Tests\Angor.Model.Implementation.Tests.csproj", "{971654DA-5B36-4D5E-AE1A-39267B885953}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +46,10 @@ Global
 		{539B4D21-F2A9-46A6-84F1-9A51884A62E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{539B4D21-F2A9-46A6-84F1-9A51884A62E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{539B4D21-F2A9-46A6-84F1-9A51884A62E9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF74455E-03D4-4D18-937E-6C89A587B932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF74455E-03D4-4D18-937E-6C89A587B932}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF74455E-03D4-4D18-937E-6C89A587B932}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF74455E-03D4-4D18-937E-6C89A587B932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{971654DA-5B36-4D5E-AE1A-39267B885953}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{971654DA-5B36-4D5E-AE1A-39267B885953}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{971654DA-5B36-4D5E-AE1A-39267B885953}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{971654DA-5B36-4D5E-AE1A-39267B885953}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
