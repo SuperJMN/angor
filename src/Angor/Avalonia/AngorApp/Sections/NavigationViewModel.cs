@@ -8,6 +8,7 @@ public class NavigationViewModel : ReactiveObject
     {
         Navigator = new Navigator();
         Create = ReactiveCommand.Create(() => Navigator.Go(() => viewModel(Navigator)));
+        Create.Execute().Subscribe();
     }
 
     public Navigator Navigator { get; set; }
