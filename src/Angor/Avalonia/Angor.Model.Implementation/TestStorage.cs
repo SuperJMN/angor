@@ -3,7 +3,7 @@ using Angor.Shared.Models;
 
 namespace Angor.Model.Implementation;
 
-public class TestStorage : INetworkStorage
+public class InMemoryStorage : INetworkStorage
 {
     public SettingsInfo GetSettings()
     {

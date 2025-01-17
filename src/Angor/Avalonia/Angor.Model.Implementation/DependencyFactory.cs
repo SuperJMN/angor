@@ -16,7 +16,7 @@ public static class DependencyFactory
 
         var networkConfiguration = new NetworkConfiguration();
         var httpClient = new HttpClient();
-        var networkService = new NetworkService(new TestStorage(), httpClient, networkServiceLogger, networkConfiguration);
+        var networkService = new NetworkService(new InMemoryStorage(), httpClient, networkServiceLogger, networkConfiguration);
         var nostrCommunicationFactory = new NostrCommunicationFactory(clientLogger, nostrCommunicationFactoryLogger);
         var relaySubscriptionsHandling = new RelaySubscriptionsHandling(relaySubscriptionsLogger, nostrCommunicationFactory, networkService);
         
@@ -30,7 +30,7 @@ public static class DependencyFactory
         var networkConfiguration = new NetworkConfiguration();
         var networkConfig = networkConfiguration;
         var httpClient = new HttpClient();
-        var networkService = new NetworkService(new TestStorage(), httpClient, networkServiceLogger, networkConfiguration);
+        var networkService = new NetworkService(new InMemoryStorage(), httpClient, networkServiceLogger, networkConfiguration);
         
         return new IndexerService(networkConfig, httpClient, networkService);
     }
