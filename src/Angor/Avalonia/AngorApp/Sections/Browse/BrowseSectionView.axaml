@@ -5,7 +5,7 @@
              xmlns:c="clr-namespace:AngorApp.Controls"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:browse="clr-namespace:AngorApp.Sections.Browse"
-             mc:Ignorable="d" d:DesignWidth="800"
+             mc:Ignorable="d" d:DesignWidth="1000"
              x:Class="AngorApp.Sections.Browse.BrowseSectionView"
              x:DataType="browse:IBrowseSectionViewModel">
 
@@ -42,24 +42,22 @@
         <ItemsControl ItemsSource="{Binding Projects}" Margin="-15  0 -5 0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <c:Pane Margin="20" IsHeaderVisible="True"
+                    <c:Pane Margin="20" IsHeaderVisible="True" MaxHeight="600"
                             HeaderBackground="{Binding Picture}"
                             HeaderIcon="{Binding Icon}"
                             Title="{Binding Name}"
-                            Subtitle="{Binding ShortDescription}"
                             IsTitleVisible="True">
                         <c:Pane.TitleIcon>
-                            <i:Icon Value="fa-wallet" FontSize="20" />
+                            <i:Icon Value="fa-wallet" FontSize="20" Margin="0 2 0 0" />
                         </c:Pane.TitleIcon>
                         <DockPanel>
-                            <StackPanel VerticalAlignment="Center" DockPanel.Dock="Bottom">
-                                <Separator Margin="0 10" />
-                                <c:IconButton Command="{Binding GoToDetails}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Content="VIEW PROJECT">
-                                    <c:IconButton.Icon>
-                                        <i:Icon Value="fa-folder" />
-                                    </c:IconButton.Icon>
-                                </c:IconButton>
-                            </StackPanel>
+                            <c:IconButton DockPanel.Dock="Bottom" Command="{Binding GoToDetails}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Content="VIEW PROJECT">
+                                <c:IconButton.Icon>
+                                    <i:Icon Value="fa-folder" />
+                                </c:IconButton.Icon>
+                            </c:IconButton>
+                            <Separator DockPanel.Dock="Bottom" Margin="0 10" />
+                            <TextBlock Margin="0 20" MaxLines="3" TextWrapping="Wrap" Text="{Binding ShortDescription}" TextTrimming="CharacterEllipsis" />
                         </DockPanel>
                     </c:Pane>
                 </DataTemplate>
