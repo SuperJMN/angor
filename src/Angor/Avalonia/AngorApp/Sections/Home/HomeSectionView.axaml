@@ -17,7 +17,6 @@
         </Style>
 
         <Style Selector="Button">
-            <Setter Property="ClipToBounds" Value="False" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -38,19 +37,19 @@
             </StackPanel>
         </c:Pane>
         <UniformGrid Margin="-20">
-            <Button Command="{Binding GoToWalletSection}" Margin="20">
+            <Button Theme="{StaticResource TransparentButton}" Command="{Binding GoToWalletSection}" Margin="20">
                 <c:Pane IsVisible="{Binding !IsWalletSetup}" Theme="{StaticResource Card}" Title="Setup Wallet" IsTitleVisible="True">
                     <TextBlock TextWrapping="Wrap">
                         <Bold>Create</Bold> or <Bold>recover</Bold> your wallet to get started with Angor
                     </TextBlock>
                 </c:Pane>
             </Button>
-            <Button Margin="20" Command="{Binding OpenHub}">
+            <Button Theme="{StaticResource TransparentButton}" Margin="20" Command="{Binding OpenHub}">
                 <c:Pane Theme="{StaticResource Card}" Title="Discover Projects" IsTitleVisible="True">
                     <TextBlock TextWrapping="Wrap">Browse through innovative projects on <Bold>Angor Hub</Bold> and find your next investment</TextBlock>
                 </c:Pane>
             </Button>
-            <Button Margin="20" IsHitTestVisible="False">
+            <Button Theme="{StaticResource TransparentButton}" Margin="20" IsHitTestVisible="False">
                 <c:Pane Theme="{StaticResource Card}" Title="Launch or Invest" IsTitleVisible="True">
                     <TextBlock TextWrapping="Wrap">Start your fundraising journey or invest in promising projects</TextBlock>
                 </c:Pane>

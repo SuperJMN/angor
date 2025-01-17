@@ -24,6 +24,7 @@
         <StyleInclude Source="Controls/TextBox.axaml" />
         <StyleInclude Source="Controls/List.axaml" />
         <StyleInclude Source="Controls/IconLabel.axaml" />
+        <StyleInclude Source="Controls/Button.axaml" />
         <StyleInclude Source="Sections/Wallet/CreateAndRecover/Steps/SeedWordsGeneration/SeedWordList.axaml" />
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml" />
     </Application.Styles>
