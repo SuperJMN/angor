@@ -8,5 +8,11 @@
              
              x:Class="AngorApp.Sections.NavigationView" x:DataType="sections:NavigationViewModel">
 
+    <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="Loaded">
+            <InvokeCommandAction Command="{Binding Create}" />
+        </EventTriggerBehavior>
+    </Interaction.Behaviors>
+    
     <navigation:Frame Navigator="{Binding Navigator}" />
 </UserControl>

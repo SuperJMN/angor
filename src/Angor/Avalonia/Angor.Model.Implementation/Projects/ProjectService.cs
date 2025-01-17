@@ -7,6 +7,46 @@ using DynamicData;
 
 namespace Angor.Model.Implementation.Projects;
 
+public static class IndexerServiceMixin
+{
+    record PageState(int Offset, IEnumerable<ProjectIndexerData> Items);
+        
+    public static IObservable<ProjectIndexerData> GetAllProjectsWithExpand(
+        this IIndexerService projectService,
+        int pageSize = 20)
+    {
+        // Clase para llevar estado (offset + lista de items)
+            
+
+        return Observable
+            .Defer(() =>
+                // Primera página, offset = 0
+                Observable.FromAsync(() => projectService.GetProjectsAsync(0, pageSize))
+                    .Select(items => new PageState(0, items))
+            )
+            .Expand(state =>
+            {
+                // Expand definirá cómo obtener la "siguiente" página a partir de la "actual"
+                if (state.Items == null || !state.Items.Any())
+                {
+                    // Si no hay más datos, emitimos secuencia vacía (termina la expansión)
+                    return Observable.Empty<PageState>();
+                }
+
+                // Siguiente offset
+                var nextOffset = state.Offset + pageSize;
+                return Observable
+                    .FromAsync(() => projectService.GetProjectsAsync(nextOffset, pageSize))
+                    .Select(items => new PageState(nextOffset, items));
+            })
+            // Nos quedamos sólo con las páginas que tengan datos
+            .TakeWhile(state => state.Items != null && state.Items.Any())
+            // De cada 'PageState', emitimos sus items
+            .SelectMany(state => state.Items);
+    }
+}
+
+
 public class ProjectService : IProjectService
 {
     private const int MaxProjectCount = 21;
@@ -21,8 +61,8 @@ public class ProjectService : IProjectService
 
     public IObservable<IChangeSet<IProject, string>> Connect()
     {
-        var tuples = Observable.FromAsync(() => indexerService
-                .GetProjectsAsync(null, MaxProjectCount))
+        var tuples = indexerService.GetAllProjectsWithExpand()
+            .Buffer(20)
             .SelectMany(projectIndexerDatas => ProjectInfos(projectIndexerDatas)
                 .ToList()
                 .SelectMany(projectInfos => ProjectMetadatas(projectInfos).ToList().Select(metadatas => new
