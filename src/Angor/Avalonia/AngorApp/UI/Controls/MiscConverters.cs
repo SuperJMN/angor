@@ -53,7 +53,7 @@ public static class MiscConverters
     });
 
     public static string BigBtcFormat = "{0} BTC";
-    public static string AmountBtcFormat = "0.0000 0000 BTC";
+    public static string AmountBtcFormat = "{0:0.0000 0000} BTC";
 
     public static FuncValueConverter<string, SvgImage> StringToQRCode { get; } = new(s =>
     {
@@ -79,7 +79,7 @@ public static class MiscConverters
 
     public static FuncValueConverter<long, decimal> SatsToBtc { get; } = new(satoshis =>
     {
-        var btc = satoshis / 1_0000_0000;
+        var btc = satoshis / (decimal)1_0000_0000;
         return btc;
     });
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AngorApp.Core;
 using AngorApp.Sections.Shell;
 using Avalonia;
@@ -21,13 +22,23 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
-        IconProvider.Current
-            .Register<FontAwesomeIconProvider>();
-        
-        this.Connect(() => new MainView(), CompositionRoot.CreateMainViewModel, () => new MainWindow());
-
+        IconProvider.Current.Register<FontAwesomeIconProvider>();
+        _ = InitializeAsync();
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    
+    private async Task InitializeAsync()
+    {
+        try 
+        {
+            this.Connect(() => new MainView(), async control => await CompositionRoot.CreateMainViewModel(control), () => new MainWindow());
+        }
+        catch (Exception ex)
+        {
+            Log.Logger.Error(ex, "Failed to create MainViewModel");
+        }
     }
 }

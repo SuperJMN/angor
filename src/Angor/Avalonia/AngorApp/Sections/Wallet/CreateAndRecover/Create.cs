@@ -28,7 +28,7 @@ public class Create
 
     public async Task<Maybe<Result<IWallet>>> Start()
     {
-        var wizardBuilder = WizardBuilder
+        var wizard = WizardBuilder
             .StartWith(() => new WelcomeViewModel())
             .Then(prev => new SeedWordsViewModel(uiServices))
             .Then(prev => new SeedWordsConfirmationViewModel(prev.Words.Value))
@@ -41,7 +41,7 @@ public class Create
             .Then(_ => new SuccessViewModel("Wallet created successfully!", "Done"))
             .Build();
 
-        var result = await uiServices.Dialog.Show(wizardBuilder, "Create wallet", closeable => wizardBuilder.OptionsForCloseable(closeable));
+        var result = await uiServices.Dialog.Show(wizard, "Create wallet", closeable => wizard.OptionsForCloseable(closeable));
         if (result)
         {
             return Result.Success<IWallet>(new WalletDesign());

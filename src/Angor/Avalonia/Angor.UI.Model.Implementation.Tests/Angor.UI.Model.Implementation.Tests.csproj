@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\RefinedSuppaWallet.Infrastructure.Angor\RefinedSuppaWallet.Infrastructure.Angor.csproj" />
       <ProjectReference Include="..\..\Shared\Angor.Shared.csproj" />
       <ProjectReference Include="..\Angor.UI.Model.Implementation\Angor.UI.Model.Implementation.csproj" />
     </ItemGroup>

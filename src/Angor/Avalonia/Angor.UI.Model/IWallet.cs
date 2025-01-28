@@ -5,7 +5,7 @@ namespace Angor.UI.Model;
 public interface IWallet
 {
     public IEnumerable<IBroadcastedTransaction> History { get; }
-    long? Balance { get; set; }
+    long? Balance { get; }
     public BitcoinNetwork Network { get; }
     public string ReceiveAddress { get; }
     Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate);

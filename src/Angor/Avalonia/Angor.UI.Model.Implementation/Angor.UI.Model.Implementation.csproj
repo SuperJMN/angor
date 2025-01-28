@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="DynamicData" />
+      <PackageReference Include="Zafiro" />
     </ItemGroup>
 
     <ItemGroup>

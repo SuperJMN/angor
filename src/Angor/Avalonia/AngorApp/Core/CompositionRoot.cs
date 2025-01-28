@@ -15,15 +15,28 @@ using AngorApp.Services;
 using Avalonia.Controls.Notifications;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
+using NBitcoin;
+using RefinedSuppaWalet.Infrastructure;
+using RefinedSuppaWalet.Infrastructure.Address;
+using RefinedSuppaWalet.Infrastructure.Transactions;
+using RefinedSuppaWalet.Infrastructure.Wallet;
+using RefinedSuppaWallet.Application.Services.Wallet;
+using RefinedSuppaWallet.Domain;
+using RefinedSuppaWallet.Intrastructure.Mempoo.AddressManager;
+using RefinedSuppaWallet.Intrastructure.Mempoo.Repository;
+using RefinedSuppaWallet.Intrastructure.Mempoo.TransactionBroadcaster;
+using Serilog;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.Avalonia.Services;
+using DefaultHttpClientFactory = Zafiro.Misc.DefaultHttpClientFactory;
+using Network = NBitcoin.Network;
 using Separator = AngorApp.Sections.Shell.Separator;
 
 namespace AngorApp.Core;
 
 public static class CompositionRoot
 {
-    public static MainViewModel CreateMainViewModel(Control control)
+    public static async Task<MainViewModel> CreateMainViewModel(Control control)
     {
         var topLevel = TopLevel.GetTopLevel(control);
         var launcher = new LauncherService(topLevel!.Launcher);
@@ -34,9 +47,10 @@ public static class CompositionRoot
             {
                 Position = NotificationPosition.BottomRight
             }));
-
-        var walletStoreDesign = new WalletProviderDesign();
-        var walletFactory = new WalletFactory(new WalletBuilderDesign(), uiServices);
+        
+        var walletAppService = await WalletApplicationService();
+        var walletProvider = new WalletProvider(walletAppService);
+        var walletFactory = new WalletFactory(new WalletBuilder(walletAppService), uiServices);
 
         MainViewModel mainViewModel = null!;
 
@@ -44,10 +58,10 @@ public static class CompositionRoot
 
         IEnumerable<SectionBase> sections =
         [
-            new Section("Home", new HomeSectionViewModel(walletStoreDesign, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
+            new Section("Home", new HomeSectionViewModel(walletProvider, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
-            new Section("Wallet", new WalletSectionViewModel(walletFactory, walletStoreDesign, uiServices), "fa-wallet"),
-            new Section("Browse", new NavigationViewModel(navigator => new BrowseSectionViewModel(walletStoreDesign, projectService, navigator, uiServices)), "fa-magnifying-glass"),
+            new Section("Wallet", new WalletSectionViewModel(walletFactory, walletProvider, uiServices), "fa-wallet"),
+            new Section("Browse", new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices)), "fa-magnifying-glass"),
             new Section("Portfolio", new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
             new Section("Founder", new FounderSectionViewModel(projectService), "fa-money-bills"),
             new Separator(),
@@ -58,6 +72,34 @@ public static class CompositionRoot
         mainViewModel = new MainViewModel(sections, uiServices);
 
         return mainViewModel;
+    }
+
+    private static async Task<WalletAppService> WalletApplicationService()
+    {
+        var network = Network.TestNet;
+        var walletId = WalletId.New();
+        var dict = new Dictionary<WalletId, (Network Network, ExtKey ExtKey)>()
+        {
+            [walletId] = (Network.TestNet, ExtKey.Parse("tprv8ZgxMBicQKsPd3bePirSewfCg7PQ9KaJ1ztgecjDodoit4yt8zns8AMUQhUFVJNLZgaW9AKKnTKHoLNMuqwBPWxucTW1Vh9F59HC2H9Fro3", Network.TestNet))
+        };
+
+        var bitcoinAddressTypeDetector = new NBitcoinAddressTypeDetector(network);
+        var addressTypeDetector = bitcoinAddressTypeDetector;
+        var addressManager = new AddressManager(network);
+        var defaultHttpClientFactory = new DefaultHttpClientFactory();
+        var mempoolUtxoRepository = new MempoolUtxoRepository(defaultHttpClientFactory, addressManager);
+        var utxoSelector = new UtxoSelector();
+        var transactionPreparer = new NBitcoinTransactionPreparer(mempoolUtxoRepository, network, addressManager, addressTypeDetector, new UtxoSelector());
+        
+        var mempoolTransactionBroadcaster = new MempoolTransactionBroadcaster(defaultHttpClientFactory);
+        var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(dict), mempoolTransactionBroadcaster);
+
+        var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
+        var mempoolSpaceWalletService = new MempoolSpaceWalletService(Log.Logger, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
+        var walletRepository = new WalletRepository(mempoolSpaceWalletService);
+        
+        await walletRepository.ImportWallet(walletId, SampleData.WalletDescriptor());
+        return new WalletAppService(bitcoinTransactionService, walletRepository);
     }
 
     private static ProjectService RealProjectService()
