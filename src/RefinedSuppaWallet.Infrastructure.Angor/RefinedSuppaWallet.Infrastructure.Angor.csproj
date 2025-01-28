@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\TestProject2\RefinedSuppaWallet.Domain\RefinedSuppaWallet.Domain.csproj" />
+      <ProjectReference Include="..\..\..\TestProject2\RefinedSuppaWallet.Infrastructure\RefinedSuppaWallet.Infrastructure.csproj" />
+      <ProjectReference Include="..\Angor\Client\Angor.Client.csproj" />
+      <ProjectReference Include="..\Angor\Shared\Angor.Shared.csproj" />
+    </ItemGroup>
+
+</Project>
