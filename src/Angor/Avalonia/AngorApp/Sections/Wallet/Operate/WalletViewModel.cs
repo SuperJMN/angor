@@ -17,7 +17,7 @@ public class WalletViewModel(IWallet wallet, UIServices uiServices) : ReactiveOb
     public ICommand Send => ReactiveCommand.CreateFromTask<bool>(() =>
     {
         var wizard = WizardBuilder.StartWith(() => new AddressAndAmountViewModel(wallet))
-            .Then(model => new TransactionPreviewViewModel(wallet, new Destination("Test", model.Amount!.Value, SampleData.TestNetBitcoinAddress), uiServices))
+            .Then(model => new TransactionPreviewViewModel(wallet, new Destination("Test", model.Amount!.Value, model.Address!), uiServices))
             .Then(_ => new SuccessViewModel("Transaction sent!", "Success"))
             .Build();
 
