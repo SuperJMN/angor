@@ -39,6 +39,6 @@ public class WalletDesign : IWallet
         var value = BitcoinAddressValidator.ValidateBitcoinAddress(address, Network);
         return value.IsValid ? Result.Success() : Result.Failure(value.Message);
     }
-
+    
     public BitcoinNetwork Network => BitcoinNetwork.Testnet;
 }

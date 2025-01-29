@@ -1,8 +1,6 @@
 using CSharpFunctionalExtensions;
-using CSharpFunctionalExtensions.ValueTasks;
 using RefinedSuppaWallet.Application.Services.Wallet;
 using RefinedSuppaWallet.Domain;
-using Zafiro.CSharpFunctionalExtensions;
 
 namespace Angor.UI.Model.Implementation;
 

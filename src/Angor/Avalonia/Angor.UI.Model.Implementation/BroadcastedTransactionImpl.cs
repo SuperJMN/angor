@@ -2,21 +2,24 @@ using RefinedSuppaWallet.Domain;
 
 namespace Angor.UI.Model.Implementation;
 
-public class BroadcastedTransactionImpl : IBroadcastedTransaction
+public class BroadcastedTransactionImpl(BroadcastedTransaction transaction) : IBroadcastedTransaction
 {
-    public BroadcastedTransactionImpl(BroadcastedTransaction transaction)
-    {
-        Amount = transaction.Balance.Value;
-        Id = transaction.Id;
-    }
+    public IEnumerable<TransactionAddressInfo> AllOutputs { get; } = transaction.AllOutputs;
 
-    public string Id { get; }
+    public IEnumerable<TransactionAddressInfo> AllInputs { get; } = transaction.AllInputs;
+
+    public IEnumerable<TransactionInputInfo> WalletOutputs { get; } = transaction.WalletInputs;
+
+    public IEnumerable<TransactionInputInfo> WalletInputs { get; } = transaction.WalletInputs;
+
+
+    public string Id { get; } = transaction.Id;
 
     public string Address { get; }
     public decimal FeeRate { get; }
-    public decimal TotalFee { get;  }
-    public long Amount { get; }
-    public string Path { get; }
-    public int UtxoCount { get; }
-    public string ViewRawJson { get; }
+    public decimal TotalFee { get; } = transaction.Fee;
+    public long Amount { get; } = transaction.Balance.Value;
+    public string Path { get; } = "";
+    public int UtxoCount => AllOutputs.Count() + AllInputs.Count();
+    public string ViewRawJson { get; } = transaction.RawJson;
 }
