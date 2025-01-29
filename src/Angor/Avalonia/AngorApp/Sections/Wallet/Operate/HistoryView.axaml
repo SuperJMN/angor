@@ -24,7 +24,7 @@
                 <z:Column Header="ADDRESS" Binding="{Binding Address}" />
             </z:SlimDataGrid.Columns>
             <z:SlimDataGrid.Columns>
-                <z:Column Header="AMOUNT" Binding="{Binding Amount}" />
+                <z:Column Header="AMOUNT" Binding="{Binding Amount, Converter={x:Static controls:MiscConverters.SatsToBtc}, StringFormat={x:Static controls:MiscConverters.AmountBtcFormatWithoutSuffix}}" />
             </z:SlimDataGrid.Columns>
             <z:SlimDataGrid.Columns>
                 <z:Column Header="PATH" Binding="{Binding Path}" />

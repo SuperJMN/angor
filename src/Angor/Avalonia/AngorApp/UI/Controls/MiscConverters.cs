@@ -54,6 +54,7 @@ public static class MiscConverters
 
     public static string BigBtcFormat = "{0} BTC";
     public static string AmountBtcFormat = "{0:0.0000 0000} BTC";
+    public static string AmountBtcFormatWithoutSuffix = "{0:0.0000 0000}";
 
     public static FuncValueConverter<string, SvgImage> StringToQRCode { get; } = new(s =>
     {
