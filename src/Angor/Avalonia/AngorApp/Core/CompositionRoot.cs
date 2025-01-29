@@ -36,7 +36,7 @@ namespace AngorApp.Core;
 
 public static class CompositionRoot
 {
-    public static async Task<MainViewModel> CreateMainViewModel(Control control)
+    public static MainViewModel CreateMainViewModel(Control control)
     {
         var topLevel = TopLevel.GetTopLevel(control);
         var launcher = new LauncherService(topLevel!.Launcher);
@@ -48,7 +48,7 @@ public static class CompositionRoot
                 Position = NotificationPosition.BottomRight
             }));
         
-        var walletAppService = await WalletApplicationService();
+        var walletAppService = WalletApplicationService();
         var walletProvider = new WalletProvider(walletAppService);
         var walletFactory = new WalletFactory(new WalletBuilder(walletAppService), uiServices);
 
@@ -58,14 +58,14 @@ public static class CompositionRoot
 
         IEnumerable<SectionBase> sections =
         [
-            new Section("Home", new HomeSectionViewModel(walletProvider, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
+            new Section("Home", () => new HomeSectionViewModel(walletProvider, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
-            new Section("Wallet", new WalletSectionViewModel(walletFactory, walletProvider, uiServices), "fa-wallet"),
-            new Section("Browse", new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices)), "fa-magnifying-glass"),
-            new Section("Portfolio", new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
-            new Section("Founder", new FounderSectionViewModel(projectService), "fa-money-bills"),
+            new Section("Wallet", () => new WalletSectionViewModel(walletFactory, walletAppService, walletProvider, uiServices), "fa-wallet"),
+            new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices)), "fa-magnifying-glass"),
+            new Section("Portfolio", () => new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
+            new Section("Founder", () => new FounderSectionViewModel(projectService), "fa-money-bills"),
             new Separator(),
-            new Section("Settings", null, "fa-gear"),
+            new Section("Settings", () => null, "fa-gear"),
             new CommandSection("Angor Hub", ReactiveCommand.CreateFromTask(() => uiServices.LauncherService.LaunchUri(Constants.AngorHubUri)), "fa-magnifying-glass") { IsPrimary = false }
         ];
 
@@ -74,7 +74,7 @@ public static class CompositionRoot
         return mainViewModel;
     }
 
-    private static async Task<WalletAppService> WalletApplicationService()
+    private static WalletAppService WalletApplicationService()
     {
         var network = Network.TestNet;
         var walletId = WalletId.New();
@@ -98,7 +98,6 @@ public static class CompositionRoot
         var mempoolSpaceWalletService = new MempoolSpaceWalletService(Log.Logger, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var walletRepository = new WalletRepository(mempoolSpaceWalletService);
         
-        await walletRepository.ImportWallet(walletId, SampleData.WalletDescriptor());
         return new WalletAppService(bitcoinTransactionService, walletRepository);
     }
 

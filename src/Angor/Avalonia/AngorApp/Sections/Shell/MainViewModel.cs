@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reactive.Linq;
 using AngorApp.Core;
 using AngorApp.Services;
 using ReactiveUI.SourceGenerators;
@@ -14,11 +15,13 @@ public partial class MainViewModel : ReactiveObject, IMainViewModel
         Sections = sections;
         SelectedSection = Sections.OfType<Section>().Skip(0).First();
         OpenHub = ReactiveCommand.CreateFromTask(() => uiServices.LauncherService.LaunchUri(Constants.AngorHubUri));
+        CurrentContent = this.WhenAnyValue(x => x.SelectedSection).Select(section => section.GetViewModel());
     }
 
     public ReactiveCommand<Unit,Unit> OpenHub { get; }
 
     public IEnumerable<SectionBase> Sections { get; }
+    public IObservable<object> CurrentContent { get; }
 
     public void GoToSection(string sectionName)
     {
