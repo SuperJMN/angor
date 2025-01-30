@@ -7,8 +7,10 @@ using AngorApp.Core;
 using AngorApp.Sections.Wallet.Operate;
 using AngorApp.Services;
 using CSharpFunctionalExtensions;
+using NBitcoin;
 using ReactiveUI.SourceGenerators;
 using RefinedSuppaWallet.Application.Services.Wallet;
+using RefinedSuppaWallet.Domain;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
 
@@ -18,16 +20,19 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
 {
     [ObservableAsProperty] private IWalletViewModel? wallet;
     
-    public WalletSectionViewModel(IWalletFactory walletFactory, WalletAppService walletAppService, IWalletProvider walletProvider, UIServices services)
+    public WalletSectionViewModel(IWalletFactory walletFactory, WalletAppService walletAppService, IWalletProvider walletProvider, UIServices services, Func<Dictionary<WalletId, (Network, ExtKey)>> dict)
     {
         CreateWallet = ReactiveCommand.CreateFromTask(walletFactory.Create);
         var wallets = CreateWallet.Values().Successes();
         wallets.Do(walletProvider.SetWallet).Subscribe();
 
         
+        var valueTuple = (Network.TestNet, ExtKey.Parse("tprv8ZgxMBicQKsPd3bePirSewfCg7PQ9KaJ1ztgecjDodoit4yt8zns8AMUQhUFVJNLZgaW9AKKnTKHoLNMuqwBPWxucTW1Vh9F59HC2H9Fro3", Network.TestNet));
+
         LoadWallet = ReactiveCommand.CreateFromTask(() =>
         {
             return walletAppService.ImportWallet(SampleData.WalletDescriptor())
+                .Tap(id => dict().Add(id, valueTuple))
                 .Map(walletId => new RuntimeWallet(walletId, walletAppService));
         }, this.WhenAnyValue(x => x.Wallet).NotNull());
         

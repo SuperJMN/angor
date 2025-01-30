@@ -22,9 +22,9 @@ using RefinedSuppaWalet.Infrastructure.Transactions;
 using RefinedSuppaWalet.Infrastructure.Wallet;
 using RefinedSuppaWallet.Application.Services.Wallet;
 using RefinedSuppaWallet.Domain;
-using RefinedSuppaWallet.Intrastructure.Mempoo.AddressManager;
-using RefinedSuppaWallet.Intrastructure.Mempoo.Repository;
-using RefinedSuppaWallet.Intrastructure.Mempoo.TransactionBroadcaster;
+using RefinedSuppaWallet.Intrastructure.Mempool.AddressManager;
+using RefinedSuppaWallet.Intrastructure.Mempool.Repository;
+using RefinedSuppaWallet.Intrastructure.Mempool.TransactionBroadcaster;
 using Serilog;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.Avalonia.Services;
@@ -47,20 +47,23 @@ public static class CompositionRoot
             {
                 Position = NotificationPosition.BottomRight
             }));
+
+        var dict = new Dictionary<WalletId, (Network, ExtKey)>();
+        var dictFunc = () => dict;
         
-        var walletAppService = WalletApplicationService();
+        var walletAppService = WalletApplicationService(dictFunc);
         var walletProvider = new WalletProvider(walletAppService);
         var walletFactory = new WalletFactory(new WalletBuilder(walletAppService), uiServices);
 
         MainViewModel mainViewModel = null!;
 
         var projectService = RealProjectService();
-
+        
         IEnumerable<SectionBase> sections =
         [
             new Section("Home", () => new HomeSectionViewModel(walletProvider, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
-            new Section("Wallet", () => new WalletSectionViewModel(walletFactory, walletAppService, walletProvider, uiServices), "fa-wallet"),
+            new Section("Wallet", () => new WalletSectionViewModel(walletFactory, walletAppService, walletProvider, uiServices, dictFunc), "fa-wallet"),
             new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices)), "fa-magnifying-glass"),
             new Section("Portfolio", () => new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
             new Section("Founder", () => new FounderSectionViewModel(projectService), "fa-money-bills"),
@@ -74,15 +77,9 @@ public static class CompositionRoot
         return mainViewModel;
     }
 
-    private static WalletAppService WalletApplicationService()
+    private static WalletAppService WalletApplicationService(Func<Dictionary<WalletId, (Network, ExtKey)>> dict)
     {
         var network = Network.TestNet;
-        var walletId = WalletId.New();
-        var dict = new Dictionary<WalletId, (Network Network, ExtKey ExtKey)>()
-        {
-            [walletId] = (Network.TestNet, ExtKey.Parse("tprv8ZgxMBicQKsPd3bePirSewfCg7PQ9KaJ1ztgecjDodoit4yt8zns8AMUQhUFVJNLZgaW9AKKnTKHoLNMuqwBPWxucTW1Vh9F59HC2H9Fro3", Network.TestNet))
-        };
-
         var bitcoinAddressTypeDetector = new NBitcoinAddressTypeDetector(network);
         var addressTypeDetector = bitcoinAddressTypeDetector;
         var addressManager = new AddressManager(network);

@@ -26,6 +26,7 @@ public partial class TransactionPreviewViewModel : ReactiveValidationObject, ITr
         IsBusy = CreateTransaction.IsExecuting.CombineLatest(Confirm.IsExecuting, (a, b) => a | b);
 
         Confirm.HandleErrorsWith(services.NotificationService, "Could not confirm transaction");
+        CreateTransaction.HandleErrorsWith(services.NotificationService, "Could not create transaction");
 
         this.WhenAnyValue(x => x.Feerate).ToSignal().InvokeCommand(CreateTransaction);
     }
