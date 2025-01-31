@@ -1,33 +1,41 @@
+using MoreLinq;
 using RefinedSuppaWalet.Infrastructure.Interfaces.Wallet;
 using RefinedSuppaWallet.Domain;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
-
-namespace RefinedSuppaWallet.Infrastructure.Angor.SecuredWalletRepository;
-
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 
-public class ManyProtectedWalletsRepository : IProtectedWalletRepository
+namespace RefinedSuppaWallet.Infrastructure.Angor.SecuredWalletRepository;
+
+public class AngorWalletRepository : IProtectedWalletRepository
 {
-    private const string WALLETS_FILE = "wallets.json";
+    private const string WalletsFile = "wallets.json";
     private readonly IStore store;
-    private ManyWalletsData allWallets; // para no recargarlo cada vez
-    
-    public ManyProtectedWalletsRepository(IStore store)
+    private readonly IWalletTransactionService transactionService;
+    private readonly ManyWalletsData allWallets;
+
+    public static async Task<IProtectedWalletRepository> Create(IWalletTransactionService transactionService, IStore store)
     {
-        this.store = store;
-        allWallets = LoadWallets().GetAwaiter().GetResult();
+        var wallets = await LoadWallets(store);
+        return new AngorWalletRepository(wallets, store, transactionService);
     }
 
-    private async Task<ManyWalletsData> LoadWallets()
+    private AngorWalletRepository(ManyWalletsData allWallets, IStore store, IWalletTransactionService transactionService)
     {
-        var data = await store.Load<ManyWalletsData>(WALLETS_FILE);
+        this.allWallets = allWallets;
+        this.store = store;
+        this.transactionService = transactionService;
+    }
+
+    private static async Task<ManyWalletsData> LoadWallets(IStore store)
+    {
+        var data = await store.Load<ManyWalletsData>(WalletsFile);
         return data ?? new ManyWalletsData();
     }
 
     private async Task SaveWallets()
     {
-        await store.Save(WALLETS_FILE, allWallets);
+        await store.Save(WalletsFile, allWallets);
     }
 
     public async Task<IEnumerable<(WalletId Id, string Name)>> ListWallets()
@@ -64,6 +72,13 @@ public class ManyProtectedWalletsRepository : IProtectedWalletRepository
             return Result.Failure<Wallet>("Wallet already exists.");
 
         var domainWallet = new Wallet(walletId, descriptor);
+
+        var addTransactionsResult = await AddTransactions(domainWallet);
+        if (addTransactionsResult.IsFailure)
+        {
+            return Result.Failure<Wallet>("Cannot import wallet. Error fetching transactions.");
+        }
+
         var storedWallet = MapToStoredWallet(domainWallet);
 
         // serializamos la info sensible y la ciframos
@@ -74,8 +89,8 @@ public class ManyProtectedWalletsRepository : IProtectedWalletRepository
         var newEntry = new EncryptedWalletInfo
         {
             WalletId = walletId.Id,
-            WalletName = walletName,    // en claro
-            EncryptedData = encrypted,  // cifrado
+            WalletName = walletName, // en claro
+            EncryptedData = encrypted, // cifrado
             Salt = salt
         };
 
@@ -86,7 +101,14 @@ public class ManyProtectedWalletsRepository : IProtectedWalletRepository
         return Result.Success(domainWallet);
     }
 
-private static Wallet MapToWallet(WalletData.StoredWallet stored)
+    private Task<Result> AddTransactions(Wallet domainWallet)
+    {
+        return transactionService.GetWalletTransactions(domainWallet.Descriptor)
+            .Tap(txs => txs.ForEach(txt => domainWallet.RegisterBroadcastedTransaction(txt)))
+            .Bind(_ => Result.Success());
+    }
+
+    private static Wallet MapToWallet(WalletData.StoredWallet stored)
     {
         var descriptor = WalletDescriptor.Create(
             stored.Fingerprint,

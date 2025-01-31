@@ -11,11 +11,14 @@ using AngorApp.Sections.Portfolio;
 using AngorApp.Sections.Shell;
 using AngorApp.Sections.Wallet;
 using AngorApp.Sections.Wallet.CreateAndRecover;
+using AngorApp.Sections.Wallet.CreateAndRecover.Steps.Passphrase.Create;
+using AngorApp.Sections.Wallet.Unlock;
 using AngorApp.Services;
 using Avalonia.Controls.Notifications;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using NBitcoin;
+using ReactiveUI.Validation.Extensions;
 using RefinedSuppaWalet.Infrastructure;
 using RefinedSuppaWalet.Infrastructure.Address;
 using RefinedSuppaWalet.Infrastructure.Interfaces.Wallet;
@@ -54,15 +57,15 @@ public static class CompositionRoot
 
         var dict = new Dictionary<WalletId, (Network, ExtKey)>();
         var dictFunc = () => dict;
-        
-        var walletAppService = WalletApplicationService(dictFunc);
+
+        var walletAppService = WalletApplicationService(dictFunc, uiServices);
         var walletProvider = new WalletProvider(walletAppService);
         var walletFactory = new WalletFactory(new WalletBuilder(walletAppService), uiServices);
 
         MainViewModel mainViewModel = null!;
 
         var projectService = RealProjectService();
-        
+
         IEnumerable<SectionBase> sections =
         [
             new Section("Home", () => new HomeSectionViewModel(walletProvider, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
@@ -81,7 +84,7 @@ public static class CompositionRoot
         return mainViewModel;
     }
 
-    private static WalletAppService WalletApplicationService(Func<Dictionary<WalletId, (Network, ExtKey)>> dict)
+    private static WalletAppService WalletApplicationService(Func<Dictionary<WalletId, (Network, ExtKey)>> dict, UIServices uiServices)
     {
         var network = Network.TestNet;
         var bitcoinAddressTypeDetector = new NBitcoinAddressTypeDetector(network);
@@ -91,15 +94,14 @@ public static class CompositionRoot
         var mempoolUtxoRepository = new MempoolUtxoRepository(defaultHttpClientFactory, addressManager);
         var utxoSelector = new UtxoSelector();
         var transactionPreparer = new NBitcoinTransactionPreparer(mempoolUtxoRepository, network, addressManager, addressTypeDetector, new UtxoSelector());
-        
+
         var mempoolTransactionBroadcaster = new MempoolTransactionBroadcaster(defaultHttpClientFactory);
         var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(dict), mempoolTransactionBroadcaster);
 
         var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
         var mempoolSpaceWalletService = new MempoolSpaceWalletService(Log.Logger, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
-        var p = new ManyProtectedWalletsRepository(new FileStore("Angor"));
-        var walletRepository = new WalletRepository(p, new PassphraseProvider());
-        
+        var walletRepository = new WalletRepository(() => AngorWalletRepository.Create(mempoolSpaceWalletService, new FileStore("Angor")), new PassphraseProvider(uiServices));
+
         return new WalletAppService(bitcoinTransactionService, walletRepository);
     }
 
@@ -112,36 +114,45 @@ public static class CompositionRoot
 
 internal class PassphraseProvider : IPassphraseProvider
 {
-    public Task<Maybe<string>> Provide(WalletId id)
+    private readonly UIServices services;
+
+    public PassphraseProvider(UIServices services)
     {
-        throw new NotImplementedException();
+        this.services = services;
+    }
+
+    public async Task<Maybe<string>> Provide(WalletId id)
+    {
+        var passphraseRequestViewModel = new PassphraseRequestViewModel();
+        await services.Dialog.Show(passphraseRequestViewModel, "Unlock wallet", passphraseRequestViewModel.IsValid());
+        return passphraseRequestViewModel.Passphrase;
     }
 }
 
 internal class WalletRepository : IWalletRepository
 {
-    private readonly IProtectedWalletRepository inner;
+    private readonly Func<Task<IProtectedWalletRepository>> inner;
     private readonly IPassphraseProvider provider;
     private readonly Dictionary<WalletId, Wallet> unlockedWallets = new();
 
-    public WalletRepository(IProtectedWalletRepository inner, IPassphraseProvider provider)
+    public WalletRepository(Func<Task<IProtectedWalletRepository>> inner, IPassphraseProvider provider)
     {
         this.inner = inner;
         this.provider = provider;
     }
 
-    public Task<IEnumerable<(WalletId Id, string Name)>> ListWallets()
+    public async Task<IEnumerable<(WalletId Id, string Name)>> ListWallets()
     {
-        return inner.ListWallets();
+        return await (await inner()).ListWallets();
     }
 
     public Task<Maybe<Wallet>> Get(WalletId id)
     {
-        return unlockedWallets.TryFind(id).Or(() => provider.Provide(id).Bind(passphrase => inner.Get(id, passphrase)));
+        return unlockedWallets.TryFind(id).Or(() => provider.Provide(id).Bind(async passphrase => await (await inner()).Get(id, passphrase)));
     }
 
-    public Task<Result<Wallet>> ImportWallet(WalletId walletId, string walletName, WalletDescriptor descriptor, string passphrase)
+    public async Task<Result<Wallet>> ImportWallet(WalletId walletId, string walletName, WalletDescriptor descriptor, string passphrase)
     {
-        return inner.ImportWallet(walletId, walletName, descriptor, passphrase);
+        return await (await inner()).ImportWallet(walletId, walletName, descriptor, passphrase);
     }
 }
