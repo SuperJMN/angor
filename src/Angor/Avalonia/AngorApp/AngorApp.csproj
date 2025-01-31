@@ -43,6 +43,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Application\RefinedSuppaWallet.Application.csproj" />
       <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Intrastructure.Mempool\RefinedSuppaWallet.Intrastructure.Mempool.csproj" />
+      <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Tests\RefinedSuppaWallet.Tests.csproj" />
+      <ProjectReference Include="..\..\..\RefinedSuppaWallet.Infrastructure.Angor\RefinedSuppaWallet.Infrastructure.Angor.csproj" />
       <ProjectReference Include="..\Angor.UI.Model.Implementation\Angor.UI.Model.Implementation.csproj" />
       <ProjectReference Include="..\Angor.UI.Model\Angor.UI.Model.csproj" />
     </ItemGroup>

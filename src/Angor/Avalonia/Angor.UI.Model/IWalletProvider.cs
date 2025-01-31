@@ -4,6 +4,6 @@ namespace Angor.UI.Model;
 
 public interface IWalletProvider
 {
-    Maybe<IWallet> GetWallet();
+    Task<Maybe<IWallet>> GetWallet();
     void SetWallet(IWallet wallet);
 }

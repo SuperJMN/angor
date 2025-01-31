@@ -18,13 +18,17 @@ using Microsoft.Extensions.Logging;
 using NBitcoin;
 using RefinedSuppaWalet.Infrastructure;
 using RefinedSuppaWalet.Infrastructure.Address;
+using RefinedSuppaWalet.Infrastructure.Interfaces.Wallet;
 using RefinedSuppaWalet.Infrastructure.Transactions;
-using RefinedSuppaWalet.Infrastructure.Wallet;
-using RefinedSuppaWallet.Application.Services.Wallet;
+using RefinedSuppaWallet.Application.Services;
 using RefinedSuppaWallet.Domain;
+using RefinedSuppaWallet.Infrastructure.Angor;
+using RefinedSuppaWallet.Infrastructure.Angor.SecuredWalletRepository;
+using RefinedSuppaWallet.Infrastructure.Angor.Store;
 using RefinedSuppaWallet.Intrastructure.Mempool.AddressManager;
 using RefinedSuppaWallet.Intrastructure.Mempool.Repository;
 using RefinedSuppaWallet.Intrastructure.Mempool.TransactionBroadcaster;
+using RefinedSuppaWallet.Tests;
 using Serilog;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.Avalonia.Services;
@@ -93,7 +97,8 @@ public static class CompositionRoot
 
         var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
         var mempoolSpaceWalletService = new MempoolSpaceWalletService(Log.Logger, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
-        var walletRepository = new WalletRepository(mempoolSpaceWalletService);
+        var p = new ManyProtectedWalletsRepository(new FileStore("Angor"));
+        var walletRepository = new WalletRepository(p, new PassphraseProvider());
         
         return new WalletAppService(bitcoinTransactionService, walletRepository);
     }
@@ -102,5 +107,41 @@ public static class CompositionRoot
     {
         var loggerFactory = LoggerConfig.CreateFactory();
         return new ProjectService(DependencyFactory.GetIndexerService(loggerFactory), DependencyFactory.GetRelayService(loggerFactory));
+    }
+}
+
+internal class PassphraseProvider : IPassphraseProvider
+{
+    public Task<Maybe<string>> Provide(WalletId id)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+internal class WalletRepository : IWalletRepository
+{
+    private readonly IProtectedWalletRepository inner;
+    private readonly IPassphraseProvider provider;
+    private readonly Dictionary<WalletId, Wallet> unlockedWallets = new();
+
+    public WalletRepository(IProtectedWalletRepository inner, IPassphraseProvider provider)
+    {
+        this.inner = inner;
+        this.provider = provider;
+    }
+
+    public Task<IEnumerable<(WalletId Id, string Name)>> ListWallets()
+    {
+        return inner.ListWallets();
+    }
+
+    public Task<Maybe<Wallet>> Get(WalletId id)
+    {
+        return unlockedWallets.TryFind(id).Or(() => provider.Provide(id).Bind(passphrase => inner.Get(id, passphrase)));
+    }
+
+    public Task<Result<Wallet>> ImportWallet(WalletId walletId, string walletName, WalletDescriptor descriptor, string passphrase)
+    {
+        return inner.ImportWallet(walletId, walletName, descriptor, passphrase);
     }
 }

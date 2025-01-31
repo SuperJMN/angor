@@ -16,9 +16,9 @@ public class ProjectDetailsViewModel(IWalletProvider walletProvider, IProject pr
     public object Icon => project.Icon;
     public object Picture => project.Picture;
 
-    public ICommand Invest { get; } = ReactiveCommand.CreateFromTask(() =>
+    public ICommand Invest { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
-        var maybeWallet = walletProvider.GetWallet();
+        var maybeWallet = await walletProvider.GetWallet();
         return maybeWallet.Match(wallet => DoInvest(wallet, project, uiServices), () => uiServices.NotificationService.Show("You need to create a Wallet before investing", "No wallet"));
     });
 

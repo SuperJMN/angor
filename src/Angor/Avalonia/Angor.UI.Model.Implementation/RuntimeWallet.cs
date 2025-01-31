@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using RefinedSuppaWallet.Application.Services.Wallet;
+using RefinedSuppaWallet.Application.Services;
 using RefinedSuppaWallet.Domain;
 
 namespace Angor.UI.Model.Implementation;
@@ -13,9 +13,9 @@ public class RuntimeWallet : IWallet
     {
         this.walletId = walletId;
         this.walletAppService = walletAppService;
-        History = walletAppService
-            .GetTransactions(walletId).Map(collection => collection.Select(IBroadcastedTransaction (transaction) => new BroadcastedTransactionImpl(transaction))).GetValueOrDefault();
-        Balance = walletAppService.GetBalance(walletId).Map(x => x.Value).GetValueOrDefault();
+        // History = walletAppService
+        //     .GetTransactions(walletId).Map(collection => collection.Select(IBroadcastedTransaction (transaction) => new BroadcastedTransactionImpl(transaction))).GetValueOrDefault();
+        // Balance = walletAppService.GetBalance(walletId).GetAwaiter().GetResult().Map(x => x.Value).GetValueOrDefault();
     }
 
     public IEnumerable<IBroadcastedTransaction> History { get; }

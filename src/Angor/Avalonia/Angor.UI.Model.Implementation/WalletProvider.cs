@@ -1,13 +1,13 @@
 using CSharpFunctionalExtensions;
-using RefinedSuppaWallet.Application.Services.Wallet;
+using RefinedSuppaWallet.Application.Services;
 
 namespace Angor.UI.Model.Implementation;
 
 public class WalletProvider(WalletAppService walletAppService) : IWalletProvider
 {
-    public Maybe<IWallet> GetWallet()
+    public async Task<Maybe<IWallet>> GetWallet()
     {
-        return walletAppService.GetWallets().Select(id => new RuntimeWallet(id, walletAppService)).TryFirst<IWallet>();
+        return (await walletAppService.GetWallets()).Select(tuple => new RuntimeWallet(tuple.Id, walletAppService)).TryFirst<IWallet>();
     }
 
     public void SetWallet(IWallet wallet)

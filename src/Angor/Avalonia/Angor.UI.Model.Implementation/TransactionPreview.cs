@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using RefinedSuppaWallet.Application.Services.Wallet;
+using RefinedSuppaWallet.Application.Services;
 using RefinedSuppaWallet.Domain;
 
 namespace Angor.UI.Model.Implementation;
