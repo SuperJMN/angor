@@ -26,7 +26,9 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
 
         var transactionsChangeSet = Observable.FromAsync(() => walletAppService.GetTransactions(walletId))
             .Successes()
-            .ToObservableChangeSet();
+            .ToObservableChangeSet()
+            .Replay()
+            .RefCount();
 
         transactionsChangeSet
             .Transform(transaction => (IBroadcastedTransaction)new BroadcastedTransactionImpl(transaction))

@@ -13,19 +13,24 @@ namespace AngorApp.Core;
 internal class PassphraseProvider : IPassphraseProvider
 {
     private readonly UIServices services;
+    private readonly Dictionary<WalletId, string> passphrases = new();
 
     public PassphraseProvider(UIServices services)
     {
         this.services = services;
     }
 
-    public Task<Maybe<string>> Provide(WalletId id)
+    public async Task<Maybe<string>> Provide(WalletId id)
     {
-        return Dispatcher.UIThread.InvokeAsync(async () =>
+        var promptForPassphrase = await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             var passphraseRequestViewModel = new PassphraseRequestViewModel();
             await services.Dialog.Show(passphraseRequestViewModel, "Unlock wallet", passphraseRequestViewModel.IsValid());
             return passphraseRequestViewModel.Passphrase.AsMaybe();
         });
+        
+        promptForPassphrase.Execute(s => passphrases[id] = s);
+        
+        return passphrases.TryFind(id).Or(promptForPassphrase);
     }
 }
