@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using Angor.UI.Model;
+using Angor.UI.Model.Implementation;
 using AngorApp.Sections.Browse.Details;
 using AngorApp.Services;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
@@ -8,7 +9,13 @@ using Zafiro.Avalonia.Controls.Navigation;
 
 namespace AngorApp.Sections.Browse;
 
-public class ProjectViewModel(IWalletProvider walletProvider, IProject project, INavigator navigator, UIServices uiServices, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
+public class ProjectViewModel(
+    IWalletProvider walletProvider,
+    IProject project,
+    INavigator navigator,
+    UIServices uiServices,
+    WalletAppService walletAppService,
+    IWalletUnlocker walletUnlocker)
     : ReactiveObject, IProjectViewModel
 {
     public IProject Project { get; } = project;

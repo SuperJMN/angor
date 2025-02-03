@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using Angor.UI.Model;
+using Angor.UI.Model.Implementation;
 using AngorApp.Sections.Browse;
 using AngorApp.Sections.Wallet.Operate.Send;
 using AngorApp.Services;
@@ -14,9 +15,7 @@ public class WalletViewModel(IWallet wallet, UIServices uiServices) : ReactiveOb
 {
     public IWallet Wallet => wallet;
 
-    public IObservable<bool> IsInitialized => wallet.WhenAnyValue(x => x.History.Count, i => i != 0);
-
-    public ICommand Send => ReactiveCommand.CreateFromTask<bool>(() =>
+    public ICommand Send => ReactiveCommand.CreateFromTask(() =>
     {
         var wizard = WizardBuilder.StartWith(() => new AddressAndAmountViewModel(wallet))
             .Then(model => new TransactionPreviewViewModel(wallet, new Destination("Test", model.Amount!.Value, model.Address!), uiServices))

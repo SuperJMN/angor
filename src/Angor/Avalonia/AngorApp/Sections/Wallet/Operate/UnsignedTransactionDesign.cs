@@ -17,7 +17,7 @@ public class UnsignedTransactionDesign : IUnsignedTransaction
     public int UtxoCount { get; set; }
     public string ViewRawJson { get; set; }
     
-    public async Task<Result<TxId>> Broadcast()
+    public async Task<Result<TxId>> Accept()
     {
         await Task.Delay(3000);
         return new TxId("test");

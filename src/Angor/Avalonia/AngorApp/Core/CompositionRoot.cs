@@ -45,11 +45,11 @@ public static class CompositionRoot
                 Position = NotificationPosition.BottomRight
             }));
 
-        var passphraseProvider = new WalletUnlocker(uiServices);
-        var walletAppService = WalletApplicationService(passphraseProvider);
+        var walletUnlocker = new WalletUnlocker(uiServices);
+        var walletAppService = WalletApplicationService(walletUnlocker);
 
         var walletProvider = new WalletProvider(walletAppService);
-        var walletFactory = new WalletFactory(new WalletBuilder(walletAppService, passphraseProvider), uiServices);
+        var walletFactory = new WalletFactory(new WalletBuilder(walletAppService, walletUnlocker), uiServices);
 
         MainViewModel mainViewModel = null!;
 
@@ -59,8 +59,8 @@ public static class CompositionRoot
         [
             new Section("Home", () => new HomeSectionViewModel(walletProvider, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
-            new Section("Wallet", () => new WalletSectionViewModel(walletFactory, walletProvider, uiServices, walletAppService, passphraseProvider), "fa-wallet"),
-            new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices, walletAppService, passphraseProvider)), "fa-magnifying-glass"),
+            new Section("Wallet", () => new WalletSectionViewModel(walletFactory, walletProvider, uiServices, walletAppService, walletUnlocker), "fa-wallet"),
+            new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices, walletAppService, walletUnlocker)), "fa-magnifying-glass"),
             new Section("Portfolio", () => new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
             new Section("Founder", () => new FounderSectionViewModel(projectService), "fa-money-bills"),
             new Separator(),

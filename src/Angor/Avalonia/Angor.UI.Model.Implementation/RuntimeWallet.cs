@@ -59,7 +59,7 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
     public Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate)
     {
         return walletAppService.EstimateFee(Id, new Amount(amount), new Address(address), new FeeRate(feerate))
-            .Map(IUnsignedTransaction (fee) => new TransactionPreview(Id, amount, address, feerate, fee, walletAppService, walletUnlocker));
+            .Map(IUnsignedTransaction (fee) => new TransactionPreview(Id, amount, address, feerate, fee, walletAppService));
     }
 
     public Result IsAddressValid(string address)

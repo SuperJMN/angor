@@ -2,12 +2,10 @@ using System.Reactive.Linq;
 using Angor.UI.Model;
 using AngorApp.Sections.Browse.ProjectLookup;
 using AngorApp.Services;
-using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Application;
 using Zafiro.Avalonia.Controls.Navigation;
-using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
 
 namespace AngorApp.Sections.Browse;

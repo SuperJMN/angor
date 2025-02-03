@@ -21,7 +21,7 @@ public partial class TransactionPreviewViewModel : ReactiveValidationObject, ITr
         Destination = destination;
         CreateTransaction = ReactiveCommand.CreateFromTask(() => wallet.CreateTransaction(destination.Amount, destination.BitcoinAddress, (long)Feerate));
         transactionHelper = CreateTransaction.Successes().ToProperty(this, x => x.Transaction);
-        Confirm = ReactiveCommand.CreateFromTask(() => Transaction!.Broadcast(), this.WhenAnyValue<TransactionPreviewViewModel, IUnsignedTransaction>(x => x.Transaction).Null().CombineLatest(CreateTransaction.IsExecuting, (a, b) => !a && !b));
+        Confirm = ReactiveCommand.CreateFromTask(() => Transaction!.Accept(), this.WhenAnyValue<TransactionPreviewViewModel, IUnsignedTransaction>(x => x.Transaction).Null().CombineLatest(CreateTransaction.IsExecuting, (a, b) => !a && !b));
         TransactionConfirmed = Confirm.Successes().Select(_ => true).StartWith(false);
         IsBusy = CreateTransaction.IsExecuting.CombineLatest(Confirm.IsExecuting, (a, b) => a | b);
 

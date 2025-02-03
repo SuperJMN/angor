@@ -16,7 +16,11 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
 {
     [ObservableAsProperty] private IWalletViewModel? wallet;
 
-    public WalletSectionViewModel(IWalletFactory walletFactory, IWalletProvider walletProvider, UIServices services, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
+    public WalletSectionViewModel(IWalletFactory walletFactory, 
+        IWalletProvider walletProvider, 
+        UIServices services, 
+        WalletAppService walletAppService, 
+        IWalletUnlocker walletUnlocker)
     {
         CreateWallet = ReactiveCommand.CreateFromTask(walletFactory.Create);
         var wallets = CreateWallet.Values().Successes();

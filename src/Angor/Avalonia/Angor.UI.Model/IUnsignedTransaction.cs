@@ -6,5 +6,5 @@ namespace Angor.UI.Model;
 public interface IUnsignedTransaction
 {
     public long TotalFee { get; set; }
-    Task<Result<TxId>> Broadcast();
+    Task<Result<TxId>> Accept();
 }
