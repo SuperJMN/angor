@@ -3,10 +3,11 @@ using RefinedSuppaWallet.Domain;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
 using System.Text.Json;
 using CSharpFunctionalExtensions;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 
 namespace RefinedSuppaWallet.Infrastructure.Angor.SecuredWalletRepository;
 
-public class AngorWalletRepository : IProtectedWalletRepository
+public class AngorWalletRepository : IWalletRepository
 {
     private const string WalletsFile = "wallets.json";
     private readonly IStore store;
@@ -32,6 +33,11 @@ public class AngorWalletRepository : IProtectedWalletRepository
     public async Task<IEnumerable<(WalletId Id, string Name)>> ListWallets()
     {
         return (await walletStore.Value).Wallets.Select(x => (new WalletId(x.WalletId), x.WalletName));
+    }
+
+    public Task<Maybe<Wallet>> Get(WalletId id)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<Maybe<Wallet>> Get(WalletId id, string passphrase)

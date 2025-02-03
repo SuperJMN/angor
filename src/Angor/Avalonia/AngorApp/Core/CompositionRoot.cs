@@ -15,6 +15,7 @@ using RefinedSuppaWalet.Infrastructure.Address;
 using RefinedSuppaWalet.Infrastructure.Transactions;
 using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
+using RefinedSuppaWallet.Infrastructure.Angor;
 using RefinedSuppaWallet.Infrastructure.Angor.SecuredWalletRepository;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
 using RefinedSuppaWallet.Intrastructure.Mempool.AddressManager;
@@ -84,11 +85,11 @@ public static class CompositionRoot
         var transactionPreparer = new NBitcoinTransactionPreparer(mempoolUtxoRepository, network, addressManager, addressTypeDetector, new UtxoSelector());
         var mempoolTransactionBroadcaster = new MempoolTransactionBroadcaster(defaultHttpClientFactory);
         var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
-        var walletRepository = new WalletRepository(() => new AngorWalletRepository(new FileStore("Angor")), passphraseProvider);
+        var walletRepository = new AngorWalletRepository(new FileStore("Angor"));
         var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(walletRepository, passphraseProvider), mempoolTransactionBroadcaster);
         var walletTransactionService = new MempoolSpaceWalletService(Logger.None, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var blockchainService = new BlockchainService(mempoolUtxoRepository, bitcoinTransactionService, walletTransactionService, mempoolTransactionBroadcaster);
-        return new WalletAppService(walletRepository, blockchainService, new AddressService(addressManager), new TransactionSigner());
+        return new WalletAppService(walletRepository, blockchainService, new TransactionSigner());
     }
 
     private static ProjectService RealProjectService()
