@@ -18,6 +18,6 @@ public class WalletBuilder : IWalletBuilder
 
     public async Task<Result<IWallet>> Create(SeedWords seedwords, Maybe<string> passphrase, string encryptionKey)
     {
-        return new RuntimeWallet(WalletId.New(), walletAppService, walletUnlocker);
+        return new DynamicWallet(WalletId.New(), walletAppService, walletUnlocker);
     }
 }

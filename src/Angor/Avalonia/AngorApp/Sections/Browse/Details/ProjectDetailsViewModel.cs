@@ -21,7 +21,7 @@ public class ProjectDetailsViewModel(IWalletProvider walletProvider, WalletAppSe
 
     public ICommand Invest { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
-        var maybeWallet = await walletProvider.GetWalletId().Map(id => new RuntimeWallet(id, walletAppService, walletUnlocker));
+        var maybeWallet = await walletProvider.GetWalletId().Map(id => new DynamicWallet(id, walletAppService, walletUnlocker));
         return maybeWallet.Match(wallet => DoInvest(wallet, project, uiServices), () => uiServices.NotificationService.Show("You need to create a Wallet before investing", "No wallet"));
     });
 

@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions.ValueTasks;
 using DynamicData;
 using DynamicData.Aggregation;
 using ReactiveUI;
@@ -14,16 +15,14 @@ using Zafiro.CSharpFunctionalExtensions;
 
 namespace Angor.UI.Model.Implementation;
 
-public partial class RuntimeWallet : ReactiveObject, IWallet
+public partial class DynamicWallet : ReactiveObject, IWallet
 {
     private readonly WalletAppService walletAppService;
-    private readonly IWalletUnlocker walletUnlocker;
 
-    public RuntimeWallet(WalletId walletId, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
+    public DynamicWallet(WalletId walletId, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
     {
         Id = walletId;
         this.walletAppService = walletAppService;
-        this.walletUnlocker = walletUnlocker;
 
         var transactionsSource = new SourceCache<BroadcastedTransaction, string>(x => x.Id);
 
@@ -37,7 +36,7 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
         History = transactions;
 
         balanceHelper = changes.Sum(x => x.Balance.Value).ToProperty(this, x => x.Balance);
-        IsUnlocked = this.walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id));
+        IsUnlocked = walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id));
         
         Load = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -64,7 +63,12 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
 
     public Result IsAddressValid(string address)
     {
-        return Result.Success();
+        return Result.Success()
+            .Ensure(() =>
+            {
+                var validateBitcoinAddress = BitcoinAddressValidator.ValidateBitcoinAddress(address, Network);
+                return validateBitcoinAddress.Network == Network;
+            }, "Network mismatch");
     }
 
     public IObservable<bool> IsUnlocked { get; }

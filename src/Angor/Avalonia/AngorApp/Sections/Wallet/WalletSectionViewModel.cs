@@ -27,7 +27,7 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
         wallets.Do(w => walletProvider.SetWallet(w.Id)).Subscribe();
 
         LoadWallet = ReactiveCommand.CreateFromTask(() => walletProvider.GetWalletId()
-                .Map(id => (IWallet)new RuntimeWallet(id, walletAppService, walletUnlocker)),
+                .Map(id => (IWallet)new DynamicWallet(id, walletAppService, walletUnlocker)),
             this.WhenAnyValue(x => x.Wallet).NotNull());
 
         walletHelper = wallets.Merge(LoadWallet.Values()).Select(w => new WalletViewModel(w, services)).ToProperty<WalletSectionViewModel, IWalletViewModel>(this, x => x.Wallet);
