@@ -1,24 +1,26 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Angor.UI.Model;
+using Angor.UI.Model.Implementation;
 using AngorApp.Sections.Browse.Details.Invest.Amount;
 using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
 using AngorApp.UI.Controls.Common.TransactionPreview;
 using CSharpFunctionalExtensions;
+using RefinedSuppaWallet.Application;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
 
 namespace AngorApp.Sections.Browse.Details;
 
-public class ProjectDetailsViewModel(IWalletProvider walletProvider, IProject project, UIServices uiServices) : ReactiveObject, IProjectDetailsViewModel
+public class ProjectDetailsViewModel(IWalletProvider walletProvider, WalletAppService walletAppService, IProject project, UIServices uiServices, IPassphraseProvider passphraseProvider) : ReactiveObject, IProjectDetailsViewModel
 {
     public object Icon => project.Icon;
     public object Picture => project.Picture;
 
     public ICommand Invest { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
-        var maybeWallet = await walletProvider.GetWallet();
+        var maybeWallet = await walletProvider.GetWalletId().Map(id => new RuntimeWallet(id, walletAppService, passphraseProvider));
         return maybeWallet.Match(wallet => DoInvest(wallet, project, uiServices), () => uiServices.NotificationService.Show("You need to create a Wallet before investing", "No wallet"));
     });
 

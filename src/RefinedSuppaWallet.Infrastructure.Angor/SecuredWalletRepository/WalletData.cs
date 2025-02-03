@@ -12,7 +12,6 @@ public class WalletData
         public string Fingerprint { get; set; }
         public BitcoinNetwork Network { get; set; }
         public List<StoredXPub> XPubs { get; set; } = new();
-        public List<StoredTransaction> Transactions { get; set; } = new();
     }
 
     public class StoredXPub

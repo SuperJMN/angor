@@ -19,7 +19,7 @@ public class LoggerConfig
 
         // Crear el factory
         var factory = new LoggerFactory();
-        
+
         // Agregar Serilog al factory
         factory.AddSerilog(logger);
 

@@ -14,6 +14,8 @@ public class WalletViewModel(IWallet wallet, UIServices uiServices) : ReactiveOb
 {
     public IWallet Wallet => wallet;
 
+    public IObservable<bool> IsInitialized => wallet.WhenAnyValue(x => x.History.Count, i => i != 0);
+
     public ICommand Send => ReactiveCommand.CreateFromTask<bool>(() =>
     {
         var wizard = WizardBuilder.StartWith(() => new AddressAndAmountViewModel(wallet))

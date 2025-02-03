@@ -1,9 +1,10 @@
 using CSharpFunctionalExtensions;
+using RefinedSuppaWallet.Domain;
 
 namespace Angor.UI.Model;
 
 public interface IWalletProvider
 {
-    Task<Maybe<IWallet>> GetWallet();
-    void SetWallet(IWallet wallet);
+    Task<Maybe<WalletId>> GetWalletId();
+    void SetWallet(WalletId wallet);
 }

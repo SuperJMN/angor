@@ -11,83 +11,82 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncImageLoader.Avalonia" />
-        <PackageReference Include="Avalonia" />
-        <PackageReference Include="Avalonia.ReactiveUI" />
-        <PackageReference Include="Avalonia.Svg" />
-        <PackageReference Include="Avalonia.Themes.Fluent" />
-        <PackageReference Include="Avalonia.Fonts.Inter" />
+        <PackageReference Include="AsyncImageLoader.Avalonia"/>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.ReactiveUI"/>
+        <PackageReference Include="Avalonia.Svg"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Fonts.Inter"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Include="Avalonia.Diagnostics">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Avalonia.Xaml.Behaviors" />
-        <PackageReference Include="CSharpFunctionalExtensions" />
-        <PackageReference Include="Deadpikle.AvaloniaProgressRing" />
-        <PackageReference Include="FluentAvaloniaUI" />
-        <PackageReference Include="Humanizer.Core" />
-        <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" />
-        <PackageReference Include="QRCoder" />
-        <PackageReference Include="ReactiveUI" />
+        <PackageReference Include="Avalonia.Xaml.Behaviors"/>
+        <PackageReference Include="CSharpFunctionalExtensions"/>
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing"/>
+        <PackageReference Include="FluentAvaloniaUI"/>
+        <PackageReference Include="Humanizer.Core"/>
+        <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome"/>
+        <PackageReference Include="QRCoder"/>
+        <PackageReference Include="ReactiveUI"/>
         <PackageReference Include="ReactiveUI.SourceGenerators">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Serilog.Extensions.Logging" />
-        <PackageReference Include="Serilog.Sinks.Console" />
-        <PackageReference Include="Zafiro.Avalonia" />
-        <PackageReference Include="Zafiro.Avalonia.Dialogs" />
+        <PackageReference Include="Serilog.Extensions.Logging"/>
+        <PackageReference Include="Serilog.Sinks.Console"/>
+        <PackageReference Include="Zafiro.Avalonia"/>
+        <PackageReference Include="Zafiro.Avalonia.Dialogs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Application\RefinedSuppaWallet.Application.csproj" />
-      <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Intrastructure.Mempool\RefinedSuppaWallet.Intrastructure.Mempool.csproj" />
-      <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Tests\RefinedSuppaWallet.Tests.csproj" />
-      <ProjectReference Include="..\..\..\RefinedSuppaWallet.Infrastructure.Angor\RefinedSuppaWallet.Infrastructure.Angor.csproj" />
-      <ProjectReference Include="..\Angor.UI.Model.Implementation\Angor.UI.Model.Implementation.csproj" />
-      <ProjectReference Include="..\Angor.UI.Model\Angor.UI.Model.csproj" />
+        <Compile Update="Sections\Browse\ProjectLookup\ProjectLookupView.axaml.cs">
+            <DependentUpon>ProjectLookup.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Sections\Browse\ProjectLookup\ProjectLookupView.axaml.cs">
-        <DependentUpon>ProjectLookup.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
+        <UpToDateCheckInput Remove="Common\Success\SuccessView.axaml"/>
+        <UpToDateCheckInput Remove="Common\TransactionPreview\Summary.axaml"/>
+        <UpToDateCheckInput Remove="Common\TransactionPreview\TransactionPreviewView.axaml"/>
+        <UpToDateCheckInput Remove="Controls\AmountControl.axaml"/>
+        <UpToDateCheckInput Remove="Controls\Button.axaml"/>
+        <UpToDateCheckInput Remove="Controls\Dialog.axaml"/>
+        <UpToDateCheckInput Remove="Controls\Frame.axaml"/>
+        <UpToDateCheckInput Remove="Controls\Header.axaml"/>
+        <UpToDateCheckInput Remove="Controls\IconButton.axaml"/>
+        <UpToDateCheckInput Remove="Controls\IconLabel.axaml"/>
+        <UpToDateCheckInput Remove="Controls\List.axaml"/>
+        <UpToDateCheckInput Remove="Controls\Pane.axaml"/>
+        <UpToDateCheckInput Remove="Controls\SectionItem.axaml"/>
+        <UpToDateCheckInput Remove="Controls\TextBox.axaml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <UpToDateCheckInput Remove="Common\Success\SuccessView.axaml" />
-      <UpToDateCheckInput Remove="Common\TransactionPreview\Summary.axaml" />
-      <UpToDateCheckInput Remove="Common\TransactionPreview\TransactionPreviewView.axaml" />
-      <UpToDateCheckInput Remove="Controls\AmountControl.axaml" />
-      <UpToDateCheckInput Remove="Controls\Button.axaml" />
-      <UpToDateCheckInput Remove="Controls\Dialog.axaml" />
-      <UpToDateCheckInput Remove="Controls\Frame.axaml" />
-      <UpToDateCheckInput Remove="Controls\Header.axaml" />
-      <UpToDateCheckInput Remove="Controls\IconButton.axaml" />
-      <UpToDateCheckInput Remove="Controls\IconLabel.axaml" />
-      <UpToDateCheckInput Remove="Controls\List.axaml" />
-      <UpToDateCheckInput Remove="Controls\Pane.axaml" />
-      <UpToDateCheckInput Remove="Controls\SectionItem.axaml" />
-      <UpToDateCheckInput Remove="Controls\TextBox.axaml" />
+        <AdditionalFiles Include="UI\Controls\AmountControl.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Button.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Common\Success\SuccessView.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Common\TransactionPreview\Summary.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Common\TransactionPreview\TransactionPreviewView.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Dialog.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Frame.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Header.axaml"/>
+        <AdditionalFiles Include="UI\Controls\IconButton.axaml"/>
+        <AdditionalFiles Include="UI\Controls\IconLabel.axaml"/>
+        <AdditionalFiles Include="UI\Controls\List.axaml"/>
+        <AdditionalFiles Include="UI\Controls\Pane.axaml"/>
+        <AdditionalFiles Include="UI\Controls\SectionItem.axaml"/>
+        <AdditionalFiles Include="UI\Controls\TextBox.axaml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="UI\Controls\AmountControl.axaml" />
-      <AdditionalFiles Include="UI\Controls\Button.axaml" />
-      <AdditionalFiles Include="UI\Controls\Common\Success\SuccessView.axaml" />
-      <AdditionalFiles Include="UI\Controls\Common\TransactionPreview\Summary.axaml" />
-      <AdditionalFiles Include="UI\Controls\Common\TransactionPreview\TransactionPreviewView.axaml" />
-      <AdditionalFiles Include="UI\Controls\Dialog.axaml" />
-      <AdditionalFiles Include="UI\Controls\Frame.axaml" />
-      <AdditionalFiles Include="UI\Controls\Header.axaml" />
-      <AdditionalFiles Include="UI\Controls\IconButton.axaml" />
-      <AdditionalFiles Include="UI\Controls\IconLabel.axaml" />
-      <AdditionalFiles Include="UI\Controls\List.axaml" />
-      <AdditionalFiles Include="UI\Controls\Pane.axaml" />
-      <AdditionalFiles Include="UI\Controls\SectionItem.axaml" />
-      <AdditionalFiles Include="UI\Controls\TextBox.axaml" />
+        <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Application\RefinedSuppaWallet.Application.csproj"/>
+        <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Infrastructure\RefinedSuppaWallet.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\..\..\..\TestProject2\RefinedSuppaWallet.Intrastructure.Mempool\RefinedSuppaWallet.Intrastructure.Mempool.csproj"/>
+        <ProjectReference Include="..\..\..\RefinedSuppaWallet.Infrastructure.Angor\RefinedSuppaWallet.Infrastructure.Angor.csproj"/>
+        <ProjectReference Include="..\Angor.UI.Model.Implementation\Angor.UI.Model.Implementation.csproj"/>
     </ItemGroup>
-    
+
 </Project>

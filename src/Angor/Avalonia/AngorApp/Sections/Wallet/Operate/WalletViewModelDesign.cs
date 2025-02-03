@@ -7,4 +7,5 @@ public class WalletViewModelDesign : IWalletViewModel
 {
     public IWallet Wallet { get; set; } = new WalletDesign();
     public ICommand Send { get; }
+    public IObservable<bool> IsInitialized { get; }
 }

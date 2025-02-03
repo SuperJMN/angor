@@ -1,38 +1,61 @@
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using RefinedSuppaWallet.Application.Services;
+using DynamicData;
+using DynamicData.Aggregation;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
+using Zafiro.CSharpFunctionalExtensions;
 
 namespace Angor.UI.Model.Implementation;
 
-public class RuntimeWallet : IWallet
+public partial class RuntimeWallet : ReactiveObject, IWallet
 {
     private readonly WalletId walletId;
     private readonly WalletAppService walletAppService;
+    private readonly IPassphraseProvider passphraseProvider;
 
-    public RuntimeWallet(WalletId walletId, WalletAppService walletAppService)
+    public RuntimeWallet(WalletId walletId, WalletAppService walletAppService, IPassphraseProvider passphraseProvider)
     {
-        this.walletId = walletId;
+        Id = walletId;
         this.walletAppService = walletAppService;
-        // History = walletAppService
-        //     .GetTransactions(walletId).Map(collection => collection.Select(IBroadcastedTransaction (transaction) => new BroadcastedTransactionImpl(transaction))).GetValueOrDefault();
-        // Balance = walletAppService.GetBalance(walletId).GetAwaiter().GetResult().Map(x => x.Value).GetValueOrDefault();
+        this.passphraseProvider = passphraseProvider;
+
+        var transactionsChangeSet = Observable.FromAsync(() => walletAppService.GetTransactions(walletId))
+            .Successes()
+            .ToObservableChangeSet();
+
+        transactionsChangeSet
+            .Transform(transaction => (IBroadcastedTransaction)new BroadcastedTransactionImpl(transaction))
+            .Bind(out var transactions)
+            .Subscribe();
+
+        History = transactions;
+
+        balanceHelper = transactionsChangeSet.Sum(x => x.Balance.Value).ToProperty(this, x => x.Balance);
     }
 
-    public IEnumerable<IBroadcastedTransaction> History { get; }
-    
-    public long? Balance { get; }
+    public ReadOnlyObservableCollection<IBroadcastedTransaction> History { get; }
+
+    [ObservableAsProperty] private long balance;
 
     public BitcoinNetwork Network { get; } = BitcoinNetwork.Testnet;
     public string ReceiveAddress { get; } = "";
-    
+
     public Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate)
     {
         return walletAppService.EstimateFee(walletId, new Amount(amount), new Address(address), new FeeRate(feerate))
-            .Map(IUnsignedTransaction (fee) => new TransactionPreview(walletId, amount, address, feerate, fee, walletAppService));
+            .Map(IUnsignedTransaction (fee) => new TransactionPreview(walletId, amount, address, feerate, fee, walletAppService, passphraseProvider));
     }
 
     public Result IsAddressValid(string address)
     {
         return Result.Success();
     }
+
+    public bool IsUnlocked { get; set; }
+    public WalletId Id { get; }
 }

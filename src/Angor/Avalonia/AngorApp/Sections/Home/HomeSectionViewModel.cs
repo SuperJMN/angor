@@ -13,7 +13,7 @@ public class HomeSectionViewModel : ReactiveObject, IHomeSectionViewModel
     public HomeSectionViewModel(IWalletProvider provider, UIServices uiServices, Func<IMainViewModel> getMainViewModel)
     {
         this.provider = provider;
-        provider.GetWallet();
+        //provider.GetWallet();
         GoToWalletSection = ReactiveCommand.Create(() => getMainViewModel().GoToSection("Wallet"));
         OpenHub = ReactiveCommand.CreateFromTask(() => uiServices.LauncherService.LaunchUri(Constants.AngorHubUri));
         //GoToFounderSection = ReactiveCommand.Create(() => getMainViewModel().GoToSection("Founder"));

@@ -1,4 +1,3 @@
-using MoreLinq;
 using RefinedSuppaWalet.Infrastructure.Interfaces.Wallet;
 using RefinedSuppaWallet.Domain;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
@@ -11,20 +10,12 @@ public class AngorWalletRepository : IProtectedWalletRepository
 {
     private const string WalletsFile = "wallets.json";
     private readonly IStore store;
-    private readonly IWalletTransactionService transactionService;
-    private readonly ManyWalletsData allWallets;
+    private readonly AsyncLazy<ManyWalletsData> walletStore;
 
-    public static async Task<IProtectedWalletRepository> Create(IWalletTransactionService transactionService, IStore store)
+    public AngorWalletRepository(IStore store)
     {
-        var wallets = await LoadWallets(store);
-        return new AngorWalletRepository(wallets, store, transactionService);
-    }
-
-    private AngorWalletRepository(ManyWalletsData allWallets, IStore store, IWalletTransactionService transactionService)
-    {
-        this.allWallets = allWallets;
         this.store = store;
-        this.transactionService = transactionService;
+        walletStore = new AsyncLazy<ManyWalletsData>(() => LoadWallets(this.store));
     }
 
     private static async Task<ManyWalletsData> LoadWallets(IStore store)
@@ -35,17 +26,17 @@ public class AngorWalletRepository : IProtectedWalletRepository
 
     private async Task SaveWallets()
     {
-        await store.Save(WalletsFile, allWallets);
+        await store.Save(WalletsFile, walletStore);
     }
 
     public async Task<IEnumerable<(WalletId Id, string Name)>> ListWallets()
     {
-        return allWallets.Wallets.Select(x => (new WalletId(x.WalletId), x.WalletName));
+        return (await walletStore.Value).Wallets.Select(x => (new WalletId(x.WalletId), x.WalletName));
     }
 
     public async Task<Maybe<Wallet>> Get(WalletId id, string passphrase)
     {
-        var info = allWallets.Wallets.FirstOrDefault(x => x.WalletId == id.Id);
+        var info = (await walletStore.Value).Wallets.FirstOrDefault(x => x.WalletId == id.Id);
         if (info == null)
             return Maybe<Wallet>.None;
 
@@ -65,19 +56,13 @@ public class AngorWalletRepository : IProtectedWalletRepository
         }
     }
 
-    public async Task<Result<Wallet>> ImportWallet(WalletId walletId, string walletName, WalletDescriptor descriptor, string passphrase)
+    public async Task<Result<Wallet>> Add(WalletId walletId, string walletName, WalletDescriptor descriptor, string passphrase)
     {
-        var exists = allWallets.Wallets.Any(w => w.WalletId == walletId.Id);
+        var exists = (await walletStore.Value).Wallets.Any(w => w.WalletId == walletId.Id);
         if (exists)
             return Result.Failure<Wallet>("Wallet already exists.");
 
         var domainWallet = new Wallet(walletId, descriptor);
-
-        var addTransactionsResult = await AddTransactions(domainWallet);
-        if (addTransactionsResult.IsFailure)
-        {
-            return Result.Failure<Wallet>("Cannot import wallet. Error fetching transactions.");
-        }
 
         var storedWallet = MapToStoredWallet(domainWallet);
 
@@ -95,17 +80,10 @@ public class AngorWalletRepository : IProtectedWalletRepository
         };
 
         // añadimos a la lista y guardamos
-        allWallets.Wallets.Add(newEntry);
+        (await walletStore.Value).Wallets.Add(newEntry);
         await SaveWallets();
 
         return Result.Success(domainWallet);
-    }
-
-    private Task<Result> AddTransactions(Wallet domainWallet)
-    {
-        return transactionService.GetWalletTransactions(domainWallet.Descriptor)
-            .Tap(txs => txs.ForEach(txt => domainWallet.RegisterBroadcastedTransaction(txt)))
-            .Bind(_ => Result.Success());
     }
 
     private static Wallet MapToWallet(WalletData.StoredWallet stored)
@@ -134,31 +112,7 @@ public class AngorWalletRepository : IProtectedWalletRepository
                 )
             ));
 
-        var wallet = new Domain.Wallet(new WalletId(stored.Id), descriptor);
-
-        foreach (var tx in stored.Transactions)
-        {
-            wallet.AddIncomingTransaction(new BroadcastedTransaction(
-                new Balance(tx.Balance),
-                tx.Id,
-                tx.WalletInputs.Select(i => new TransactionInputInfo(
-                    new TransactionAddressInfo(i.Address.Address, i.Address.TotalAmount),
-                    i.TxId,
-                    i.Index
-                )),
-                tx.WalletOutputs.Select(o => new TransactionOutputInfo(
-                    new TransactionAddressInfo(o.Address.Address, o.Address.TotalAmount),
-                    o.Index
-                )),
-                tx.AllInputs.Select(i => new TransactionAddressInfo(i.Address, i.TotalAmount)),
-                tx.AllOutputs.Select(o => new TransactionAddressInfo(o.Address, o.TotalAmount)),
-                tx.Fee,
-                tx.IsConfirmed,
-                tx.BlockHeight,
-                tx.BlockTime,
-                tx.RawJson
-            ));
-        }
+        var wallet = new Wallet(new WalletId(stored.Id), descriptor);
 
         return wallet;
     }
@@ -180,45 +134,6 @@ public class AngorWalletRepository : IProtectedWalletRepository
                     CoinType = x.Path.CoinType,
                     Account = x.Path.Account
                 }
-            }).ToList(),
-            Transactions = wallet.Transactions.Select(tx => new WalletData.StoredTransaction
-            {
-                Id = tx.Id,
-                Balance = tx.Balance.Value,
-                WalletInputs = tx.WalletInputs.Select(i => new WalletData.StoredTransactionInput
-                {
-                    Address = new WalletData.StoredAddressInfo
-                    {
-                        Address = i.Address.Address,
-                        TotalAmount = i.Address.TotalAmount
-                    },
-                    TxId = i.TxId,
-                    Index = i.Index
-                }).ToList(),
-                WalletOutputs = tx.WalletOutputs.Select(o => new WalletData.StoredTransactionOutput
-                {
-                    Address = new WalletData.StoredAddressInfo
-                    {
-                        Address = o.Address.Address,
-                        TotalAmount = o.Address.TotalAmount
-                    },
-                    Index = o.Index
-                }).ToList(),
-                AllInputs = tx.AllInputs.Select(i => new WalletData.StoredAddressInfo
-                {
-                    Address = i.Address,
-                    TotalAmount = i.TotalAmount
-                }).ToList(),
-                AllOutputs = tx.AllOutputs.Select(o => new WalletData.StoredAddressInfo
-                {
-                    Address = o.Address,
-                    TotalAmount = o.TotalAmount
-                }).ToList(),
-                Fee = tx.Fee,
-                IsConfirmed = tx.IsConfirmed,
-                BlockHeight = tx.BlockHeight,
-                BlockTime = tx.BlockTime,
-                RawJson = tx.RawJson
             }).ToList()
         };
     }

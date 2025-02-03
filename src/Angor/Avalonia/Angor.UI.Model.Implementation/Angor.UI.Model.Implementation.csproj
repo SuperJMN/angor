@@ -7,13 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="DynamicData" />
-      <PackageReference Include="Zafiro" />
+        <PackageReference Include="ReactiveUI.SourceGenerators">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Zafiro"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Shared\Angor.Shared.csproj" />
-      <ProjectReference Include="..\Angor.UI.Model\Angor.UI.Model.csproj" />
+        <ProjectReference Include="..\..\Shared\Angor.Shared.csproj"/>
+        <ProjectReference Include="..\Angor.UI.Model\Angor.UI.Model.csproj"/>
     </ItemGroup>
 
 </Project>

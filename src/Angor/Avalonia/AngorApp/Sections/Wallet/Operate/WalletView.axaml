@@ -24,8 +24,7 @@
         </Style>
     </UserControl.Styles>
 
-    <DockPanel>
-
+    <DockPanel IsVisible="{Binding IsInitialized^}">
         <StackPanel Spacing="20">
 
             <controls:Pane IsTitleVisible="True" Title="Wallet"
