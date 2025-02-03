@@ -11,5 +11,5 @@ public class BroadcastedTransactionDesign : IBroadcastedTransaction
     public string Path { get; init; }
     public int UtxoCount { get; init; }
     public string ViewRawJson { get; init; }
-    
+    public string Id { get; }
 }

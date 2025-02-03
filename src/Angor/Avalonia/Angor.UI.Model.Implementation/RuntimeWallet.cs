@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -24,22 +25,29 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
         this.walletAppService = walletAppService;
         this.walletUnlocker = walletUnlocker;
 
-        var transactionsChangeSet = Observable.FromAsync(() => walletAppService.GetTransactions(walletId))
-            .Successes()
-            .ToObservableChangeSet()
-            .Replay()
-            .RefCount();
+        var transactionsSource = new SourceCache<BroadcastedTransaction, string>(x => x.Id);
 
-        transactionsChangeSet
+        var changes = transactionsSource.Connect();
+        
+        changes
             .Transform(transaction => (IBroadcastedTransaction)new BroadcastedTransactionImpl(transaction))
             .Bind(out var transactions)
             .Subscribe();
-
+        
         History = transactions;
 
-        balanceHelper = transactionsChangeSet.Sum(x => x.Balance.Value).ToProperty(this, x => x.Balance);
+        balanceHelper = changes.Sum(x => x.Balance.Value).ToProperty(this, x => x.Balance);
         IsUnlocked = this.walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id));
+        
+        Load = ReactiveCommand.CreateFromTask(async () =>
+        {
+            await walletAppService.GetTransactions(Id).Tap(t => transactionsSource.AddOrUpdate(t));
+        });
+
+        Load.Execute().Subscribe();
     }
+
+    public ReactiveCommand<Unit,Unit> Load { get; }
 
     public ReadOnlyObservableCollection<IBroadcastedTransaction> History { get; }
 

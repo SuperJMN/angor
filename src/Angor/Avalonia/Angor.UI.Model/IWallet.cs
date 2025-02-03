@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
 using CSharpFunctionalExtensions;
+using ReactiveUI;
 using RefinedSuppaWallet.Domain;
 
 namespace Angor.UI.Model;
@@ -14,4 +16,5 @@ public interface IWallet
     Result IsAddressValid(string address);
     public IObservable<bool> IsUnlocked { get; }
     WalletId Id { get; }
+    public ReactiveCommand<Unit, Unit> Load { get; }
 }

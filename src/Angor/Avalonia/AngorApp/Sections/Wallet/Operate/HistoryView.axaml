@@ -9,7 +9,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="AngorApp.Sections.Wallet.Operate.HistoryView"
              x:DataType="operate:IWalletViewModel">
-    
+
     <Design.DataContext>
         <operate:WalletViewModelDesign />
     </Design.DataContext>
@@ -19,24 +19,48 @@
             <i:Icon Value="fa-solid fa-cube" />
         </controls:Pane.TitleIcon>
 
-        <z:SlimDataGrid Margin="10" ItemsSource="{Binding Wallet.History}">
-            <z:SlimDataGrid.Columns>
-                <z:Column Header="ADDRESS" Binding="{Binding Address}" />
-            </z:SlimDataGrid.Columns>
-            <z:SlimDataGrid.Columns>
-                <z:Column Header="AMOUNT" Binding="{Binding Amount, Converter={x:Static controls:MiscConverters.SatsToBtc}, StringFormat={x:Static controls:MiscConverters.AmountBtcFormatWithoutSuffix}}" />
-            </z:SlimDataGrid.Columns>
-            <z:SlimDataGrid.Columns>
-                <z:Column Header="PATH" Binding="{Binding Path}" />
-            </z:SlimDataGrid.Columns>
-            <z:SlimDataGrid.Columns>
-                <z:Column Header="UTXO COUNT" Binding="{Binding UtxoCount}" />
-            </z:SlimDataGrid.Columns>
-            <z:SlimDataGrid.Columns>
-                <z:Column Header="VIEW RAW JSON" Binding="{Binding ViewRawJson}" />
-            </z:SlimDataGrid.Columns>
+        <StackPanel>
+            <Grid Margin="10 20 0 0" ColumnDefinitions="* * * * *" TextElement.FontWeight="Bold" TextElement.FontSize="16">
+                <TextBlock Text="ADDRESS" />
+                <TextBlock Grid.Column="1" Text="AMOUNT" />
+                <TextBlock Grid.Column="2" Text="PATH" />
+                <TextBlock Grid.Column="3" Text="UTXO COUNT" />
+                <TextBlock Grid.Column="4" Text="RAW JSON" />
+            </Grid>
+            <ListBox Background="Transparent" ItemsSource="{Binding Wallet.History}" Grid.IsSharedSizeScope="True">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="* * * * *">
+                            <TextBlock Text="{Binding Address}" />
+                            <TextBlock Grid.Column="1" Text="{Binding Amount, Converter={x:Static controls:MiscConverters.SatsToBtc}, StringFormat={x:Static controls:MiscConverters.AmountBtcFormatWithoutSuffix}}" />
+                            <TextBlock Grid.Column="2" Text="{Binding Path}" />
+                            <TextBlock Grid.Column="3" Text="{Binding UtxoCount}" />
+                            <TextBlock Grid.Column="4" Text="{Binding ViewRawJson}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
-        </z:SlimDataGrid>
+            <!-- <z:SlimDataGrid Margin="10" ItemsSource="{Binding Wallet.History}"> -->
+            <!--     <z:SlimDataGrid.Columns> -->
+            <!--         <z:Column Header="ADDRESS" Binding="{Binding Address}" /> -->
+            <!--     </z:SlimDataGrid.Columns> -->
+            <!--     <z:SlimDataGrid.Columns> -->
+            <!--         <z:Column Header="AMOUNT" Binding="{Binding Amount, Converter={x:Static controls:MiscConverters.SatsToBtc}, StringFormat={x:Static controls:MiscConverters.AmountBtcFormatWithoutSuffix}}" /> -->
+            <!--     </z:SlimDataGrid.Columns> -->
+            <!--     <z:SlimDataGrid.Columns> -->
+            <!--         <z:Column Header="PATH" Binding="{Binding Path}" /> -->
+            <!--     </z:SlimDataGrid.Columns> -->
+            <!--     <z:SlimDataGrid.Columns> -->
+            <!--         <z:Column Header="UTXO COUNT" Binding="{Binding UtxoCount}" /> -->
+            <!--     </z:SlimDataGrid.Columns> -->
+            <!--     <z:SlimDataGrid.Columns> -->
+            <!--         <z:Column Header="VIEW RAW JSON" Binding="{Binding ViewRawJson}" /> -->
+            <!--     </z:SlimDataGrid.Columns> -->
+            <!-- -->
+            <!-- </z:SlimDataGrid> -->
+            
+        </StackPanel>
     </controls:Pane>
 
 </UserControl>

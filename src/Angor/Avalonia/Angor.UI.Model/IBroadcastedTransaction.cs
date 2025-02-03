@@ -9,4 +9,5 @@ public interface IBroadcastedTransaction
     public string Path { get; }
     public int UtxoCount { get; }
     public string ViewRawJson { get; }
+    string Id { get; }
 }

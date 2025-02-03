@@ -44,6 +44,7 @@ public class WalletDesign : IWallet
 
     public IObservable<bool> IsUnlocked { get; set; }
     public WalletId Id { get; }
+    public ReactiveCommand<Unit, Unit> Load { get; }
 
     public BitcoinNetwork Network => BitcoinNetwork.Testnet;
 }
