@@ -45,7 +45,7 @@ public static class CompositionRoot
                 Position = NotificationPosition.BottomRight
             }));
 
-        var passphraseProvider = new PassphraseProvider(uiServices);
+        var passphraseProvider = new WalletUnlocker(uiServices);
         var walletAppService = WalletApplicationService(passphraseProvider);
 
         var walletProvider = new WalletProvider(walletAppService);
@@ -73,7 +73,7 @@ public static class CompositionRoot
         return mainViewModel;
     }
 
-    private static WalletAppService WalletApplicationService(PassphraseProvider passphraseProvider)
+    private static WalletAppService WalletApplicationService(WalletUnlocker walletUnlocker)
     {
         var network = Network.TestNet;
         var bitcoinAddressTypeDetector = new NBitcoinAddressTypeDetector(network);
@@ -85,8 +85,9 @@ public static class CompositionRoot
         var transactionPreparer = new NBitcoinTransactionPreparer(mempoolUtxoRepository, network, addressManager, addressTypeDetector, new UtxoSelector());
         var mempoolTransactionBroadcaster = new MempoolTransactionBroadcaster(defaultHttpClientFactory);
         var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
-        var walletRepository = new AngorWalleteRepository(new FileStore("Angor"), passphraseProvider);
-        var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(walletRepository, passphraseProvider), mempoolTransactionBroadcaster);
+        var walletRepository = new AngorWalleteRepository(new FileStore("Angor"), walletUnlocker);
+        Dictionary<WalletId, (Network, ExtKey)> dict = new();       // TODO: This is a hack, we need to find a better way to store the keys
+        var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(dict), mempoolTransactionBroadcaster);
         var walletTransactionService = new MempoolSpaceWalletService(Logger.None, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var blockchainService = new BlockchainService(mempoolUtxoRepository, bitcoinTransactionService, walletTransactionService, mempoolTransactionBroadcaster);
         return new WalletAppService(walletRepository, blockchainService, new TransactionSigner());

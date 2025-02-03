@@ -3,7 +3,6 @@ using CSharpFunctionalExtensions;
 using NBitcoin;
 using RefinedSuppaWalet.Infrastructure;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
-using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
 
@@ -12,15 +11,15 @@ namespace RefinedSuppaWallet.Infrastructure.Angor;
 public class AngorWalleteRepository : IWalletRepository
 {
     private readonly IStore store;
-    private readonly IPassphraseProvider passphraseProvider;
+    private readonly IWalletUnlocker walletUnlocker;
     private readonly Dictionary<WalletId, Wallet> wallets = new();
     private readonly Dictionary<WalletId, string> names = new();
     private readonly Dictionary<WalletId, string> passphrases = new();
 
-    public AngorWalleteRepository(IStore store, IPassphraseProvider passphraseProvider)
+    public AngorWalleteRepository(IStore store, IWalletUnlocker walletUnlocker)
     {
         this.store = store;
-        this.passphraseProvider = passphraseProvider;
+        this.walletUnlocker = walletUnlocker;
         var walletId = WalletId.New();
         wallets.Add(walletId, new Wallet(walletId, SampleData.WalletDescriptor()));
     }
@@ -32,7 +31,7 @@ public class AngorWalleteRepository : IWalletRepository
 
     public async Task<Maybe<Wallet>> Get(WalletId id)
     {
-        return await passphraseProvider.Provide(id).Bind(passphrase => wallets.TryFind(id));
+        return await walletUnlocker.Provide(id).Bind(passphrase => wallets.TryFind(id));
     }
 
     public async Task<Result<Wallet>> ImportWallet(string name, string seed, string passphrase, Network network)

@@ -5,8 +5,10 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:operate="clr-namespace:AngorApp.Sections.Wallet.Operate"
              xmlns:controls="clr-namespace:AngorApp.UI.Controls"
+             xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+             xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="800"
-             x:Class="AngorApp.Sections.Wallet.Operate.WalletView"  x:DataType="operate:IWalletViewModel">
+             x:Class="AngorApp.Sections.Wallet.Operate.WalletView" x:DataType="operate:IWalletViewModel">
 
     <Design.DataContext>
         <operate:WalletViewModelDesign />
@@ -24,39 +26,49 @@
         </Style>
     </UserControl.Styles>
 
-    <DockPanel IsVisible="{Binding IsInitialized^}">
-        <StackPanel Spacing="20">
+    <Panel>
+        <DockPanel IsVisible="{Binding Wallet.IsUnlocked^}">
+            <StackPanel Spacing="20">
 
-            <controls:Pane IsTitleVisible="True" Title="Wallet"
-                           Subtitle="Wallet and balances">
-                <controls:Pane.TitleRightContent>
-                    <UniformGrid Rows="1">
-                        <UniformGrid.Styles>
-                            <Style Selector="Button">
-                                <Setter Property="Margin" Value="5" />
-                                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            </Style>
-                        </UniformGrid.Styles>
-                        <Button Command="{Binding Send}" Content="Send" />
-                        <Button Content="Receive">
-                            <Button.Flyout>
-                                <Flyout>
-                                    <operate:Receive />
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </UniformGrid>
-                </controls:Pane.TitleRightContent>
-                <controls:Pane.TitleIcon>
-                    <i:Icon Value="fa-wallet" />
-                </controls:Pane.TitleIcon>
-            </controls:Pane>
+                <controls:Pane IsTitleVisible="True" Title="Wallet"
+                               Subtitle="Wallet and balances">
+                    <controls:Pane.TitleRightContent>
+                        <UniformGrid Rows="1">
+                            <UniformGrid.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="Margin" Value="5" />
+                                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                </Style>
+                            </UniformGrid.Styles>
+                            <Button Command="{Binding Send}" Content="Send" />
+                            <Button Content="Receive">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <operate:Receive />
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </UniformGrid>
+                    </controls:Pane.TitleRightContent>
+                    <controls:Pane.TitleIcon>
+                        <i:Icon Value="fa-wallet" />
+                    </controls:Pane.TitleIcon>
+                </controls:Pane>
 
-            <operate:Balance />
+                <operate:Balance />
 
-            <operate:HistoryView />
-            
+                <operate:HistoryView />
+
+            </StackPanel>
+        </DockPanel>
+        
+        <StackPanel
+            IsVisible="{Binding !Wallet.IsUnlocked^}"
+            Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <i:Icon Value="fa-lock" FontSize="40" />
+            <TextBlock Classes="SizeBig" Text="WALLET LOCKED" TextAlignment="Center" />
         </StackPanel>
-    </DockPanel>
+        
+    </Panel>
 
 </UserControl>

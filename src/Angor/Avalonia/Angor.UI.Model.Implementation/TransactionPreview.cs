@@ -1,10 +1,11 @@
 using CSharpFunctionalExtensions;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
 
 namespace Angor.UI.Model.Implementation;
 
-public class TransactionPreview(WalletId walletId, long amount, string address, long feeRate, Fee fee, WalletAppService walletAppService, IPassphraseProvider passphraseProvider) : IUnsignedTransaction
+public class TransactionPreview(WalletId walletId, long amount, string address, long feeRate, Fee fee, WalletAppService walletAppService, IWalletUnlocker walletUnlocker) : IUnsignedTransaction
 {
     public WalletId WalletId { get; } = walletId;
     public long Amount { get; } = amount;
@@ -14,7 +15,7 @@ public class TransactionPreview(WalletId walletId, long amount, string address, 
 
     public Task<Result<TxId>> Broadcast()
     {
-        return passphraseProvider.Provide(WalletId)
+        return walletUnlocker.Provide(WalletId)
             .ToResult("Passphrase must be provided")
             .Bind(passphrase => WalletAppService
                 .SendAmount(WalletId, new Amount(Amount), new Address(Address), new FeeRate(feeRate), passphrase)

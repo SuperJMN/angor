@@ -6,6 +6,7 @@ using DynamicData;
 using DynamicData.Aggregation;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
 using Zafiro.CSharpFunctionalExtensions;
@@ -14,15 +15,14 @@ namespace Angor.UI.Model.Implementation;
 
 public partial class RuntimeWallet : ReactiveObject, IWallet
 {
-    private readonly WalletId walletId;
     private readonly WalletAppService walletAppService;
-    private readonly IPassphraseProvider passphraseProvider;
+    private readonly IWalletUnlocker walletUnlocker;
 
-    public RuntimeWallet(WalletId walletId, WalletAppService walletAppService, IPassphraseProvider passphraseProvider)
+    public RuntimeWallet(WalletId walletId, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
     {
         Id = walletId;
         this.walletAppService = walletAppService;
-        this.passphraseProvider = passphraseProvider;
+        this.walletUnlocker = walletUnlocker;
 
         var transactionsChangeSet = Observable.FromAsync(() => walletAppService.GetTransactions(walletId))
             .Successes()
@@ -38,6 +38,7 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
         History = transactions;
 
         balanceHelper = transactionsChangeSet.Sum(x => x.Balance.Value).ToProperty(this, x => x.Balance);
+        IsUnlocked = this.walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id));
     }
 
     public ReadOnlyObservableCollection<IBroadcastedTransaction> History { get; }
@@ -49,8 +50,8 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
 
     public Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate)
     {
-        return walletAppService.EstimateFee(walletId, new Amount(amount), new Address(address), new FeeRate(feerate))
-            .Map(IUnsignedTransaction (fee) => new TransactionPreview(walletId, amount, address, feerate, fee, walletAppService, passphraseProvider));
+        return walletAppService.EstimateFee(Id, new Amount(amount), new Address(address), new FeeRate(feerate))
+            .Map(IUnsignedTransaction (fee) => new TransactionPreview(Id, amount, address, feerate, fee, walletAppService, walletUnlocker));
     }
 
     public Result IsAddressValid(string address)
@@ -58,6 +59,6 @@ public partial class RuntimeWallet : ReactiveObject, IWallet
         return Result.Success();
     }
 
-    public bool IsUnlocked { get; set; }
+    public IObservable<bool> IsUnlocked { get; }
     public WalletId Id { get; }
 }

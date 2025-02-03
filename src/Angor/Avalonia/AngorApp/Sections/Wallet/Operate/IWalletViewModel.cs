@@ -7,5 +7,4 @@ public interface IWalletViewModel
 {
     public IWallet Wallet { get; }
     public ICommand Send { get; }
-    public IObservable<bool> IsInitialized { get; }
 }

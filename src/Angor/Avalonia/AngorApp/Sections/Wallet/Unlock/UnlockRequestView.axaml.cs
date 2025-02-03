@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace AngorApp.Sections.Wallet.Unlock;
 
-public partial class PassphraseRequestView : UserControl
+public partial class UnlockRequestView : UserControl
 {
-    public PassphraseRequestView()
+    public UnlockRequestView()
     {
         InitializeComponent();
     }

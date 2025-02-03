@@ -5,6 +5,7 @@ using AngorApp.Sections.Wallet.Operate;
 using AngorApp.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Application;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
@@ -15,18 +16,17 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
 {
     [ObservableAsProperty] private IWalletViewModel? wallet;
 
-    public WalletSectionViewModel(IWalletFactory walletFactory, IWalletProvider walletProvider, UIServices services, WalletAppService walletAppService, IPassphraseProvider passphraseProvider)
+    public WalletSectionViewModel(IWalletFactory walletFactory, IWalletProvider walletProvider, UIServices services, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
     {
         CreateWallet = ReactiveCommand.CreateFromTask(walletFactory.Create);
         var wallets = CreateWallet.Values().Successes();
-        wallets.Do(w => walletProvider.SetWallet(wallet.Wallet.Id)).Subscribe();
+        wallets.Do(w => walletProvider.SetWallet(w.Id)).Subscribe();
 
         LoadWallet = ReactiveCommand.CreateFromTask(() => walletProvider.GetWalletId()
-                .Map(id => (IWallet)new RuntimeWallet(id, walletAppService, passphraseProvider)),
+                .Map(id => (IWallet)new RuntimeWallet(id, walletAppService, walletUnlocker)),
             this.WhenAnyValue(x => x.Wallet).NotNull());
 
-        var initial = LoadWallet.Values();
-        walletHelper = wallets.Merge(initial).Select(w => new WalletViewModel(w, services)).ToProperty<WalletSectionViewModel, IWalletViewModel>(this, x => x.Wallet);
+        walletHelper = wallets.Merge(LoadWallet.Values()).Select(w => new WalletViewModel(w, services)).ToProperty<WalletSectionViewModel, IWalletViewModel>(this, x => x.Wallet);
         RecoverWallet = ReactiveCommand.CreateFromTask(walletFactory.Recover);
 
         LoadWallet.Execute().Subscribe();

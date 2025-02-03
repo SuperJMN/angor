@@ -42,7 +42,7 @@ public class WalletDesign : IWallet
         return value.IsValid ? Result.Success() : Result.Failure(value.Message);
     }
 
-    public bool IsUnlocked { get; set; }
+    public IObservable<bool> IsUnlocked { get; set; }
     public WalletId Id { get; }
 
     public BitcoinNetwork Network => BitcoinNetwork.Testnet;

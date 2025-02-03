@@ -4,7 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:unlock="clr-namespace:AngorApp.Sections.Wallet.Unlock"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="AngorApp.Sections.Wallet.Unlock.PassphraseRequestView"
-             x:DataType="unlock:PassphraseRequestViewModel">
-    <TextBox Text="{Binding Passphrase}" />
+             x:Class="AngorApp.Sections.Wallet.Unlock.UnlockRequestView"
+             x:DataType="unlock:UnlockRequestViewModel">
+    <StackPanel Spacing="10">
+        <TextBlock Text="Please, enter the encryption password to unlock your wallet" TextWrapping="Wrap" />
+        <TextBox Theme="{StaticResource PasswordBox}" Classes="untouched" Watermark="Encryption password" Text="{Binding Password}" />
+    </StackPanel>
 </UserControl>
