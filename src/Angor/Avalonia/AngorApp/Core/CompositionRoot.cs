@@ -45,7 +45,7 @@ public static class CompositionRoot
             {
                 Position = NotificationPosition.BottomRight
             }));
-        
+
         var walletUnlocker = new WalletUnlocker(uiServices);
         var walletRepository = new AngorWalletRepository(new FileStore("Angor"), walletUnlocker, new AesWalletEncryption());
         var walletAppService = WalletApplicationService(walletRepository);
@@ -54,7 +54,7 @@ public static class CompositionRoot
         var walletFactory = new WalletFactory(walletBuilder, uiServices, walletRepository, walletProvider, walletUnlocker);
 
         MainViewModel mainViewModel = null!;
-        
+
         // // Initial wallet 
         // await walletRepository.ImportWallet("Test", "away abuse minute slow used modify universe morning leaf host spider moment", "test", BitcoinNetwork.Mainnet)
         //     .Bind(w => walletBuilder.Create(w.Id))
@@ -96,7 +96,7 @@ public static class CompositionRoot
         var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(dict), mempoolTransactionBroadcaster);
         var walletTransactionService = new MempoolSpaceWalletService(Logger.None, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var blockchainService = new BlockchainService(mempoolUtxoRepository, bitcoinTransactionService, walletTransactionService, mempoolTransactionBroadcaster);
-        return new WalletAppService(walletRepository, blockchainService, new TransactionSigner());
+        return new WalletAppService(walletRepository, blockchainService, new AddressService(addressManager), new TransactionSigner());
     }
 
     private static ProjectService RealProjectService()

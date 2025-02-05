@@ -10,8 +10,6 @@ using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
 using Zafiro.CSharpFunctionalExtensions;
-using Zafiro.Reactive;
-using Zafiro.UI;
 
 namespace Angor.UI.Model.Implementation;
 
@@ -27,39 +25,46 @@ public partial class DynamicWallet : ReactiveObject, IWallet
         var transactionsSource = new SourceCache<BroadcastedTransaction, string>(x => x.Id);
 
         var changes = transactionsSource.Connect();
-        
+
         changes
             .Transform(transaction => (IBroadcastedTransaction)new BroadcastedTransactionImpl(transaction))
             .Bind(out var transactions)
             .Subscribe();
-        
+
         History = transactions;
 
         balanceHelper = changes.Sum(x => x.Balance.Value).ToProperty(this, x => x.Balance);
-        
-        LoadTransactions = ReactiveCommand.CreateFromTask(async () =>
-        {
-            return await walletAppService.GetTransactions(Id).Tap(t => transactionsSource.AddOrUpdate(t)).Bind(_ => Result.Success());
-        });
 
-        Load = ReactiveCommand.CreateCombined([LoadTransactions]);
-        
+        LoadTransactions = ReactiveCommand.CreateFromTask(async () => { return await walletAppService.GetTransactions(Id).Tap(t => transactionsSource.AddOrUpdate(t)).Bind(_ => Result.Success()); });
+
         isUnlockedHelper = walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id)).ToProperty(this, x => x.IsUnlocked);
+        GenerateReceiveAddress = ReactiveCommand.CreateFromTask(() => walletAppService.GetNextReceiveAddress(Id).Map(x => x.Value));
+        receiveAddressHelper = GenerateReceiveAddress.Successes().ToProperty(this, x => x.ReceiveAddress);
+        
+        var generateReceiveAddressResult = ReactiveCommand.CreateFromTask<Unit, Result>(async _ =>
+        {
+            var res = await GenerateReceiveAddress.Execute(Unit.Default);
+            return res.IsSuccess ? Result.Success() : Result.Failure(res.Error);
+        });
+        
+        Load = ReactiveCommand.CreateCombined([LoadTransactions, generateReceiveAddressResult]);
     }
 
-    
-    [ObservableAsProperty] private bool isUnlocked; 
+    public ReactiveCommand<Unit, Result<string>> GenerateReceiveAddress { get; set; }
 
-    public CombinedReactiveCommand<Unit, Result> Load { get;  }
+
+    [ObservableAsProperty] private bool isUnlocked;
+
+    public CombinedReactiveCommand<Unit, Result> Load { get; }
+
+    [ObservableAsProperty] private string? receiveAddress;
 
     public ReactiveCommand<Unit, Result> LoadTransactions { get; }
 
     public ReadOnlyObservableCollection<IBroadcastedTransaction> History { get; }
 
     [ObservableAsProperty] private long balance;
-
     public BitcoinNetwork Network { get; } = BitcoinNetwork.Testnet;
-    public string ReceiveAddress { get; } = "";
 
     public Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate)
     {

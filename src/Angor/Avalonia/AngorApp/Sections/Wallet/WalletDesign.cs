@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Angor.UI.Model;
 using AngorApp.Sections.Browse;
 using AngorApp.Sections.Wallet.Operate;
@@ -11,6 +12,8 @@ namespace AngorApp.Sections.Wallet;
 
 public class WalletDesign : IWallet
 {
+    private readonly Task<Result<string>> receiveAddress = Task.FromResult(Result.Success(SampleData.TestNetBitcoinAddress));
+
     public ReadOnlyObservableCollection<IBroadcastedTransaction> History { get; } = new ReadOnlyObservableCollection<IBroadcastedTransaction>([
         new BroadcastedTransactionDesign { Address = "someaddress1", Amount = 1000, UtxoCount = 12, Path = "path", ViewRawJson = "json" },
         new BroadcastedTransactionDesign { Address = "someaddress2", Amount = 3000, UtxoCount = 15, Path = "path", ViewRawJson = "json" },
@@ -20,7 +23,7 @@ public class WalletDesign : IWallet
 
     public long Balance { get; } = 5_0000_0000;
 
-    public string ReceiveAddress { get; } = SampleData.TestNetBitcoinAddress;
+    public Task<Result<string>> GetReceiveAddress() => receiveAddress;
 
     public async Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate)
     {
@@ -45,6 +48,9 @@ public class WalletDesign : IWallet
     public bool IsUnlocked { get; set; }
     public WalletId Id { get; }
     public CombinedReactiveCommand<Unit, Result> Load { get; }
+    public string ReceiveAddress { get; }
+    
+    public ReactiveCommand<Unit, Result<string>> GenerateReceiveAddress { get; }
 
     public BitcoinNetwork Network => BitcoinNetwork.Testnet;
 }
