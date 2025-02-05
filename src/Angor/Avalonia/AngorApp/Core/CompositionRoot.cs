@@ -51,7 +51,7 @@ public static class CompositionRoot
         var walletAppService = WalletApplicationService(walletRepository);
         var walletProvider = new WalletProvider();
         var walletBuilder = new WalletBuilder(walletAppService, walletUnlocker);
-        var walletFactory = new WalletFactory(walletBuilder, uiServices, walletRepository, walletProvider);
+        var walletFactory = new WalletFactory(walletBuilder, uiServices, walletRepository, walletProvider, walletUnlocker);
 
         MainViewModel mainViewModel = null!;
         

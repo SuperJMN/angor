@@ -9,20 +9,23 @@ using RefinedSuppaWallet.Domain;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
+using BitcoinNetwork = RefinedSuppaWallet.Domain.BitcoinNetwork;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 
 public partial class SummaryAndCreationViewModel : ReactiveValidationObject, IStep, ISummaryAndCreationViewModel
 {
     private readonly IWalletImporter walletImporter;
+    private readonly IWalletUnlocker unlocker;
     private readonly IWalletProvider walletProvider;
     private readonly IWalletBuilder walletBuilder;
     [ObservableAsProperty] private IWallet? wallet;
 
-    public SummaryAndCreationViewModel(IWalletImporter walletImporter, IWalletProvider walletProvider, Maybe<string> passphrase, SeedWords seedwords, string encryptionKey, IWalletBuilder walletBuilder,
+    public SummaryAndCreationViewModel(IWalletImporter walletImporter, IWalletUnlocker unlocker, IWalletProvider walletProvider, Maybe<string> passphrase, SeedWords seedwords, string encryptionKey, IWalletBuilder walletBuilder,
         Action<Result<IWallet>> creationResult)
     {
         this.walletImporter = walletImporter;
+        this.unlocker = unlocker;
         this.walletProvider = walletProvider;
         this.walletBuilder = walletBuilder;
         Passphrase = passphrase;
@@ -33,8 +36,9 @@ public partial class SummaryAndCreationViewModel : ReactiveValidationObject, ISt
 
     private Task<Result<IWallet>> CreateAndSet(SeedWords seedwords, Maybe<string> passphrase, string encryptionKey)
     {
-        return walletBuilder.Create(WalletId.New())
-            .Tap(w => walletImporter.ImportWallet("Main", string.Join(" ", seedwords), encryptionKey, w.Network.ToDomain()))
+        return walletImporter.ImportWallet("Main", string.Join(" ", seedwords), encryptionKey, BitcoinNetwork.Testnet)
+            .Bind(w => walletBuilder.Create(w.Id))
+            .Tap(w => unlocker.ConfirmUnlock(w.Id, encryptionKey))
             .Tap(w => walletProvider.CurrentWallet = w.AsMaybe());
     }
 

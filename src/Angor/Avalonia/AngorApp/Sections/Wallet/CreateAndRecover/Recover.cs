@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Angor.UI.Model;
 using Angor.UI.Model.Implementation;
+using AngorApp.Core;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.EncryptionPassword;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.Passphrase;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.Passphrase.Create;
@@ -11,6 +12,7 @@ using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
 using CSharpFunctionalExtensions;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.CSharpFunctionalExtensions;
@@ -23,13 +25,15 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover
         private readonly IWalletBuilder walletBuilder;
         private readonly IWalletImporter walletImporter;
         private readonly IWalletProvider walletProvider;
+        private readonly IWalletUnlocker walletUnlocker;
 
-        public Recover(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider)
+        public Recover(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlocker walletUnlocker)
         {
             this.uiServices = uiServices;
             this.walletBuilder = walletBuilder;
             this.walletImporter = walletImporter;
             this.walletProvider = walletProvider;
+            this.walletUnlocker = walletUnlocker;
         }
 
         public async Task<Maybe<IWallet>> Start()
@@ -41,7 +45,7 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover
                 .Then(_ => new RecoverySeedWordsViewModel())
                 .Then(seedwords => new PassphraseRecoverViewModel(seedwords.SeedWords))
                 .Then(passphrase => new EncryptionPasswordViewModel(passphrase.SeedWords, passphrase.Passphrase!))
-                .Then(passphrase => new SummaryAndCreationViewModel(walletImporter, walletProvider, passphrase.Passphrase, passphrase.SeedWords, passphrase.Password!, walletBuilder, r => wallet = r.AsMaybe())
+                .Then(passphrase => new SummaryAndCreationViewModel(walletImporter, walletUnlocker, walletProvider, passphrase.Passphrase, passphrase.SeedWords, passphrase.Password!, walletBuilder, r => wallet = r.AsMaybe())
                 {
                     IsRecovery = true
                 })

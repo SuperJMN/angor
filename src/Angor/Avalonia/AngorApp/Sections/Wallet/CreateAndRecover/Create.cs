@@ -5,6 +5,7 @@ using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsConfirmation;
 using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
 using CSharpFunctionalExtensions;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.CSharpFunctionalExtensions;
@@ -21,13 +22,15 @@ public class Create
     private readonly IWalletBuilder walletBuilder;
     private readonly IWalletImporter walletImporter;
     private readonly IWalletProvider walletProvider;
+    private readonly IWalletUnlocker walletUnlocker;
 
-    public Create(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider)
+    public Create(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlocker walletUnlocker)
     {
         this.uiServices = uiServices;
         this.walletBuilder = walletBuilder;
         this.walletImporter = walletImporter;
         this.walletProvider = walletProvider;
+        this.walletUnlocker = walletUnlocker;
     }
 
     public async Task<Maybe<IWallet>> Start()
@@ -40,7 +43,7 @@ public class Create
             .Then(prev => new SeedWordsConfirmationViewModel(prev.Words.Value))
             .Then(prev => new PassphraseCreateViewModel(prev.SeedWords))
             .Then(prev => new EncryptionPasswordViewModel(prev.SeedWords, prev.Passphrase!))
-            .Then(prev => new SummaryAndCreationViewModel(walletImporter, walletProvider, prev.Passphrase, prev.SeedWords, prev.Password!, walletBuilder, r => wallet = r.AsMaybe())
+            .Then(prev => new SummaryAndCreationViewModel(walletImporter, walletUnlocker, walletProvider, prev.Passphrase, prev.SeedWords, prev.Password!, walletBuilder, r => wallet = r.AsMaybe())
             {
                 IsRecovery = false,
             })

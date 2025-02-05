@@ -29,7 +29,7 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
         SetDefaultWallet = ReactiveCommand.CreateFromTask(async () =>
         {
             var walletInfos = (await walletAppService.GetWallets()).ToList();
-            if (!(walletInfos.Count != 0 || walletProvider.CurrentWallet.HasNoValue))
+            if (walletInfos.Count == 0 || walletProvider.CurrentWallet.HasValue)
             {
                 return;
             }
