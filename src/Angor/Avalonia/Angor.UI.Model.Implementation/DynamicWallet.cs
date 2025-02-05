@@ -44,8 +44,11 @@ public partial class DynamicWallet : ReactiveObject, IWallet
 
         Load = ReactiveCommand.CreateCombined([LoadTransactions]);
         
-        IsUnlocked = walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id));
+        isUnlockedHelper = walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id)).ToProperty(this, x => x.IsUnlocked);
     }
+
+    
+    [ObservableAsProperty] private bool isUnlocked; 
 
     public CombinedReactiveCommand<Unit, Result> Load { get;  }
 
@@ -74,6 +77,6 @@ public partial class DynamicWallet : ReactiveObject, IWallet
             }, "Network mismatch");
     }
 
-    public IObservable<bool> IsUnlocked { get; }
+    //public IObservable<bool> IsUnlocked { get; }
     public WalletId Id { get; }
 }

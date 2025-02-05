@@ -14,7 +14,7 @@ public interface IWallet
     public string ReceiveAddress { get; }
     Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate);
     Result IsAddressValid(string address);
-    public IObservable<bool> IsUnlocked { get; }
+    public bool IsUnlocked { get; }
     WalletId Id { get; }
     public CombinedReactiveCommand<Unit, Result> Load { get; }
 }

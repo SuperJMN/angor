@@ -8,6 +8,12 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="AngorApp.Sections.Wallet.WalletSectionView" x:DataType="wallet:WalletSectionViewModel">
 
+    <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="Loaded">
+            <InvokeCommandAction Command="{Binding SetDefaultWallet}" />
+        </EventTriggerBehavior>
+    </Interaction.Behaviors>
+
     <UserControl.Styles>
         <Style Selector="WrapPanel > :is(Control)">
             <Setter Property="Margin" Value="10"></Setter>
