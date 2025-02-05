@@ -10,10 +10,16 @@ using RefinedSuppaWallet.Infrastructure.Angor.Store;
 
 namespace RefinedSuppaWallet.Infrastructure.Angor;
 
+public class WalletData
+{
+    public string Seed { get; set; }
+    public bool RequiresPassphrase { get; set; }
+}
+
 public interface IWalletEncryption
 {
-    Task<Result<string>> Decrypt(EncryptedWallet wallet, string encryptionKey);
-    Task<EncryptedWallet> Encrypt(string seed, string encryptionKey, string name, Guid id);
+    Task<Result<WalletData>> Decrypt(EncryptedWallet wallet, string encryptionKey);
+    Task<EncryptedWallet> Encrypt(WalletData walletData, string encryptionKey, string name, Guid id);
 }
 
 public class AesWalletEncryption : IWalletEncryption
@@ -21,7 +27,7 @@ public class AesWalletEncryption : IWalletEncryption
     private const int ITERATIONS = 100000;
     private const int KEY_SIZE = 256;
 
-    public async Task<Result<string>> Decrypt(EncryptedWallet encryptedWallet, string encryptionKey)
+    public async Task<Result<WalletData>> Decrypt(EncryptedWallet encryptedWallet, string encryptionKey)
     {
         try
         {
@@ -43,15 +49,16 @@ public class AesWalletEncryption : IWalletEncryption
             using var msDecrypt = new MemoryStream(encryptedData);
             using var csDecrypt = new CryptoStream(msDecrypt, aes.CreateDecryptor(), CryptoStreamMode.Read);
             using var reader = new StreamReader(csDecrypt);
-            return Result.Success(await reader.ReadToEndAsync());
+            var jsonData = await reader.ReadToEndAsync();
+            return Result.Success(System.Text.Json.JsonSerializer.Deserialize<WalletData>(jsonData)!);
         }
         catch (Exception ex)
         {
-            return Result.Failure<string>($"Error decrypting wallet: {ex.Message}");
+            return Result.Failure<WalletData>($"Error decrypting wallet: {ex.Message}");
         }
     }
 
-    public async Task<EncryptedWallet> Encrypt(string seed, string encryptionKey, string name, Guid id)
+    public async Task<EncryptedWallet> Encrypt(WalletData walletData, string encryptionKey, string name, Guid id)
     {
         var salt = GenerateRandomBytes(32);
         var iv = GenerateRandomBytes(16);
@@ -73,7 +80,8 @@ public class AesWalletEncryption : IWalletEncryption
             using (var csEncrypt = new CryptoStream(msEncrypt, aes.CreateEncryptor(), CryptoStreamMode.Write))
             using (var writer = new StreamWriter(csEncrypt, Encoding.UTF8))
             {
-                await writer.WriteAsync(seed);
+                var jsonData = System.Text.Json.JsonSerializer.Serialize(walletData);
+                await writer.WriteAsync(jsonData);
             }
             encryptedData = msEncrypt.ToArray();
         }
@@ -146,7 +154,7 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
         var passwordResult = passwordMaybe.ToResult("No password provided");
 
         return await passwordResult
-            .Bind(password => Descrypt(id, encryptedWallet, password))
+            .Bind(password => Decrypt(id, encryptedWallet, password))
             .Map(seed =>
             {
                 var descriptor = WalletDescriptorFactory.CreateFromSeed(seed, Network.TestNet);
@@ -156,14 +164,15 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
             });
     }
 
-    private Task<Result<string>> Descrypt(WalletId id, EncryptedWallet wallet, string password)
+    private Task<Result<string>> Decrypt(WalletId id, EncryptedWallet wallet, string password)
     {
         return walletEncryption.Decrypt(wallet, password)
+            .Map(walletData => walletData.Seed)
             .MapError(_ => "Invalid decryption password")
             .Tap(() => walletUnlocker.ConfirmUnlock(id, password));
     }
 
-    public async Task<Result<Wallet>> ImportWallet(string name, string seed, string encryptionKey, BitcoinNetwork network)
+    public async Task<Result<Wallet>> ImportWallet(string name, string seed, string encryptionKey, BitcoinNetwork network, bool requiresPassphrase = false)
     {
         await EnsureEncryptedWalletsLoaded();
 
@@ -171,14 +180,19 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
         var descriptor = WalletDescriptorFactory.CreateFromSeed(seed, network.ToNBitcoin());
         var wallet = new Wallet(walletId, descriptor);
 
-        var encryptedWallet = await walletEncryption.Encrypt(seed, encryptionKey, name, walletId.Id);
+        var walletData = new WalletData
+        {
+            Seed = seed,
+            RequiresPassphrase = requiresPassphrase
+        };
+
+        var encryptedWallet = await walletEncryption.Encrypt(walletData, encryptionKey, name, walletId.Id);
 
         wallets[walletId] = wallet;
         encryptedWallets![walletId.Id] = encryptedWallet;
 
         return await Save().Map(() => wallet);
     }
-
     private async Task<Result> Save()
     {
         try
