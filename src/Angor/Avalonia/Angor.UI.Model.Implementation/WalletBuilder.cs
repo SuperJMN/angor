@@ -16,8 +16,8 @@ public class WalletBuilder : IWalletBuilder
         this.walletUnlocker = walletUnlocker;
     }
 
-    public async Task<Result<IWallet>> Create(SeedWords seedwords, Maybe<string> passphrase, string encryptionKey)
+    public async Task<Result<IWallet>> Create(WalletId id)
     {
-        return new DynamicWallet(WalletId.New(), walletAppService, walletUnlocker);
+        return new DynamicWallet(id, walletAppService, walletUnlocker);
     }
 }

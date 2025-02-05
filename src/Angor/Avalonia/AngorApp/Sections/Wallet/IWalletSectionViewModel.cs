@@ -6,6 +6,6 @@ namespace AngorApp.Sections.Wallet;
 
 public interface IWalletSectionViewModel
 {
-    ReactiveCommand<Unit, Maybe<Result<IWallet>>> CreateWallet { get; }
-    ReactiveCommand<Unit, Maybe<Result<IWallet>>> RecoverWallet { get; }
+    ReactiveCommand<Unit, Maybe<IWallet>> CreateWallet { get; }
+    ReactiveCommand<Unit, Maybe<IWallet>> RecoverWallet { get; }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Angor.UI.Model.Implementation;
 using Angor.UI.Model.Implementation.Projects;
 using AngorApp.Sections;
@@ -9,19 +10,19 @@ using AngorApp.Sections.Shell;
 using AngorApp.Sections.Wallet;
 using AngorApp.Services;
 using Avalonia.Controls.Notifications;
+using CSharpFunctionalExtensions;
 using NBitcoin;
 using RefinedSuppaWalet.Infrastructure;
 using RefinedSuppaWalet.Infrastructure.Address;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWalet.Infrastructure.Transactions;
 using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
 using RefinedSuppaWallet.Infrastructure.Angor;
-using RefinedSuppaWallet.Infrastructure.Angor.SecuredWalletRepository;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
 using RefinedSuppaWallet.Intrastructure.Mempool.AddressManager;
 using RefinedSuppaWallet.Intrastructure.Mempool.Repository;
 using RefinedSuppaWallet.Intrastructure.Mempool.TransactionBroadcaster;
-using Serilog;
 using Serilog.Core;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.Avalonia.Services;
@@ -33,7 +34,7 @@ namespace AngorApp.Core;
 
 public static class CompositionRoot
 {
-    public static MainViewModel CreateMainViewModel(Control control)
+    public static async Task<MainViewModel> CreateMainViewModel(Control control)
     {
         var topLevel = TopLevel.GetTopLevel(control);
         var launcher = new LauncherService(topLevel!.Launcher);
@@ -44,22 +45,28 @@ public static class CompositionRoot
             {
                 Position = NotificationPosition.BottomRight
             }));
-
+        
         var walletUnlocker = new WalletUnlocker(uiServices);
-        var walletAppService = WalletApplicationService(walletUnlocker);
-
-        var walletProvider = new WalletProvider(walletAppService);
-        var walletFactory = new WalletFactory(new WalletBuilder(walletAppService, walletUnlocker), uiServices);
+        var walletRepository = new AngorWalletRepository(new FileStore("Angor"), walletUnlocker, new AesWalletEncryption());
+        var walletAppService = WalletApplicationService(walletRepository);
+        var walletProvider = new WalletProvider();
+        var walletBuilder = new WalletBuilder(walletAppService, walletUnlocker);
+        var walletFactory = new WalletFactory(walletBuilder, uiServices, walletRepository, walletProvider);
 
         MainViewModel mainViewModel = null!;
+        
+        // // Initial wallet 
+        // await walletRepository.ImportWallet("Test", "away abuse minute slow used modify universe morning leaf host spider moment", "1234", BitcoinNetwork.Mainnet)
+        //     .Bind(w => walletBuilder.Create(w.Id))
+        //     .Tap(wallet => walletProvider.CurrentWallet = wallet.AsMaybe());
 
         var projectService = RealProjectService();
 
         IEnumerable<SectionBase> sections =
         [
-            new Section("Home", () => new HomeSectionViewModel(walletProvider, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
+            new Section("Home", () => new HomeSectionViewModel(walletAppService, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
-            new Section("Wallet", () => new WalletSectionViewModel(walletFactory, walletProvider, uiServices, walletAppService, walletUnlocker), "fa-wallet"),
+            new Section("Wallet", () => new WalletSectionViewModel(walletAppService, walletFactory, walletProvider, walletBuilder, uiServices), "fa-wallet"),
             new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices, walletAppService, walletUnlocker)), "fa-magnifying-glass"),
             new Section("Portfolio", () => new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
             new Section("Founder", () => new FounderSectionViewModel(projectService), "fa-money-bills"),
@@ -73,7 +80,7 @@ public static class CompositionRoot
         return mainViewModel;
     }
 
-    private static WalletAppService WalletApplicationService(WalletUnlocker walletUnlocker)
+    private static WalletAppService WalletApplicationService(IWalletRepository walletRepository)
     {
         var network = Network.TestNet;
         var bitcoinAddressTypeDetector = new NBitcoinAddressTypeDetector(network);
@@ -85,8 +92,7 @@ public static class CompositionRoot
         var transactionPreparer = new NBitcoinTransactionPreparer(mempoolUtxoRepository, network, addressManager, addressTypeDetector, new UtxoSelector());
         var mempoolTransactionBroadcaster = new MempoolTransactionBroadcaster(defaultHttpClientFactory);
         var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
-        var walletRepository = new AngorWalleteRepository(new FileStore("Angor"), walletUnlocker);
-        Dictionary<WalletId, (Network, ExtKey)> dict = new();       // TODO: This is a hack, we need to find a better way to store the keys
+        Dictionary<WalletId, (Network, ExtKey)> dict = new(); // TODO: This is a hack, we need to find a better way to store the keys
         var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(dict), mempoolTransactionBroadcaster);
         var walletTransactionService = new MempoolSpaceWalletService(Logger.None, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var blockchainService = new BlockchainService(mempoolUtxoRepository, bitcoinTransactionService, walletTransactionService, mempoolTransactionBroadcaster);

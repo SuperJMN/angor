@@ -1,17 +1,20 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using CSharpFunctionalExtensions;
-using RefinedSuppaWallet.Application;
-using RefinedSuppaWallet.Domain;
+using Zafiro.CSharpFunctionalExtensions;
 
 namespace Angor.UI.Model.Implementation;
 
-public class WalletProvider(WalletAppService walletAppService) : IWalletProvider
+public class WalletProvider : IWalletProvider
 {
-    public async Task<Maybe<WalletId>> GetWalletId()
+    private readonly BehaviorSubject<Maybe<IWallet>> currentWallet = new(Maybe<IWallet>.None);
+    public IObservable<bool> HasWallet => currentWallet.Any();
+
+    public Maybe<IWallet> CurrentWallet
     {
-        return (await walletAppService.GetWallets()).TryFirst().Select(s => s.Id);
+        get => currentWallet.Value;
+        set => currentWallet.OnNext(value);
     }
 
-    public void SetWallet(WalletId wallet)
-    {
-    }
+    public IObservable<IWallet> CurrentWallets => currentWallet.Values().AsObservable();
 }

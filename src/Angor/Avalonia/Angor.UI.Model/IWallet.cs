@@ -16,5 +16,5 @@ public interface IWallet
     Result IsAddressValid(string address);
     public IObservable<bool> IsUnlocked { get; }
     WalletId Id { get; }
-    public ReactiveCommand<Unit, Unit> Load { get; }
+    public CombinedReactiveCommand<Unit, Result> Load { get; }
 }

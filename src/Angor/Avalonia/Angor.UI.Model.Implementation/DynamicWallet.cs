@@ -1,9 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using CSharpFunctionalExtensions.ValueTasks;
 using DynamicData;
 using DynamicData.Aggregation;
 using ReactiveUI;
@@ -12,6 +10,8 @@ using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Application;
 using RefinedSuppaWallet.Domain;
 using Zafiro.CSharpFunctionalExtensions;
+using Zafiro.Reactive;
+using Zafiro.UI;
 
 namespace Angor.UI.Model.Implementation;
 
@@ -36,17 +36,20 @@ public partial class DynamicWallet : ReactiveObject, IWallet
         History = transactions;
 
         balanceHelper = changes.Sum(x => x.Balance.Value).ToProperty(this, x => x.Balance);
-        IsUnlocked = walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id));
         
-        Load = ReactiveCommand.CreateFromTask(async () =>
+        LoadTransactions = ReactiveCommand.CreateFromTask(async () =>
         {
-            await walletAppService.GetTransactions(Id).Tap(t => transactionsSource.AddOrUpdate(t));
+            return await walletAppService.GetTransactions(Id).Tap(t => transactionsSource.AddOrUpdate(t)).Bind(_ => Result.Success());
         });
 
-        Load.Execute().Subscribe();
+        Load = ReactiveCommand.CreateCombined([LoadTransactions]);
+        
+        IsUnlocked = walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id));
     }
 
-    public ReactiveCommand<Unit,Unit> Load { get; }
+    public CombinedReactiveCommand<Unit, Result> Load { get;  }
+
+    public ReactiveCommand<Unit, Result> LoadTransactions { get; }
 
     public ReadOnlyObservableCollection<IBroadcastedTransaction> History { get; }
 

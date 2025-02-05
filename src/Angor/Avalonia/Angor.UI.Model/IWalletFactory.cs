@@ -4,6 +4,6 @@ namespace Angor.UI.Model;
 
 public interface IWalletFactory
 {
-    public Task<Maybe<Result<IWallet>>> Recover();
-    public Task<Maybe<Result<IWallet>>> Create();
+    public Task<Maybe<IWallet>> Recover();
+    public Task<Maybe<IWallet>> Create();
 }

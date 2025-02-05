@@ -1,27 +1,23 @@
+using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Input;
-using Angor.UI.Model;
 using AngorApp.Core;
 using AngorApp.Sections.Shell;
 using AngorApp.Services;
+using RefinedSuppaWallet.Application;
 
 namespace AngorApp.Sections.Home;
 
 public class HomeSectionViewModel : ReactiveObject, IHomeSectionViewModel
 {
-    private readonly IWalletProvider provider;
-
-    public HomeSectionViewModel(IWalletProvider provider, UIServices uiServices, Func<IMainViewModel> getMainViewModel)
+    public HomeSectionViewModel(WalletAppService walletAppService, UIServices uiServices, Func<IMainViewModel> getMainViewModel)
     {
-        this.provider = provider;
-        //provider.GetWallet();
-        GoToWalletSection = ReactiveCommand.Create(() => getMainViewModel().GoToSection("Wallet"));
+        GoToWalletSection = ReactiveCommand.Create(() => getMainViewModel().GoToSection("Wallet"), Observable.FromAsync(walletAppService.GetWallets).Select(x => !x.Any()));
         OpenHub = ReactiveCommand.CreateFromTask(() => uiServices.LauncherService.LaunchUri(Constants.AngorHubUri));
-        //GoToFounderSection = ReactiveCommand.Create(() => getMainViewModel().GoToSection("Founder"));
         IsWalletSetup = false;
     }
 
     public bool IsWalletSetup { get; }
     public ICommand GoToWalletSection { get; }
-    public ICommand GoToFounderSection { get; }
     public ICommand OpenHub { get; }
 }

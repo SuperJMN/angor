@@ -36,12 +36,6 @@ internal class WalletUnlocker : IWalletUnlocker
             await services.Dialog.Show(passphraseRequestViewModel, "Unlock wallet", passphraseRequestViewModel.IsValid());
             return passphraseRequestViewModel.Password.AsMaybe();
         });
-        
-        promptForPassphrase.Execute(s =>
-        {
-            passphrases[id] = s;
-            unlockedSubject.OnNext(id);
-        });
 
         return promptForPassphrase;
     }
@@ -50,5 +44,11 @@ internal class WalletUnlocker : IWalletUnlocker
     public bool IsUnlocked(WalletId id)
     {
         return passphrases.ContainsKey(id);
+    }
+
+    public void ConfirmUnlock(WalletId id, string password)
+    {
+        passphrases[id] = password;
+        unlockedSubject.OnNext(id);
     }
 }

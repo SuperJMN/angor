@@ -8,21 +8,25 @@ namespace AngorApp.Services;
 public class WalletFactory : IWalletFactory
 {
     private readonly UIServices uiServices;
+    private readonly IWalletImporter walletImporter;
+    private readonly IWalletProvider walletProvider;
     private readonly IWalletBuilder walletBuilder;
 
-    public WalletFactory(IWalletBuilder walletBuilder, UIServices uiServices)
+    public WalletFactory(IWalletBuilder walletBuilder, UIServices uiServices, IWalletImporter walletImporter, IWalletProvider walletProvider)
     {
         this.walletBuilder = walletBuilder;
         this.uiServices = uiServices;
+        this.walletImporter = walletImporter;
+        this.walletProvider = walletProvider;
     }
 
-    public Task<Maybe<Result<IWallet>>> Recover()
+    public Task<Maybe<IWallet>> Recover()
     {
-        return new Recover(uiServices, walletBuilder).Start();
+        return new Recover(uiServices, walletBuilder, walletImporter, walletProvider).Start();
     }
 
-    public Task<Maybe<Result<IWallet>>> Create()
+    public Task<Maybe<IWallet>> Create()
     {
-        return new Create(uiServices, walletBuilder).Start();
+        return new Create(uiServices, walletBuilder, walletImporter, walletProvider).Start();
     }
 }

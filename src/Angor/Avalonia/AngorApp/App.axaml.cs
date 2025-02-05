@@ -34,7 +34,7 @@ public partial class App : Application
     {
         try 
         {
-            this.Connect(() => new MainView(), control => CompositionRoot.CreateMainViewModel(control), () => new MainWindow());
+            this.Connect(() => new MainView(), async control => await CompositionRoot.CreateMainViewModel(control), () => new MainWindow());
         }
         catch (Exception ex)
         {

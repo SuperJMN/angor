@@ -19,4 +19,10 @@
         <ProjectReference Include="..\Angor.UI.Model\Angor.UI.Model.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Zafiro.UI">
+        <HintPath>..\..\..\..\..\..\..\..\..\home\jmn\.nuget\packages\zafiro.ui\14.0.7\lib\net8.0\Zafiro.UI.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

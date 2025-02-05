@@ -14,7 +14,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Panel IsVisible="{Binding !LoadWallet.IsExecuting^}">
+    <Panel>
         <StackPanel IsVisible="{Binding Path=Wallet, Converter={x:Static ObjectConverters.IsNull}}">
             <controls:Pane Title="Setup your wallet" IsTitleVisible="True">
                 <WrapPanel HorizontalAlignment="Center" Margin="-10">
