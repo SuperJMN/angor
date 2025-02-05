@@ -1,7 +1,5 @@
 using System.Windows.Input;
 using Angor.UI.Model;
-using Angor.UI.Model.Implementation;
-using AngorApp.Sections.Browse;
 using AngorApp.Sections.Wallet.Operate.Send;
 using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
@@ -11,17 +9,27 @@ using TransactionPreviewViewModel = AngorApp.UI.Controls.Common.TransactionPrevi
 
 namespace AngorApp.Sections.Wallet.Operate;
 
-public class WalletViewModel(IWallet wallet, UIServices uiServices) : ReactiveObject, IWalletViewModel
+public class WalletViewModel : ReactiveObject, IWalletViewModel
 {
-    public IWallet Wallet => wallet;
+    private readonly UIServices uiService;
+
+    public WalletViewModel(IWallet wallet, UIServices uiServices)
+    {
+        Wallet = wallet;
+        uiService = uiServices;
+
+        Wallet.Load.Execute().Subscribe();
+    }
+
+    public IWallet Wallet { get; }
 
     public ICommand Send => ReactiveCommand.CreateFromTask(() =>
     {
-        var wizard = WizardBuilder.StartWith(() => new AddressAndAmountViewModel(wallet))
-            .Then(model => new TransactionPreviewViewModel(wallet, new Destination("Test", model.Amount!.Value, model.Address!), uiServices))
+        var wizard = WizardBuilder.StartWith(() => new AddressAndAmountViewModel(Wallet))
+            .Then(model => new TransactionPreviewViewModel(Wallet, new Destination("Test", model.Amount!.Value, model.Address!), uiService))
             .Then(_ => new SuccessViewModel("Transaction sent!", "Success"))
             .Build();
 
-        return uiServices.Dialog.Show(wizard, "Send", closeable => wizard.OptionsForCloseable(closeable));
+        return uiService.Dialog.Show(wizard, "Send", closeable => wizard.OptionsForCloseable(closeable));
     });
 }

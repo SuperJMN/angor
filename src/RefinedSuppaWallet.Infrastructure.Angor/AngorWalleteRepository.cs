@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
 using CSharpFunctionalExtensions;
@@ -7,8 +6,9 @@ using RefinedSuppaWalet.Infrastructure;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWalet.Infrastructure.Transactions;
 using RefinedSuppaWallet.Domain;
-using RefinedSuppaWallet.Infrastructure.Angor.SecuredWalletRepository;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
+
+namespace RefinedSuppaWallet.Infrastructure.Angor;
 
 public interface IWalletEncryption
 {
@@ -71,11 +71,10 @@ public class AesWalletEncryption : IWalletEncryption
 
             using var msEncrypt = new MemoryStream();
             using (var csEncrypt = new CryptoStream(msEncrypt, aes.CreateEncryptor(), CryptoStreamMode.Write))
-            using (var writer = new BinaryWriter(csEncrypt))
+            using (var writer = new StreamWriter(csEncrypt, Encoding.UTF8))
             {
-                writer.Write(Encoding.UTF8.GetBytes(seed));
+                await writer.WriteAsync(seed);
             }
-
             encryptedData = msEncrypt.ToArray();
         }
 
@@ -147,14 +146,21 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
         var passwordResult = passwordMaybe.ToResult("No password provided");
 
         return await passwordResult
-            .Bind(password => walletEncryption.Decrypt(encryptedWallet, password).Tap(() => walletUnlocker.ConfirmUnlock(id, password)))
+            .Bind(password => Descrypt(id, encryptedWallet, password))
             .Map(seed =>
             {
-                var descriptor = WalletDescriptorFactory.CreateFromSeed(seed, Network.Main);
+                var descriptor = WalletDescriptorFactory.CreateFromSeed(seed, Network.TestNet);
                 var newWallet = new Wallet(id, descriptor);
                 wallets[id] = newWallet;
                 return newWallet;
             });
+    }
+
+    private Task<Result<string>> Descrypt(WalletId id, EncryptedWallet wallet, string password)
+    {
+        return walletEncryption.Decrypt(wallet, password)
+            .MapError(_ => "Invalid decryption password")
+            .Tap(() => walletUnlocker.ConfirmUnlock(id, password));
     }
 
     public async Task<Result<Wallet>> ImportWallet(string name, string seed, string encryptionKey, BitcoinNetwork network)

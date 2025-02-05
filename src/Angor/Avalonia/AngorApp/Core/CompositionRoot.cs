@@ -56,7 +56,7 @@ public static class CompositionRoot
         MainViewModel mainViewModel = null!;
         
         // // Initial wallet 
-        // await walletRepository.ImportWallet("Test", "away abuse minute slow used modify universe morning leaf host spider moment", "1234", BitcoinNetwork.Mainnet)
+        // await walletRepository.ImportWallet("Test", "away abuse minute slow used modify universe morning leaf host spider moment", "test", BitcoinNetwork.Mainnet)
         //     .Bind(w => walletBuilder.Create(w.Id))
         //     .Tap(wallet => walletProvider.CurrentWallet = wallet.AsMaybe());
 
