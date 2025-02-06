@@ -108,16 +108,16 @@ public class AesWalletEncryption : IWalletEncryption
 public class AngorWalletRepository : IWalletRepository, IWalletImporter
 {
     private readonly IStore store;
-    private readonly IWalletUnlocker walletUnlocker;
+    private readonly IWalletUnlockHandler walletUnlockHandler;
     private readonly IWalletEncryption walletEncryption;
     private readonly Dictionary<WalletId, Wallet> wallets = new();
     // Se deja en null hasta el primer acceso, para cargar de forma perezosa
     private Dictionary<Guid, EncryptedWallet>? encryptedWallets;
 
-    public AngorWalletRepository(IStore store, IWalletUnlocker walletUnlocker, IWalletEncryption walletEncryption)
+    public AngorWalletRepository(IStore store, IWalletUnlockHandler walletUnlockHandler, IWalletEncryption walletEncryption)
     {
         this.store = store;
-        this.walletUnlocker = walletUnlocker;
+        this.walletUnlockHandler = walletUnlockHandler;
         this.walletEncryption = walletEncryption;
     }
 
@@ -150,7 +150,7 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
         if (!encryptedWallets!.TryGetValue(id.Id, out var encryptedWallet))
             return Result.Failure<Wallet>("Wallet not found");
 
-        var passwordMaybe = await walletUnlocker.Provide(id);
+        var passwordMaybe = await walletUnlockHandler.RequestPassword(id);
         var passwordResult = passwordMaybe.ToResult("No password provided");
 
         return await passwordResult
@@ -169,7 +169,7 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
         return walletEncryption.Decrypt(wallet, password)
             .Map(walletData => walletData.Seed)
             .MapError(_ => "Invalid decryption password")
-            .Tap(() => walletUnlocker.ConfirmUnlock(id, password));
+            .Tap(() => walletUnlockHandler.ConfirmUnlock(id, password));
     }
 
     public async Task<Result<Wallet>> ImportWallet(string name, string seed, string encryptionKey, BitcoinNetwork network, bool requiresPassphrase = false)

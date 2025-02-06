@@ -16,16 +16,16 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 public partial class SummaryAndCreationViewModel : ReactiveValidationObject, IStep, ISummaryAndCreationViewModel
 {
     private readonly IWalletImporter walletImporter;
-    private readonly IWalletUnlocker unlocker;
+    private readonly IWalletUnlockHandler unlockHandler;
     private readonly IWalletProvider walletProvider;
     private readonly IWalletBuilder walletBuilder;
     [ObservableAsProperty] private IWallet? wallet;
 
-    public SummaryAndCreationViewModel(IWalletImporter walletImporter, IWalletUnlocker unlocker, IWalletProvider walletProvider, Maybe<string> passphrase, SeedWords seedwords, string encryptionKey, IWalletBuilder walletBuilder,
+    public SummaryAndCreationViewModel(IWalletImporter walletImporter, IWalletUnlockHandler unlockHandler, IWalletProvider walletProvider, Maybe<string> passphrase, SeedWords seedwords, string encryptionKey, IWalletBuilder walletBuilder,
         Action<Result<IWallet>> creationResult)
     {
         this.walletImporter = walletImporter;
-        this.unlocker = unlocker;
+        this.unlockHandler = unlockHandler;
         this.walletProvider = walletProvider;
         this.walletBuilder = walletBuilder;
         Passphrase = passphrase;
@@ -38,7 +38,7 @@ public partial class SummaryAndCreationViewModel : ReactiveValidationObject, ISt
     {
         return walletImporter.ImportWallet("Main", string.Join(" ", seedwords), encryptionKey, BitcoinNetwork.Testnet, passphrase.Match(_ => true, () => false))
             .Bind(w => walletBuilder.Create(w.Id))
-            .Tap(w => unlocker.ConfirmUnlock(w.Id, encryptionKey))
+            .Tap(w => unlockHandler.ConfirmUnlock(w.Id, encryptionKey))
             .Tap(w => walletProvider.CurrentWallet = w.AsMaybe());
     }
 

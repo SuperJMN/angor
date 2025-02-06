@@ -17,7 +17,7 @@ public partial class DynamicWallet : ReactiveObject, IWallet
 {
     private readonly WalletAppService walletAppService;
 
-    public DynamicWallet(WalletId walletId, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
+    public DynamicWallet(WalletId walletId, WalletAppService walletAppService, IWalletUnlockHandler walletUnlockHandler)
     {
         Id = walletId;
         this.walletAppService = walletAppService;
@@ -37,7 +37,7 @@ public partial class DynamicWallet : ReactiveObject, IWallet
 
         LoadTransactions = ReactiveCommand.CreateFromTask(async () => { return await walletAppService.GetTransactions(Id).Tap(t => transactionsSource.AddOrUpdate(t)).Bind(_ => Result.Success()); });
 
-        isUnlockedHelper = walletUnlocker.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlocker.IsUnlocked(Id)).ToProperty(this, x => x.IsUnlocked);
+        isUnlockedHelper = walletUnlockHandler.WalletUnlocked.Select(id => Id == id).StartWith(walletUnlockHandler.IsUnlocked(Id)).ToProperty(this, x => x.IsUnlocked);
         GenerateReceiveAddress = ReactiveCommand.CreateFromTask(() => walletAppService.GetNextReceiveAddress(Id).Map(x => x.Value));
         receiveAddressHelper = GenerateReceiveAddress.Successes().ToProperty(this, x => x.ReceiveAddress);
         

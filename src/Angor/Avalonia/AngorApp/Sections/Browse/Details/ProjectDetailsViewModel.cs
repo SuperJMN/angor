@@ -14,7 +14,7 @@ using Zafiro.Avalonia.Dialogs;
 
 namespace AngorApp.Sections.Browse.Details;
 
-public class ProjectDetailsViewModel(IWalletProvider walletProvider, WalletAppService walletAppService, IProject project, UIServices uiServices, IWalletUnlocker walletUnlocker) : ReactiveObject, IProjectDetailsViewModel
+public class ProjectDetailsViewModel(IWalletProvider walletProvider, WalletAppService walletAppService, IProject project, UIServices uiServices, IWalletUnlockHandler walletUnlockHandler) : ReactiveObject, IProjectDetailsViewModel
 {
     public object Icon => project.Icon;
     public object Picture => project.Picture;

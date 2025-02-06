@@ -4,7 +4,6 @@ namespace AngorApp.Sections.Home;
 
 public interface IHomeSectionViewModel
 {
-    public bool IsWalletSetup { get; }
-    public ICommand GoToWalletSection { get; }
+    public ReactiveCommand<Unit, Unit> GoToWalletSection { get; }
     public ICommand OpenHub { get; }
 }

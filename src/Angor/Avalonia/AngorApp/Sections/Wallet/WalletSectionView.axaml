@@ -16,12 +16,12 @@
 
     <UserControl.Styles>
         <Style Selector="WrapPanel > :is(Control)">
-            <Setter Property="Margin" Value="10"></Setter>
+            <Setter Property="Margin" Value="10" />
         </Style>
     </UserControl.Styles>
 
     <Panel>
-        <StackPanel IsVisible="{Binding Path=Wallet, Converter={x:Static ObjectConverters.IsNull}}">
+        <StackPanel IsVisible="{Binding Path=Wallet, Converter={x:Static ObjectConverters.IsNull}, FallbackValue=False}">
             <controls:Pane Title="Setup your wallet" IsTitleVisible="True">
                 <WrapPanel HorizontalAlignment="Center" Margin="-10">
                     <Button Content="Create wallet" Command="{Binding CreateWallet}" />
@@ -29,6 +29,6 @@
                 </WrapPanel>
             </controls:Pane>
         </StackPanel>
-        <operate:WalletView IsVisible="{Binding Path=., Converter={x:Static ObjectConverters.IsNotNull}}" DataContext="{Binding Wallet}" />
+        <operate:WalletView IsVisible="{Binding Path=., Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}" DataContext="{Binding Wallet}" />
     </Panel>
 </UserControl>

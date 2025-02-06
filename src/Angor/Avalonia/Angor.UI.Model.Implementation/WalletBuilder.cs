@@ -8,16 +8,16 @@ namespace Angor.UI.Model.Implementation;
 public class WalletBuilder : IWalletBuilder
 {
     private readonly WalletAppService walletAppService;
-    private readonly IWalletUnlocker walletUnlocker;
+    private readonly IWalletUnlockHandler walletUnlockHandler;
 
-    public WalletBuilder(WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
+    public WalletBuilder(WalletAppService walletAppService, IWalletUnlockHandler walletUnlockHandler)
     {
         this.walletAppService = walletAppService;
-        this.walletUnlocker = walletUnlocker;
+        this.walletUnlockHandler = walletUnlockHandler;
     }
 
     public async Task<Result<IWallet>> Create(WalletId id)
     {
-        return new DynamicWallet(id, walletAppService, walletUnlocker);
+        return new DynamicWallet(id, walletAppService, walletUnlockHandler);
     }
 }

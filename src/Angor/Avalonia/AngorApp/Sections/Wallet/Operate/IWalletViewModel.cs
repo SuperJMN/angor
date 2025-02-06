@@ -7,4 +7,5 @@ public interface IWalletViewModel
 {
     public IWallet Wallet { get; }
     public ICommand Send { get; }
+    public ICommand Unlock { get; }
 }

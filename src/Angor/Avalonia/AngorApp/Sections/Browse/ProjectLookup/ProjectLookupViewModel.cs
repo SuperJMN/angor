@@ -27,7 +27,7 @@ public partial class ProjectLookupViewModel : ReactiveObject, IProjectLookupView
     public ProjectLookupViewModel(IProjectService projectService,
         IWalletProvider walletProvider,
         INavigator navigator,
-        UIServices uiServices, WalletAppService walletAppService, IWalletUnlocker walletUnlocker)
+        UIServices uiServices, WalletAppService walletAppService, IWalletUnlockHandler walletUnlockHandler)
     {
         Lookup = ReactiveCommand.CreateFromTask<string, Maybe<IList<IProjectViewModel>>>(
             async pid =>
@@ -37,7 +37,7 @@ public partial class ProjectLookupViewModel : ReactiveObject, IProjectLookupView
 
                 return maybeProject.Map<IProject, IList<IProjectViewModel>>(project =>
                 {
-                    var vm = new ProjectViewModel(walletProvider, project, navigator, uiServices, walletAppService, walletUnlocker);
+                    var vm = new ProjectViewModel(walletProvider, project, navigator, uiServices, walletAppService, walletUnlockHandler);
                     return new List<IProjectViewModel> { vm };
                 });
             }

@@ -3,8 +3,10 @@ using Angor.UI.Model;
 using AngorApp.Sections.Wallet.Operate.Send;
 using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
+using Zafiro.Reactive;
 using TransactionPreviewViewModel = AngorApp.UI.Controls.Common.TransactionPreview.TransactionPreviewViewModel;
 
 namespace AngorApp.Sections.Wallet.Operate;
@@ -13,12 +15,13 @@ public class WalletViewModel : ReactiveObject, IWalletViewModel
 {
     private readonly UIServices uiService;
 
-    public WalletViewModel(IWallet wallet, UIServices uiServices)
+    public WalletViewModel(IWallet wallet, UIServices uiServices, IWalletRepository walletUnlocker)
     {
         Wallet = wallet;
         uiService = uiServices;
 
-        Wallet.Load.Execute().Subscribe();
+        Unlock = ReactiveCommand.CreateFromTask(() => walletUnlocker.Get(wallet.Id));
+        this.WhenAnyValue(x => x.Wallet.IsUnlocked).Trues().ToSignal().InvokeCommand(Wallet.Load);
     }
 
     public IWallet Wallet { get; }
@@ -32,4 +35,6 @@ public class WalletViewModel : ReactiveObject, IWalletViewModel
 
         return uiService.Dialog.Show(wizard, "Send", closeable => wizard.OptionsForCloseable(closeable));
     });
+
+    public ICommand Unlock { get; }
 }

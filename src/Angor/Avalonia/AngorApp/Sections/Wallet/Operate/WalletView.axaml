@@ -12,6 +12,12 @@
     <Design.DataContext>
         <operate:WalletViewModelDesign />
     </Design.DataContext>
+    
+    <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="Loaded">
+            <InvokeCommandAction Command="{Binding Unlock}" />
+        </EventTriggerBehavior>
+    </Interaction.Behaviors>
 
     <UserControl.Styles>
 
@@ -26,7 +32,7 @@
     </UserControl.Styles>
 
     <Panel>
-        <DockPanel IsVisible="{Binding Wallet.IsUnlocked}">
+        <DockPanel IsVisible="{Binding Wallet.IsUnlocked, FallbackValue=False}">
             <Panel>
                 <StackPanel Spacing="20" IsVisible="{Binding !Wallet.Load.IsExecuting^}">
 
@@ -68,11 +74,11 @@
         </DockPanel>
 
         <StackPanel
-            IsVisible="{Binding !Wallet.IsUnlocked}"
+            IsVisible="{Binding !Wallet.IsUnlocked, FallbackValue=True}"
             Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center">
             <i:Icon Value="fa-lock" FontSize="40" />
             <TextBlock Classes="SizeBig" Text="WALLET LOCKED" TextAlignment="Center" />
-            <Button HorizontalAlignment="Center" Content="Unlock wallet" Command="{Binding  Wallet.Load}" />
+            <Button HorizontalAlignment="Center" Content="Unlock wallet" Command="{Binding  Unlock}" />
         </StackPanel>
 
     </Panel>

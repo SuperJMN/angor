@@ -5,6 +5,7 @@ using AngorApp.Sections.Wallet.Operate;
 using AngorApp.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
+using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Application;
 using Zafiro.CSharpFunctionalExtensions;
 
@@ -17,12 +18,12 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
     public WalletSectionViewModel(WalletAppService walletAppService, IWalletFactory walletFactory,
         IWalletProvider walletProvider,
         IWalletBuilder builder,
-        UIServices services)
+        UIServices services, IWalletRepository walletUnlocker)
     {
         CreateWallet = ReactiveCommand.CreateFromTask(walletFactory.Create);
         walletHelper = walletProvider.CurrentWallets
             .Merge(Observable.Return(walletProvider.CurrentWallet).Values())
-            .Select(w => new WalletViewModel(w, services))
+            .Select(w => new WalletViewModel(w, services, walletUnlocker))
             .ToProperty(this, x => x.Wallet);
         
         RecoverWallet = ReactiveCommand.CreateFromTask(walletFactory.Recover);
@@ -39,8 +40,6 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
                 .Tap(w => walletProvider.CurrentWallet = w.AsMaybe());
         });
         
-        //SetDefaultWallet.Execute().Subscribe();
-
         IObservable<CombinedReactiveCommand<Unit, Result>> loadCommand = this.WhenAnyValue(x => x.Wallet!.Wallet.Load).WhereNotNull();
         loadCommand.Select(command => command.Select(results => results.Combine().TapError(s => services.NotificationService.Show(s, "Failure"))).Subscribe()).Subscribe();
 

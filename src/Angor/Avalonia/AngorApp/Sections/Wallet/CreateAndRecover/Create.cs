@@ -22,15 +22,15 @@ public class Create
     private readonly IWalletBuilder walletBuilder;
     private readonly IWalletImporter walletImporter;
     private readonly IWalletProvider walletProvider;
-    private readonly IWalletUnlocker walletUnlocker;
+    private readonly IWalletUnlockHandler walletUnlockHandler;
 
-    public Create(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlocker walletUnlocker)
+    public Create(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlockHandler walletUnlockHandler)
     {
         this.uiServices = uiServices;
         this.walletBuilder = walletBuilder;
         this.walletImporter = walletImporter;
         this.walletProvider = walletProvider;
-        this.walletUnlocker = walletUnlocker;
+        this.walletUnlockHandler = walletUnlockHandler;
     }
 
     public async Task<Maybe<IWallet>> Start()
@@ -43,7 +43,7 @@ public class Create
             .Then(prev => new SeedWordsConfirmationViewModel(prev.Words.Value))
             .Then(prev => new PassphraseCreateViewModel(prev.SeedWords))
             .Then(prev => new EncryptionPasswordViewModel(prev.SeedWords, prev.Passphrase!))
-            .Then(prev => new SummaryAndCreationViewModel(walletImporter, walletUnlocker, walletProvider, prev.Passphrase, prev.SeedWords, prev.Password!, walletBuilder, r => wallet = r.AsMaybe())
+            .Then(prev => new SummaryAndCreationViewModel(walletImporter, walletUnlockHandler, walletProvider, prev.Passphrase, prev.SeedWords, prev.Password!, walletBuilder, r => wallet = r.AsMaybe())
             {
                 IsRecovery = false,
             })

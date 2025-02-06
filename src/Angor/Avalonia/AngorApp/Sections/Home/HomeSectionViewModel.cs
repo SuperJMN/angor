@@ -14,10 +14,8 @@ public class HomeSectionViewModel : ReactiveObject, IHomeSectionViewModel
     {
         GoToWalletSection = ReactiveCommand.Create(() => getMainViewModel().GoToSection("Wallet"), Observable.FromAsync(walletAppService.GetWallets).Select(x => !x.Any()));
         OpenHub = ReactiveCommand.CreateFromTask(() => uiServices.LauncherService.LaunchUri(Constants.AngorHubUri));
-        IsWalletSetup = false;
     }
 
-    public bool IsWalletSetup { get; }
-    public ICommand GoToWalletSection { get; }
+    public ReactiveCommand<Unit, Unit> GoToWalletSection { get; }
     public ICommand OpenHub { get; }
 }

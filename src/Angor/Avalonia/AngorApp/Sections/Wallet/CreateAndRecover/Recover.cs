@@ -25,15 +25,15 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover
         private readonly IWalletBuilder walletBuilder;
         private readonly IWalletImporter walletImporter;
         private readonly IWalletProvider walletProvider;
-        private readonly IWalletUnlocker walletUnlocker;
+        private readonly IWalletUnlockHandler walletUnlockHandler;
 
-        public Recover(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlocker walletUnlocker)
+        public Recover(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlockHandler walletUnlockHandler)
         {
             this.uiServices = uiServices;
             this.walletBuilder = walletBuilder;
             this.walletImporter = walletImporter;
             this.walletProvider = walletProvider;
-            this.walletUnlocker = walletUnlocker;
+            this.walletUnlockHandler = walletUnlockHandler;
         }
 
         public async Task<Maybe<IWallet>> Start()
@@ -45,7 +45,7 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover
                 .Then(_ => new RecoverySeedWordsViewModel())
                 .Then(seedwords => new PassphraseRecoverViewModel(seedwords.SeedWords))
                 .Then(passphrase => new EncryptionPasswordViewModel(passphrase.SeedWords, passphrase.Passphrase!))
-                .Then(passphrase => new SummaryAndCreationViewModel(walletImporter, walletUnlocker, walletProvider, passphrase.Passphrase, passphrase.SeedWords, passphrase.Password!, walletBuilder, r => wallet = r.AsMaybe())
+                .Then(passphrase => new SummaryAndCreationViewModel(walletImporter, walletUnlockHandler, walletProvider, passphrase.Passphrase, passphrase.SeedWords, passphrase.Password!, walletBuilder, r => wallet = r.AsMaybe())
                 {
                     IsRecovery = true
                 })

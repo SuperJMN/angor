@@ -15,9 +15,9 @@ public class ProjectViewModel(
     INavigator navigator,
     UIServices uiServices,
     WalletAppService walletAppService,
-    IWalletUnlocker walletUnlocker)
+    IWalletUnlockHandler walletUnlockHandler)
     : ReactiveObject, IProjectViewModel
 {
     public IProject Project { get; } = project;
-    public ICommand GoToDetails { get; set; } = ReactiveCommand.Create(() => navigator.Go(() => new ProjectDetailsViewModel(walletProvider, walletAppService, project, uiServices, walletUnlocker)));
+    public ICommand GoToDetails { get; set; } = ReactiveCommand.Create(() => navigator.Go(() => new ProjectDetailsViewModel(walletProvider, walletAppService, project, uiServices, walletUnlockHandler)));
 }

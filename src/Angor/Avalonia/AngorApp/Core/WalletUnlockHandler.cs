@@ -14,19 +14,19 @@ using Dispatcher = Avalonia.Threading.Dispatcher;
 
 namespace AngorApp.Core;
 
-internal class WalletUnlocker : IWalletUnlocker
+internal class WalletUnlockHandler : IWalletUnlockHandler
 {
     private readonly UIServices services;
     private readonly Dictionary<WalletId, string> passphrases = new();
     private readonly Subject<WalletId> unlockedSubject = new();
     private readonly ConcurrentDictionary<WalletId, SemaphoreSlim> locks = new();
 
-    public WalletUnlocker(UIServices services)
+    public WalletUnlockHandler(UIServices services)
     {
         this.services = services;
     }
     
-    public async Task<Maybe<string>> Provide(WalletId id)
+    public async Task<Maybe<string>> RequestPassword(WalletId id)
     {
         var storedPassphrase = passphrases.TryFind(id);
         if (storedPassphrase.HasValue)

@@ -10,7 +10,6 @@ using AngorApp.Sections.Shell;
 using AngorApp.Sections.Wallet;
 using AngorApp.Services;
 using Avalonia.Controls.Notifications;
-using CSharpFunctionalExtensions;
 using NBitcoin;
 using RefinedSuppaWalet.Infrastructure;
 using RefinedSuppaWalet.Infrastructure.Address;
@@ -46,7 +45,7 @@ public static class CompositionRoot
                 Position = NotificationPosition.BottomRight
             }));
 
-        var walletUnlocker = new WalletUnlocker(uiServices);
+        var walletUnlocker = new WalletUnlockHandler(uiServices);
         var walletRepository = new AngorWalletRepository(new FileStore("Angor"), walletUnlocker, new AesWalletEncryption());
         var walletAppService = WalletApplicationService(walletRepository);
         var walletProvider = new WalletProvider();
@@ -66,7 +65,7 @@ public static class CompositionRoot
         [
             new Section("Home", () => new HomeSectionViewModel(walletAppService, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
-            new Section("Wallet", () => new WalletSectionViewModel(walletAppService, walletFactory, walletProvider, walletBuilder, uiServices), "fa-wallet"),
+            new Section("Wallet", () => new WalletSectionViewModel(walletAppService, walletFactory, walletProvider, walletBuilder, uiServices, walletRepository), "fa-wallet"),
             new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices, walletAppService, walletUnlocker)), "fa-magnifying-glass"),
             new Section("Portfolio", () => new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
             new Section("Founder", () => new FounderSectionViewModel(projectService), "fa-money-bills"),
