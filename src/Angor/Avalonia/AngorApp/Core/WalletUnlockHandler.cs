@@ -11,6 +11,7 @@ using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWallet.Domain;
 using Zafiro.Avalonia.Dialogs;
 using Dispatcher = Avalonia.Threading.Dispatcher;
+using PasswordViewModel = AngorApp.UI.Controls.Common.Password.PasswordViewModel;
 
 namespace AngorApp.Core;
 
@@ -55,12 +56,7 @@ internal class WalletUnlockHandler : IWalletUnlockHandler
 
     private Task<Maybe<string>> Prompt(WalletId id)
     {
-        return Dispatcher.UIThread.InvokeAsync(async () =>
-        {
-            var passphraseRequestViewModel = new UnlockRequestViewModel();
-            await services.Dialog.Show(passphraseRequestViewModel, "Unlock wallet", passphraseRequestViewModel.IsValid());
-            return passphraseRequestViewModel.Password.AsMaybe();
-        });
+        return Dispatcher.UIThread.InvokeAsync(() => services.Dialog.ShowAndGetResult(new UnlockRequestViewModel(), "Unlock wallet", model =>  model.IsValid(), x => x.Password!));
     }
     
     public IObservable<WalletId> WalletUnlocked => unlockedSubject.AsObservable();

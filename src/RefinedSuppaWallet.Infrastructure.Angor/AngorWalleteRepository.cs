@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using CSharpFunctionalExtensions;
 using NBitcoin;
@@ -42,13 +40,13 @@ public static class MappingExtensions
             return Result.Failure<WalletDescriptor>("The required XPubs are missing to create a Wallet Descriptor");
 
         var xpubCollection = XPubCollection.Create(segwitXpub, taprootXpub);
-        
+
         // Convertimos el string de red al objeto de dominio. Asumimos que BitcoinNetwork tiene un método Parse.
         if (!Enum.TryParse<BitcoinNetwork>(dto.Network, out var network))
         {
             return Result.Failure<WalletDescriptor>($"Invalid network found for Wallet Descriptor: {dto.Network}");
         }
-        
+
         return WalletDescriptor.Create(dto.Fingerprint, network, xpubCollection);
     }
 
@@ -61,99 +59,20 @@ public static class MappingExtensions
 
 public class WalletData
 {
-    // Aquí se almacena el descriptor serializado a JSON.
-    public string DescriptorJson { get; set; }
+    // Se utiliza para mostrar la información de solo lectura
+    public string? DescriptorJson { get; set; }
+
+    // Indica si la wallet fue creada con passphrase
     public bool RequiresPassphrase { get; set; }
+
+    // Información sensible para firmar (por ejemplo, las seedwords)
+    public string? SeedWords { get; set; }
 }
 
 public interface IWalletEncryption
 {
     Task<Result<WalletData>> Decrypt(EncryptedWallet wallet, string encryptionKey);
     Task<EncryptedWallet> Encrypt(WalletData walletData, string encryptionKey, string name, Guid id);
-}
-
-public class AesWalletEncryption : IWalletEncryption
-{
-    private const int ITERATIONS = 100000;
-    private const int KEY_SIZE = 256;
-
-    public async Task<Result<WalletData>> Decrypt(EncryptedWallet encryptedWallet, string encryptionKey)
-    {
-        try
-        {
-            var salt = Convert.FromBase64String(encryptedWallet.Salt);
-            var encryptedData = Convert.FromBase64String(encryptedWallet.EncryptedData);
-            var iv = Convert.FromBase64String(encryptedWallet.IV);
-
-            using var deriveBytes = new Rfc2898DeriveBytes(
-                encryptionKey,
-                salt,
-                ITERATIONS,
-                HashAlgorithmName.SHA256);
-            var key = deriveBytes.GetBytes(KEY_SIZE / 8);
-
-            using var aes = Aes.Create();
-            aes.Key = key;
-            aes.IV = iv;
-
-            using var msDecrypt = new MemoryStream(encryptedData);
-            using var csDecrypt = new CryptoStream(msDecrypt, aes.CreateDecryptor(), CryptoStreamMode.Read);
-            using var reader = new StreamReader(csDecrypt);
-            var jsonData = await reader.ReadToEndAsync();
-            return Result.Success(System.Text.Json.JsonSerializer.Deserialize<WalletData>(jsonData)!);
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<WalletData>($"Error decrypting wallet: {ex.Message}");
-        }
-    }
-
-    public async Task<EncryptedWallet> Encrypt(WalletData walletData, string encryptionKey, string name, Guid id)
-    {
-        var salt = GenerateRandomBytes(32);
-        var iv = GenerateRandomBytes(16);
-
-        using var deriveBytes = new Rfc2898DeriveBytes(
-            encryptionKey,
-            salt,
-            ITERATIONS,
-            HashAlgorithmName.SHA256);
-        var key = deriveBytes.GetBytes(KEY_SIZE / 8);
-
-        byte[] encryptedData;
-        using (var aes = Aes.Create())
-        {
-            aes.Key = key;
-            aes.IV = iv;
-
-            using var msEncrypt = new MemoryStream();
-            using (var csEncrypt = new CryptoStream(msEncrypt, aes.CreateEncryptor(), CryptoStreamMode.Write))
-            using (var writer = new StreamWriter(csEncrypt, Encoding.UTF8))
-            {
-                var jsonData = System.Text.Json.JsonSerializer.Serialize(walletData);
-                await writer.WriteAsync(jsonData);
-            }
-
-            encryptedData = msEncrypt.ToArray();
-        }
-
-        return new EncryptedWallet
-        {
-            Id = id,
-            Name = name,
-            Salt = Convert.ToBase64String(salt),
-            IV = Convert.ToBase64String(iv),
-            EncryptedData = Convert.ToBase64String(encryptedData)
-        };
-    }
-
-    private static byte[] GenerateRandomBytes(int length)
-    {
-        var randomBytes = new byte[length];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomBytes);
-        return randomBytes;
-    }
 }
 
 public record WalletDescriptorDto(
@@ -174,22 +93,26 @@ public record DerivationPathDto(
     uint Account
 );
 
-public class AngorWalletRepository : IWalletRepository, IWalletImporter
+public class AngorWalletDataRepository : IWalletRepository, IWalletImporter, ISensitiveWalletDataProvider
 {
     private readonly IStore store;
     private readonly IWalletUnlockHandler walletUnlockHandler;
     private readonly IWalletEncryption walletEncryption;
+    private readonly IPassphraseProvider passphraseProvider;
+    private readonly IEncryptionKeyProvider encryptionKeyProvider;
 
     private readonly Dictionary<WalletId, Wallet> wallets = new();
 
     // Se deja en null hasta el primer acceso, para cargar de forma perezosa
     private Dictionary<Guid, EncryptedWallet>? encryptedWallets;
 
-    public AngorWalletRepository(IStore store, IWalletUnlockHandler walletUnlockHandler, IWalletEncryption walletEncryption)
+    public AngorWalletDataRepository(IStore store, IWalletUnlockHandler walletUnlockHandler, IWalletEncryption walletEncryption, IPassphraseProvider passphraseProvider, IEncryptionKeyProvider encryptionKeyProvider)
     {
         this.store = store;
         this.walletUnlockHandler = walletUnlockHandler;
         this.walletEncryption = walletEncryption;
+        this.passphraseProvider = passphraseProvider;
+        this.encryptionKeyProvider = encryptionKeyProvider;
     }
 
     /// <summary>
@@ -244,29 +167,52 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
             .Tap(() => walletUnlockHandler.ConfirmUnlock(id, password));
     }
 
-    public async Task<Result<Wallet>> ImportWallet(string name, string seedwords, Maybe<string> passphrase, string encryptionKey, BitcoinNetwork network)
+    public async Task<Result<Wallet>> ImportWallet(
+        string name,
+        string seedwords,
+        Maybe<string> passphrase,
+        string encryptionKey,
+        BitcoinNetwork network)
     {
         await EnsureEncryptedWalletsLoaded();
 
         var walletId = WalletId.New();
+        // Crea el descriptor usando seedwords y passphrase (si la hay)
         var descriptor = WalletDescriptorFactory.Create(seedwords, passphrase, network.ToNBitcoin());
         var wallet = new Wallet(walletId, descriptor);
 
+        // Serializa el descriptor a JSON a través de un DTO
         var dto = descriptor.ToDto();
         var descriptorJson = JsonSerializer.Serialize(dto);
 
+        // Crea el WalletData incluyendo también las seedwords
         var walletData = new WalletData
         {
             DescriptorJson = descriptorJson,
-            RequiresPassphrase = passphrase.HasValue
+            RequiresPassphrase = passphrase.HasValue,
+            SeedWords = seedwords
         };
 
+        // Cifra la información y la guarda
         var encryptedWallet = await walletEncryption.Encrypt(walletData, encryptionKey, name, walletId.Id);
 
         wallets[walletId] = wallet;
         encryptedWallets![walletId.Id] = encryptedWallet;
 
         return await Save().Map(() => wallet);
+    }
+
+    public async Task<Result<(string seed, string passphrase)>> RequestSensitiveData(WalletId id)
+    {
+        if (!encryptedWallets!.TryGetValue(id.Id, out var encryptedWallet))
+            return Result.Failure<(string, string)>("Wallet not found");
+
+        return await encryptionKeyProvider.GetEncryptionKey(id)
+            .Bind(encryptionKey => passphraseProvider.RequestPassphrase(id)
+                .Bind(passphrase => walletEncryption.Decrypt(encryptedWallet, encryptionKey)
+                    .Ensure(data => data.SeedWords != null, "Seed words not found")
+                    .Ensure(data => data.SeedWords != null, "Descriptor not found")
+                    .Map(data => (data.SeedWords!, passphrase))));
     }
 
     private async Task<Result> Save()

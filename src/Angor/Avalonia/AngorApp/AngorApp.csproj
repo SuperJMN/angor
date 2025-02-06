@@ -45,6 +45,10 @@
             <DependentUpon>ProjectLookup.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+        <Compile Update="UI\Controls\Common\Password\PasswordView.axaml.cs">
+          <DependentUpon>UnlockRequestView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

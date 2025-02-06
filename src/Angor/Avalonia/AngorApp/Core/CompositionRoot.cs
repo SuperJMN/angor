@@ -10,7 +10,7 @@ using AngorApp.Sections.Shell;
 using AngorApp.Sections.Wallet;
 using AngorApp.Services;
 using Avalonia.Controls.Notifications;
-using NBitcoin;
+using CSharpFunctionalExtensions;
 using RefinedSuppaWalet.Infrastructure;
 using RefinedSuppaWalet.Infrastructure.Address;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
@@ -46,18 +46,13 @@ public static class CompositionRoot
             }));
 
         var walletUnlocker = new WalletUnlockHandler(uiServices);
-        var walletRepository = new AngorWalletRepository(new FileStore("Angor"), walletUnlocker, new AesWalletEncryption());
+        var walletRepository = new AngorWalletDataRepository(new FileStore("Angor"), walletUnlocker, new AesWalletEncryption(), new PassphraseProvider(uiServices), new EncryptionKeyProvider(uiServices));
         var walletAppService = WalletApplicationService(walletRepository);
         var walletProvider = new WalletProvider();
         var walletBuilder = new WalletBuilder(walletAppService, walletUnlocker);
         var walletFactory = new WalletFactory(walletBuilder, uiServices, walletRepository, walletProvider, walletUnlocker);
 
         MainViewModel mainViewModel = null!;
-
-        // // Initial wallet 
-        // await walletRepository.ImportWallet("Test", "away abuse minute slow used modify universe morning leaf host spider moment", "test", BitcoinNetwork.Mainnet)
-        //     .Bind(w => walletBuilder.Create(w.Id))
-        //     .Tap(wallet => walletProvider.CurrentWallet = wallet.AsMaybe());
 
         var projectService = RealProjectService();
 
@@ -79,7 +74,7 @@ public static class CompositionRoot
         return mainViewModel;
     }
 
-    private static WalletAppService WalletApplicationService(IWalletRepository walletRepository)
+    private static WalletAppService WalletApplicationService(AngorWalletDataRepository repository)
     {
         var network = Network.TestNet;
         var bitcoinAddressTypeDetector = new NBitcoinAddressTypeDetector(network);
@@ -91,11 +86,11 @@ public static class CompositionRoot
         var transactionPreparer = new NBitcoinTransactionPreparer(mempoolUtxoRepository, network, addressManager, addressTypeDetector, new UtxoSelector());
         var mempoolTransactionBroadcaster = new MempoolTransactionBroadcaster(defaultHttpClientFactory);
         var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
-        var transactionSigner = new NBitcoinTransactionSigner(walletRepository, new PassphraseProvider(), Network.TestNet);
+        var transactionSigner = new NBitcoinTransactionSigner(new MasterkeyProvider(repository), Network.TestNet);
         var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, transactionSigner, mempoolTransactionBroadcaster);
         var walletTransactionService = new MempoolSpaceWalletService(Logger.None, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var blockchainService = new BlockchainService(mempoolUtxoRepository, bitcoinTransactionService, walletTransactionService, mempoolTransactionBroadcaster);
-        return new WalletAppService(walletRepository, blockchainService, new AddressService(addressManager), new TransactionSigner());
+        return new WalletAppService(repository, blockchainService, new AddressService(addressManager), transactionSigner);
     }
 
     private static ProjectService RealProjectService()
