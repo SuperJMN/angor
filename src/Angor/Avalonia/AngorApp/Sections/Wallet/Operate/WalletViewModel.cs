@@ -1,12 +1,15 @@
+using System.Reactive.Linq;
 using System.Windows.Input;
 using Angor.UI.Model;
 using AngorApp.Sections.Wallet.Operate.Send;
 using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
+using CSharpFunctionalExtensions;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.Reactive;
+using Zafiro.UI;
 using TransactionPreviewViewModel = AngorApp.UI.Controls.Common.TransactionPreview.TransactionPreviewViewModel;
 
 namespace AngorApp.Sections.Wallet.Operate;
@@ -21,6 +24,7 @@ public class WalletViewModel : ReactiveObject, IWalletViewModel
         uiService = uiServices;
 
         Unlock = ReactiveCommand.CreateFromTask(() => walletUnlocker.Get(wallet.Id));
+        Unlock.HandleErrorsWith(uiService.NotificationService, "Unlock failed");
         this.WhenAnyValue(x => x.Wallet.IsUnlocked).Trues().ToSignal().InvokeCommand(Wallet.Load);
     }
 
@@ -36,5 +40,5 @@ public class WalletViewModel : ReactiveObject, IWalletViewModel
         return uiService.Dialog.Show(wizard, "Send", closeable => wizard.OptionsForCloseable(closeable));
     });
 
-    public ICommand Unlock { get; }
+    public ReactiveCommand<Unit, Result<RefinedSuppaWallet.Domain.Wallet>> Unlock { get; }
 }

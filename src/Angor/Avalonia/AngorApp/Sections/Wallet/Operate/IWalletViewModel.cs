@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using Angor.UI.Model;
+using CSharpFunctionalExtensions;
 
 namespace AngorApp.Sections.Wallet.Operate;
 
@@ -7,5 +8,5 @@ public interface IWalletViewModel
 {
     public IWallet Wallet { get; }
     public ICommand Send { get; }
-    public ICommand Unlock { get; }
+    public ReactiveCommand<Unit, Result<RefinedSuppaWallet.Domain.Wallet>> Unlock { get; }
 }
