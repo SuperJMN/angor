@@ -91,8 +91,8 @@ public static class CompositionRoot
         var transactionPreparer = new NBitcoinTransactionPreparer(mempoolUtxoRepository, network, addressManager, addressTypeDetector, new UtxoSelector());
         var mempoolTransactionBroadcaster = new MempoolTransactionBroadcaster(defaultHttpClientFactory);
         var mempoolTransactionFetcher = new MempoolTransactionFetcher(Network.TestNet);
-        Dictionary<WalletId, (Network, ExtKey)> dict = new(); // TODO: This is a hack, we need to find a better way to store the keys
-        var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, new NBitcoinTransactionSigner(dict), mempoolTransactionBroadcaster);
+        var transactionSigner = new NBitcoinTransactionSigner(walletRepository, new PassphraseProvider(), Network.TestNet);
+        var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, transactionSigner, mempoolTransactionBroadcaster);
         var walletTransactionService = new MempoolSpaceWalletService(Logger.None, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var blockchainService = new BlockchainService(mempoolUtxoRepository, bitcoinTransactionService, walletTransactionService, mempoolTransactionBroadcaster);
         return new WalletAppService(walletRepository, blockchainService, new AddressService(addressManager), new TransactionSigner());

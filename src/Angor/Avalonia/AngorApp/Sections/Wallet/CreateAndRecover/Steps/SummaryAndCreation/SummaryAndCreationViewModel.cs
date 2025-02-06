@@ -36,7 +36,7 @@ public partial class SummaryAndCreationViewModel : ReactiveValidationObject, ISt
 
     private Task<Result<IWallet>> CreateAndSet(SeedWords seedwords, Maybe<string> passphrase, string encryptionKey)
     {
-        return walletImporter.ImportWallet("Main", string.Join(" ", seedwords), encryptionKey, BitcoinNetwork.Testnet, passphrase.Match(_ => true, () => false))
+        return walletImporter.ImportWallet("Main", string.Join(" ", seedwords), passphrase, encryptionKey, BitcoinNetwork.Testnet)
             .Bind(w => walletBuilder.Create(w.Id))
             .Tap(w => unlockHandler.ConfirmUnlock(w.Id, encryptionKey))
             .Tap(w => walletProvider.CurrentWallet = w.AsMaybe());

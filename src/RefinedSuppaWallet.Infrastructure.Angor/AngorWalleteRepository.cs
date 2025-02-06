@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using CSharpFunctionalExtensions;
 using NBitcoin;
 using RefinedSuppaWalet.Infrastructure;
@@ -7,12 +8,61 @@ using RefinedSuppaWalet.Infrastructure.Interfaces;
 using RefinedSuppaWalet.Infrastructure.Transactions;
 using RefinedSuppaWallet.Domain;
 using RefinedSuppaWallet.Infrastructure.Angor.Store;
+using ScriptType = RefinedSuppaWallet.Domain.ScriptType;
 
 namespace RefinedSuppaWallet.Infrastructure.Angor;
 
+public static class MappingExtensions
+{
+    // Mapea del dominio al DTO
+    public static WalletDescriptorDto ToDto(this WalletDescriptor descriptor) =>
+        new WalletDescriptorDto(
+            descriptor.Fingerprint,
+            descriptor.Network.ToString(), // Asumimos que Network tiene un ToString() adecuado.
+            descriptor.XPubs.Select(x => x.ToDto())
+        );
+
+    public static XPubDto ToDto(this XPub xpub) =>
+        new XPubDto(
+            xpub.Value,
+            xpub.ScriptType,
+            new DerivationPathDto(xpub.Path.Purpose, xpub.Path.CoinType, xpub.Path.Account)
+        );
+
+    // Mapea del DTO al dominio
+    public static Result<WalletDescriptor> ToDomain(this WalletDescriptorDto dto)
+    {
+        // Reconstruimos los XPub a partir del DTO usando LINQ, sin bucles imperativos.
+        var xpubList = dto.XPubs.Select(x => x.ToDomain()).ToList();
+
+        // Suponemos que tenemos, por lo menos, los xpub necesarios (por ejemplo, SegWit y Taproot)
+        var segwitXpub = xpubList.FirstOrDefault(x => x.ScriptType == ScriptType.SegWit);
+        var taprootXpub = xpubList.FirstOrDefault(x => x.ScriptType == ScriptType.Taproot);
+        if (segwitXpub is null || taprootXpub is null)
+            return Result.Failure<WalletDescriptor>("The required XPubs are missing to create a Wallet Descriptor");
+
+        var xpubCollection = XPubCollection.Create(segwitXpub, taprootXpub);
+        
+        // Convertimos el string de red al objeto de dominio. Asumimos que BitcoinNetwork tiene un método Parse.
+        if (!Enum.TryParse<BitcoinNetwork>(dto.Network, out var network))
+        {
+            return Result.Failure<WalletDescriptor>($"Invalid network found for Wallet Descriptor: {dto.Network}");
+        }
+        
+        return WalletDescriptor.Create(dto.Fingerprint, network, xpubCollection);
+    }
+
+    public static XPub ToDomain(this XPubDto dto)
+    {
+        var path = DerivationPath.Create(dto.Path.Purpose, dto.Path.CoinType, dto.Path.Account);
+        return XPub.Create(dto.Value, dto.ScriptType, path);
+    }
+}
+
 public class WalletData
 {
-    public string Seed { get; set; }
+    // Aquí se almacena el descriptor serializado a JSON.
+    public string DescriptorJson { get; set; }
     public bool RequiresPassphrase { get; set; }
 }
 
@@ -83,6 +133,7 @@ public class AesWalletEncryption : IWalletEncryption
                 var jsonData = System.Text.Json.JsonSerializer.Serialize(walletData);
                 await writer.WriteAsync(jsonData);
             }
+
             encryptedData = msEncrypt.ToArray();
         }
 
@@ -105,12 +156,32 @@ public class AesWalletEncryption : IWalletEncryption
     }
 }
 
+public record WalletDescriptorDto(
+    string Fingerprint,
+    string Network, // Representamos la red como string para simplificar la serialización.
+    IEnumerable<XPubDto> XPubs
+);
+
+public record XPubDto(
+    string Value,
+    ScriptType ScriptType,
+    DerivationPathDto Path
+);
+
+public record DerivationPathDto(
+    uint Purpose,
+    uint CoinType,
+    uint Account
+);
+
 public class AngorWalletRepository : IWalletRepository, IWalletImporter
 {
     private readonly IStore store;
     private readonly IWalletUnlockHandler walletUnlockHandler;
     private readonly IWalletEncryption walletEncryption;
+
     private readonly Dictionary<WalletId, Wallet> wallets = new();
+
     // Se deja en null hasta el primer acceso, para cargar de forma perezosa
     private Dictionary<Guid, EncryptedWallet>? encryptedWallets;
 
@@ -155,35 +226,39 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
 
         return await passwordResult
             .Bind(password => Decrypt(id, encryptedWallet, password))
-            .Map(seed =>
+            .Map(descriptor =>
             {
-                var descriptor = WalletDescriptorFactory.CreateFromSeed(seed, Network.TestNet);
                 var newWallet = new Wallet(id, descriptor);
                 wallets[id] = newWallet;
                 return newWallet;
             });
     }
 
-    private Task<Result<string>> Decrypt(WalletId id, EncryptedWallet wallet, string password)
+    private Task<Result<WalletDescriptor>> Decrypt(WalletId id, EncryptedWallet wallet, string password)
     {
         return walletEncryption.Decrypt(wallet, password)
-            .Map(walletData => walletData.Seed)
             .MapError(_ => "Invalid decryption password")
+            .MapTry(walletData => JsonSerializer.Deserialize<WalletDescriptorDto>(walletData.DescriptorJson))
+            .EnsureNotNull("Invalid wallet data")
+            .Bind(dto => dto.ToDomain())
             .Tap(() => walletUnlockHandler.ConfirmUnlock(id, password));
     }
 
-    public async Task<Result<Wallet>> ImportWallet(string name, string seed, string encryptionKey, BitcoinNetwork network, bool requiresPassphrase = false)
+    public async Task<Result<Wallet>> ImportWallet(string name, string seedwords, Maybe<string> passphrase, string encryptionKey, BitcoinNetwork network)
     {
         await EnsureEncryptedWalletsLoaded();
 
         var walletId = WalletId.New();
-        var descriptor = WalletDescriptorFactory.CreateFromSeed(seed, network.ToNBitcoin());
+        var descriptor = WalletDescriptorFactory.Create(seedwords, passphrase, network.ToNBitcoin());
         var wallet = new Wallet(walletId, descriptor);
+
+        var dto = descriptor.ToDto();
+        var descriptorJson = JsonSerializer.Serialize(dto);
 
         var walletData = new WalletData
         {
-            Seed = seed,
-            RequiresPassphrase = requiresPassphrase
+            DescriptorJson = descriptorJson,
+            RequiresPassphrase = passphrase.HasValue
         };
 
         var encryptedWallet = await walletEncryption.Encrypt(walletData, encryptionKey, name, walletId.Id);
@@ -193,6 +268,7 @@ public class AngorWalletRepository : IWalletRepository, IWalletImporter
 
         return await Save().Map(() => wallet);
     }
+
     private async Task<Result> Save()
     {
         try
