@@ -3,11 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:unlock="clr-namespace:AngorApp.Sections.Wallet.Unlock"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" 
              x:Class="AngorApp.Sections.Wallet.Unlock.UnlockRequestView"
-             x:DataType="unlock:UnlockRequestViewModel">
-    <StackPanel Spacing="10">
-        <TextBlock Text="Please, enter the encryption password" TextWrapping="Wrap" />
+             x:DataType="unlock:UnlockRequestViewModel" Width="300">
+    <StackPanel Spacing="10" Margin="10 20">
+        <TextBlock Text="Please, enter the encryption password" TextWrapping="Wrap" VerticalAlignment="Center" />
         <TextBox Theme="{StaticResource PasswordBox}" Classes="untouched" Watermark="Encryption password" Text="{Binding Password}" />
     </StackPanel>
 </UserControl>
