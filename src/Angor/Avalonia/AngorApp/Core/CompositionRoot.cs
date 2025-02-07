@@ -43,14 +43,15 @@ public static class CompositionRoot
             new NotificationService(new WindowNotificationManager(topLevel)
             {
                 Position = NotificationPosition.BottomRight
-            }));
+            }),
+            new ActiveWallet());
 
         var walletUnlocker = new WalletUnlockHandler(uiServices);
         var walletRepository = new AngorWalletDataRepository(new FileStore("Angor"), walletUnlocker, new AesWalletEncryption(), new PassphraseProvider(uiServices), new EncryptionKeyProvider(uiServices));
         var walletAppService = WalletApplicationService(walletRepository);
-        var walletProvider = new WalletProvider();
+        
         var walletBuilder = new WalletBuilder(walletAppService, walletUnlocker);
-        var walletFactory = new WalletFactory(walletBuilder, uiServices, walletRepository, walletProvider, walletUnlocker);
+        var walletFactory = new WalletFactory(walletBuilder, uiServices, walletAppService, walletUnlocker);
 
         MainViewModel mainViewModel = null!;
 
@@ -60,8 +61,8 @@ public static class CompositionRoot
         [
             new Section("Home", () => new HomeSectionViewModel(walletAppService, uiServices, () => mainViewModel), "svg:/Assets/angor-icon.svg"),
             new Separator(),
-            new Section("Wallet", () => new WalletSectionViewModel(walletAppService, walletFactory, walletProvider, walletBuilder, uiServices, walletRepository), "fa-wallet"),
-            new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(walletProvider, projectService, navigator, uiServices, walletAppService, walletUnlocker)), "fa-magnifying-glass"),
+            new Section("Wallet", () => new WalletSectionViewModel(walletAppService, walletFactory, walletBuilder, uiServices, walletRepository), "fa-wallet"),
+            new Section("Browse", () => new NavigationViewModel(navigator => new BrowseSectionViewModel(projectService, navigator, uiServices)), "fa-magnifying-glass"),
             new Section("Portfolio", () => new PortfolioSectionViewModel(), "fa-hand-holding-dollar"),
             new Section("Founder", () => new FounderSectionViewModel(projectService), "fa-money-bills"),
             new Separator(),
@@ -90,7 +91,7 @@ public static class CompositionRoot
         var bitcoinTransactionService = new BitcoinTransactionService(addressTypeDetector, mempoolUtxoRepository, utxoSelector, transactionPreparer, transactionSigner, mempoolTransactionBroadcaster);
         var walletTransactionService = new MempoolSpaceWalletService(Logger.None, new MempoolAddressScanner(Network.TestNet), mempoolTransactionFetcher);
         var blockchainService = new BlockchainService(mempoolUtxoRepository, bitcoinTransactionService, walletTransactionService, mempoolTransactionBroadcaster);
-        return new WalletAppService(repository, blockchainService, new AddressService(addressManager), transactionSigner);
+        return new WalletAppService(repository, blockchainService, new AddressService(addressManager), transactionSigner, repository);
     }
 
     private static ProjectService RealProjectService()

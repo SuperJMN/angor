@@ -13,6 +13,7 @@ using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
 using CSharpFunctionalExtensions;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
+using RefinedSuppaWallet.Application;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.CSharpFunctionalExtensions;
@@ -23,16 +24,14 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover
     {
         private readonly UIServices uiServices;
         private readonly IWalletBuilder walletBuilder;
-        private readonly IWalletImporter walletImporter;
-        private readonly IWalletProvider walletProvider;
+        private readonly IWalletAppService walletAppService;
         private readonly IWalletUnlockHandler walletUnlockHandler;
 
-        public Recover(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlockHandler walletUnlockHandler)
+        public Recover(UIServices uiServices, IWalletBuilder walletBuilder, IWalletAppService walletAppService, IWalletUnlockHandler walletUnlockHandler)
         {
             this.uiServices = uiServices;
             this.walletBuilder = walletBuilder;
-            this.walletImporter = walletImporter;
-            this.walletProvider = walletProvider;
+            this.walletAppService = walletAppService;
             this.walletUnlockHandler = walletUnlockHandler;
         }
 
@@ -45,7 +44,13 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover
                 .Then(_ => new RecoverySeedWordsViewModel())
                 .Then(seedwords => new PassphraseRecoverViewModel(seedwords.SeedWords))
                 .Then(passphrase => new EncryptionPasswordViewModel(passphrase.SeedWords, passphrase.Passphrase!))
-                .Then(passphrase => new SummaryAndCreationViewModel(walletImporter, walletUnlockHandler, walletProvider, passphrase.Passphrase, passphrase.SeedWords, passphrase.Password!, walletBuilder, r => wallet = r.AsMaybe())
+                .Then(data => new SummaryAndCreationViewModel(
+                    walletAppService: walletAppService, 
+                    uiServices: uiServices, unlockHandler: walletUnlockHandler, 
+                    passphrase: data.Passphrase, 
+                    seedwords: data.SeedWords, 
+                    encryptionKey: data.EncryptionKey!, 
+                    walletBuilder: walletBuilder, r => wallet = r.AsMaybe())
                 {
                     IsRecovery = true
                 })

@@ -1,11 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Angor.UI.Model;
+using AngorApp.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Helpers;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
-using RefinedSuppaWallet.Domain;
+using RefinedSuppaWallet.Application;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
@@ -15,18 +16,18 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 
 public partial class SummaryAndCreationViewModel : ReactiveValidationObject, IStep, ISummaryAndCreationViewModel
 {
-    private readonly IWalletImporter walletImporter;
+    private readonly IWalletAppService walletAppService;
+    private readonly UIServices uiServices;
     private readonly IWalletUnlockHandler unlockHandler;
-    private readonly IWalletProvider walletProvider;
     private readonly IWalletBuilder walletBuilder;
     [ObservableAsProperty] private IWallet? wallet;
 
-    public SummaryAndCreationViewModel(IWalletImporter walletImporter, IWalletUnlockHandler unlockHandler, IWalletProvider walletProvider, Maybe<string> passphrase, SeedWords seedwords, string encryptionKey, IWalletBuilder walletBuilder,
+    public SummaryAndCreationViewModel(IWalletAppService walletAppService, UIServices uiServices, IWalletUnlockHandler unlockHandler, Maybe<string> passphrase, SeedWords seedwords, string encryptionKey, IWalletBuilder walletBuilder,
         Action<Result<IWallet>> creationResult)
     {
-        this.walletImporter = walletImporter;
+        this.walletAppService = walletAppService;
+        this.uiServices = uiServices;
         this.unlockHandler = unlockHandler;
-        this.walletProvider = walletProvider;
         this.walletBuilder = walletBuilder;
         Passphrase = passphrase;
         CreateWallet = ReactiveCommand.CreateFromTask(() => CreateAndSet(seedwords, passphrase, encryptionKey));
@@ -36,10 +37,10 @@ public partial class SummaryAndCreationViewModel : ReactiveValidationObject, ISt
 
     private Task<Result<IWallet>> CreateAndSet(SeedWords seedwords, Maybe<string> passphrase, string encryptionKey)
     {
-        return walletImporter.ImportWallet("Main", string.Join(" ", seedwords), passphrase, encryptionKey, BitcoinNetwork.Testnet)
-            .Bind(w => walletBuilder.Create(w.Id))
+        return walletAppService.ImportWallet("Main", string.Join(" ", seedwords), passphrase, encryptionKey, BitcoinNetwork.Testnet)
+            .Bind(walletId => walletBuilder.Create(walletId))
             .Tap(w => unlockHandler.ConfirmUnlock(w.Id, encryptionKey))
-            .Tap(w => walletProvider.CurrentWallet = w.AsMaybe());
+            .Tap(w => uiServices.ActiveWallet.Current = w.AsMaybe());
     }
 
     public string CreateWalletText => IsRecovery ? "Recover Wallet" : "Create Wallet";

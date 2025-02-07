@@ -6,6 +6,7 @@ using AngorApp.Services;
 using AngorApp.UI.Controls.Common.Success;
 using CSharpFunctionalExtensions;
 using RefinedSuppaWalet.Infrastructure.Interfaces;
+using RefinedSuppaWallet.Application;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
 using Zafiro.CSharpFunctionalExtensions;
@@ -16,23 +17,8 @@ using WelcomeViewModel = AngorApp.Sections.Wallet.CreateAndRecover.Steps.CreateW
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover;
 
-public class Create
+public class Create(UIServices uiServices, IWalletBuilder walletBuilder, IWalletAppService walletAppService, IWalletUnlockHandler walletUnlockHandler)
 {
-    private readonly UIServices uiServices;
-    private readonly IWalletBuilder walletBuilder;
-    private readonly IWalletImporter walletImporter;
-    private readonly IWalletProvider walletProvider;
-    private readonly IWalletUnlockHandler walletUnlockHandler;
-
-    public Create(UIServices uiServices, IWalletBuilder walletBuilder, IWalletImporter walletImporter, IWalletProvider walletProvider, IWalletUnlockHandler walletUnlockHandler)
-    {
-        this.uiServices = uiServices;
-        this.walletBuilder = walletBuilder;
-        this.walletImporter = walletImporter;
-        this.walletProvider = walletProvider;
-        this.walletUnlockHandler = walletUnlockHandler;
-    }
-
     public async Task<Maybe<IWallet>> Start()
     {
         Maybe<IWallet> wallet = Maybe<IWallet>.None;
@@ -43,7 +29,7 @@ public class Create
             .Then(prev => new SeedWordsConfirmationViewModel(prev.Words.Value))
             .Then(prev => new PassphraseCreateViewModel(prev.SeedWords))
             .Then(prev => new EncryptionPasswordViewModel(prev.SeedWords, prev.Passphrase!))
-            .Then(prev => new SummaryAndCreationViewModel(walletImporter, walletUnlockHandler, walletProvider, prev.Passphrase, prev.SeedWords, prev.Password!, walletBuilder, r => wallet = r.AsMaybe())
+            .Then(prev => new SummaryAndCreationViewModel(walletAppService, uiServices, walletUnlockHandler, prev.Passphrase, prev.SeedWords, prev.EncryptionKey!, walletBuilder, r => wallet = r.AsMaybe())
             {
                 IsRecovery = false,
             })

@@ -16,13 +16,13 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
     [ObservableAsProperty] private IWalletViewModel? wallet;
 
     public WalletSectionViewModel(WalletAppService walletAppService, IWalletFactory walletFactory,
-        IWalletProvider walletProvider,
         IWalletBuilder builder,
-        UIServices services, IWalletRepository walletUnlocker)
+        UIServices services,
+        IWalletRepository walletUnlocker)
     {
         CreateWallet = ReactiveCommand.CreateFromTask(walletFactory.Create);
-        walletHelper = walletProvider.CurrentWallets
-            .Merge(Observable.Return(walletProvider.CurrentWallet).Values())
+        walletHelper = services.ActiveWallet.CurrentChanged
+            .Merge(Observable.Return(services.ActiveWallet.Current).Values())
             .Select(w => new WalletViewModel(w, services, walletUnlocker))
             .ToProperty(this, x => x.Wallet);
         
@@ -30,14 +30,14 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
         SetDefaultWallet = ReactiveCommand.CreateFromTask(async () =>
         {
             var walletInfos = (await walletAppService.GetWallets()).ToList();
-            if (walletInfos.Count == 0 || walletProvider.CurrentWallet.HasValue)
+            if (walletInfos.Count == 0 || services.ActiveWallet.Current.HasValue)
             {
                 return;
             }
             
             var walletInfo = walletInfos.First();
             await builder.Create(walletInfo.Id)
-                .Tap(w => walletProvider.CurrentWallet = w.AsMaybe());
+                .Tap(w => services.ActiveWallet.Current = w.AsMaybe());
         });
         
         IObservable<CombinedReactiveCommand<Unit, Result>> loadCommand = this.WhenAnyValue(x => x.Wallet!.Wallet.Load).WhereNotNull();

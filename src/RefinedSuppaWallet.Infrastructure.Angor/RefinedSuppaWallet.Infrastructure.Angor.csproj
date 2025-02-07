@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\TestProject2\RefinedSuppaWallet.Application\RefinedSuppaWallet.Application.csproj" />
       <ProjectReference Include="..\..\..\TestProject2\RefinedSuppaWallet.Domain\RefinedSuppaWallet.Domain.csproj" />
       <ProjectReference Include="..\..\..\TestProject2\RefinedSuppaWallet.Infrastructure\RefinedSuppaWallet.Infrastructure.csproj" />
       <ProjectReference Include="..\Angor\Client\Angor.Client.csproj" />

@@ -10,15 +10,15 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.EncryptionPassword;
 
 public partial class EncryptionPasswordViewModel : ReactiveValidationObject, IStep, IEncryptionPasswordViewModel
 {
-    [Reactive] private string? password;
+    [Reactive] private string? encryptionKey;
     [Reactive] private string? passwordConfirm;
 
     public EncryptionPasswordViewModel(SeedWords seedWords, Maybe<string> passphrase)
     {
         SeedWords = seedWords;
         Passphrase = passphrase;
-        this.ValidationRule<EncryptionPasswordViewModel, string>(x => x.Password, s => !string.IsNullOrWhiteSpace(s), "Password cannot be empty");
-        this.ValidationRule<EncryptionPasswordViewModel, string>(x => x.PasswordConfirm, this.WhenAnyValue<EncryptionPasswordViewModel, bool, string, string>(x => x.Password, x => x.PasswordConfirm, Object.Equals), "Passwords do not match");
+        this.ValidationRule<EncryptionPasswordViewModel, string>(x => x.EncryptionKey, s => !string.IsNullOrWhiteSpace(s), "Password cannot be empty");
+        this.ValidationRule<EncryptionPasswordViewModel, string>(x => x.PasswordConfirm, this.WhenAnyValue<EncryptionPasswordViewModel, bool, string, string>(x => x.EncryptionKey, x => x.PasswordConfirm, Object.Equals), "Passwords do not match");
     }
 
     public SeedWords SeedWords { get; }

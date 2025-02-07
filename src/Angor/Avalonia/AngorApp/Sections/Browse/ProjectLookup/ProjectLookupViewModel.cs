@@ -7,8 +7,6 @@ using AngorApp.Core;
 using AngorApp.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
-using RefinedSuppaWalet.Infrastructure.Interfaces;
-using RefinedSuppaWallet.Application;
 using Serilog;
 using Zafiro.Avalonia.Controls.Navigation;
 using Zafiro.CSharpFunctionalExtensions;
@@ -25,9 +23,8 @@ public partial class ProjectLookupViewModel : ReactiveObject, IProjectLookupView
     [Reactive] private IProjectViewModel? selectedProject;
 
     public ProjectLookupViewModel(IProjectService projectService,
-        IWalletProvider walletProvider,
         INavigator navigator,
-        UIServices uiServices, WalletAppService walletAppService, IWalletUnlockHandler walletUnlockHandler)
+        UIServices uiServices)
     {
         Lookup = ReactiveCommand.CreateFromTask<string, Maybe<IList<IProjectViewModel>>>(
             async pid =>
@@ -37,7 +34,7 @@ public partial class ProjectLookupViewModel : ReactiveObject, IProjectLookupView
 
                 return maybeProject.Map<IProject, IList<IProjectViewModel>>(project =>
                 {
-                    var vm = new ProjectViewModel(walletProvider, project, navigator, uiServices, walletAppService, walletUnlockHandler);
+                    var vm = new ProjectViewModel(project, navigator, uiServices);
                     return new List<IProjectViewModel> { vm };
                 });
             }
