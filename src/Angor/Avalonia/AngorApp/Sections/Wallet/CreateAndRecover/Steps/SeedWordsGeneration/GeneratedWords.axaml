@@ -2,14 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Collections"
              xmlns:f="clr-namespace:Zafiro.Avalonia.Misc;assembly=Zafiro.Avalonia"
              xmlns:converters="clr-namespace:Zafiro.Avalonia.Converters;assembly=Zafiro.Avalonia"
              xmlns:seedWordsGeneration="clr-namespace:AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration"
              xmlns:av="https://github.com/projektanker/icons.avalonia"
              xmlns:avalonia="clr-namespace:Zafiro.Avalonia;assembly=Zafiro.Avalonia"
              xmlns:controls="clr-namespace:AngorApp.UI.Controls"
-             xmlns:angorApp="clr-namespace:AngorApp"
              mc:Ignorable="d" d:DesignWidth="500"
              x:Class="AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration.GeneratedWords"
              x:DataType="seedWordsGeneration:ISeedWordsViewModel">
@@ -38,7 +36,7 @@
             <StackPanel Spacing="15">
                 <seedWordsGeneration:SeedWordsList SeedWords="{Binding Words.Value}" />
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
-                    <controls:IconButton HorizontalAlignment="Stretch" Content="Copy All" Command="{Binding Source={x:Static f:Commands.Instance}, Path=CopyText}" CommandParameter="{Binding Words, Converter={x:Static converters:StringConverters.AsString}}">
+                    <controls:IconButton HorizontalAlignment="Stretch" Content="Copy All" Command="{Binding Source={x:Static f:Commands.Instance}, Path=CopyText}" CommandParameter="{Binding Words.Value, Converter={x:Static converters:StringConverters.AsString}}">
                         <controls:IconButton.Icon>
                             <av:Icon Value="fa-copy" />
                         </controls:IconButton.Icon>
