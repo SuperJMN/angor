@@ -12,8 +12,8 @@
     </Design.DataContext>
 
     <Panel>
-        <seedWordsGeneration:Empty IsVisible="{Binding Words, Converter={x:Static ObjectConverters.IsNull}}" />
-        <seedWordsGeneration:GeneratedWords IsVisible="{Binding Words, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <seedWordsGeneration:Empty IsVisible="{Binding Words.HasNoValue}" />
+        <seedWordsGeneration:GeneratedWords IsVisible="{Binding Words.HasValue}" />
     </Panel>
 
 </UserControl>

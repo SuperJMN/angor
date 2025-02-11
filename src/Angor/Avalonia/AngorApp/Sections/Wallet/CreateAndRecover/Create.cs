@@ -26,7 +26,7 @@ public class Create(UIServices uiServices, IWalletBuilder walletBuilder, IWallet
         var wizard = WizardBuilder
             .StartWith(() => new WelcomeViewModel())
             .Then(prev => new SeedWordsViewModel(uiServices))
-            .Then(prev => new SeedWordsConfirmationViewModel(prev.Words!))
+            .Then(prev => new SeedWordsConfirmationViewModel(prev.Words.Value!))
             .Then(prev => new PassphraseCreateViewModel(prev.SeedWords))
             .Then(prev => new EncryptionPasswordViewModel(prev.SeedWords, prev.Passphrase!))
             .Then(prev => new SummaryAndCreationViewModel(walletAppService, uiServices, walletUnlockHandler, prev.Passphrase, prev.SeedWords, prev.EncryptionKey!, walletBuilder, r => wallet = r.AsMaybe())
