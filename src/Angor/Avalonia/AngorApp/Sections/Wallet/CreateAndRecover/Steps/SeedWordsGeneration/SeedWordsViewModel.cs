@@ -18,19 +18,21 @@ public partial class SeedWordsViewModel : ReactiveValidationObject, ISeedWordsVi
     {
         GenerateWords = ReactiveCommand.CreateFromTask(() =>
         {
-            return words.Match(
-                async wordList => 
+            return words.AsMaybe().Match(
+                async wordList =>
                 {
                     var dialogResult = await ShowConfirmation(uiServices);
-                    return dialogResult.Match(confirmed => confirmed ? CreateNewWords() : wordList, () => wordList).AsMaybe();
+                    return dialogResult.Match(confirmed => confirmed ? CreateNewWords() : wordList, () => wordList)
+                        .AsMaybe();
                 },
                 () => Task.FromResult(CreateNewWords().AsMaybe())
-            );
+            )
+            .Map(seedWords => seedWords);
         });
 
         GenerateWords.Values().Do(_ => AreWordsWrittenDown = false).Subscribe();
 
-        wordsHelper = GenerateWords.ToProperty(this, x => x.Words);
+        wordsHelper = GenerateWords.Select(maybe => maybe.GetValueOrDefault()).ToProperty(this, x => x.Words);
     }
 
     private static SeedWords CreateNewWords()
@@ -48,8 +50,10 @@ public partial class SeedWordsViewModel : ReactiveValidationObject, ISeedWordsVi
     
     [Reactive] private bool areWordsWrittenDown;
 
-    [ObservableAsProperty] private Maybe<SeedWords> words;
-    public IObservable<bool> IsValid => this.WhenAnyValue<SeedWordsViewModel, bool, bool, Maybe<SeedWords>>(x => x.AreWordsWrittenDown, x => x.Words, (written, maybeWords) => written && maybeWords.HasValue);
+    [ObservableAsProperty] private SeedWords? words;
+    
+    
+    public IObservable<bool> IsValid => this.WhenAnyValue<SeedWordsViewModel, bool, bool, SeedWords?>(x => x.AreWordsWrittenDown, x => x.Words, (written, w) => written && w != null);
     public IObservable<bool> IsBusy => Observable.Return(false);
     public bool AutoAdvance => false;
 

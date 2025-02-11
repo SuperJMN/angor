@@ -6,7 +6,7 @@ namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration;
 
 public interface ISeedWordsViewModel : IStep
 {
-    Maybe<SeedWords> Words { get; }
+    SeedWords? Words { get; }
     ReactiveCommand<Unit, Maybe<SeedWords>> GenerateWords { get; }
     bool AreWordsWrittenDown { get; set; }
 }

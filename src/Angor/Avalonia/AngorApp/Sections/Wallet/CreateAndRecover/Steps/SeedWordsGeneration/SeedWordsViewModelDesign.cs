@@ -13,7 +13,7 @@ public partial class SeedWordsViewModelDesign : ReactiveObject, ISeedWordsViewMo
     public IObservable<bool> IsBusy { get; } = Observable.Return(false);
     public bool AutoAdvance => false; 
     
-    [Reactive] private Maybe<SeedWords> words = Maybe<SeedWords>.None;
+    [Reactive] private SeedWords? words;
 
     public bool HasWords
     {
@@ -25,11 +25,11 @@ public partial class SeedWordsViewModelDesign : ReactiveObject, ISeedWordsViewMo
 
             if (value)
             {
-                Words = SampleData.Seedwords.AsMaybe();                
+                Words = SampleData.Seedwords;                
             }
             else
             {
-                Words = Maybe<SeedWords>.None;
+                Words = null;
             }
 
             hasWords = value;
