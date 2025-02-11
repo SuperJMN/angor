@@ -53,6 +53,7 @@ public class ProjectDetailsViewModel(IWalletProvider walletProvider, IProject pr
             .Then(_ => new SuccessViewModel("Transaction confirmed!", "Success"))
             .Build();
 
-        await uiServices.Dialog.Show(wizard, @$"Invest in ""{project}""", closeable => wizard.OptionsForCloseable(closeable));
+        await uiServices.Dialog.Show(wizard, @$"Invest in ""{project}""",
+            closeable => wizard.OptionsForCloseable(closeable));
     }
 }
