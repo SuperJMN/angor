@@ -9,6 +9,7 @@
              xmlns:av="https://github.com/projektanker/icons.avalonia"
              xmlns:avalonia="clr-namespace:Zafiro.Avalonia;assembly=Zafiro.Avalonia"
              xmlns:controls="clr-namespace:AngorApp.UI.Controls"
+             xmlns:angorApp="clr-namespace:AngorApp"
              mc:Ignorable="d" d:DesignWidth="500"
              x:Class="AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration.GeneratedWords"
              x:DataType="seedWordsGeneration:ISeedWordsViewModel">
@@ -37,7 +38,7 @@
             <StackPanel Spacing="15">
                 <seedWordsGeneration:SeedWordsList SeedWords="{Binding Words.Value}" />
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
-                    <controls:IconButton HorizontalAlignment="Stretch" Content="Copy All" Command="{Binding Source={x:Static f:Commands.Instance}, Path=CopyText}" CommandParameter="{Binding Words.Value, Converter={x:Static converters:StringConverters.AsString}}">
+                    <controls:IconButton HorizontalAlignment="Stretch" Content="Copy All" Command="{Binding Source={x:Static f:Commands.Instance}, Path=CopyText}" CommandParameter="{Binding Words, Converter={x:Static converters:StringConverters.AsString}}">
                         <controls:IconButton.Icon>
                             <av:Icon Value="fa-copy" />
                         </controls:IconButton.Icon>
