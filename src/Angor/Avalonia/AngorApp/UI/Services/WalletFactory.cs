@@ -5,26 +5,15 @@ using SuppaWallet.Gui.Model;
 
 namespace AngorApp.UI.Services;
 
-public class WalletFactory : IWalletFactory
+public class WalletFactory(Create create, Recover recover) : IWalletFactory
 {
-    private readonly UIServices uiServices;
-    private readonly IWalletBuilder walletBuilder;
-
-    public WalletFactory(IWalletBuilder walletBuilder, UIServices uiServices)
-    {
-        this.walletBuilder = walletBuilder;
-        this.uiServices = uiServices;
-    }
-
     public Task<Maybe<IWallet>> Recover()
     {
-        throw new NotImplementedException();
-        //return new Recover(uiServices, walletBuilder).Start();
+        return recover.Start();
     }
 
     public Task<Maybe<IWallet>> Create()
     {
-        throw new NotImplementedException();
-        //return new Create(uiServices, walletBuilder).Start();
+        return create.Start();
     }
 }
