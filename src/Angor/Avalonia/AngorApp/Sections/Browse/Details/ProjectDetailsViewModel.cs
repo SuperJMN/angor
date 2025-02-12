@@ -6,12 +6,14 @@ using AngorApp.UI.Controls.Common.Success;
 using AngorApp.UI.Controls.Common.TransactionPreview;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
+using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
+using Destination = Angor.UI.Model.Destination;
 
 namespace AngorApp.Sections.Browse.Details;
 
-public class ProjectDetailsViewModel(IWalletProvider walletProvider, IProject project, UIServices uiServices)
+public class ProjectDetailsViewModel(IProject project, UIServices uiServices)
     : ReactiveObject, IProjectDetailsViewModel
 {
     public object Icon => project.Icon;
@@ -19,7 +21,7 @@ public class ProjectDetailsViewModel(IWalletProvider walletProvider, IProject pr
 
     public ICommand Invest { get; } = ReactiveCommand.CreateFromTask(() =>
     {
-        var maybeWallet = walletProvider.GetWallet();
+        var maybeWallet = uiServices.ActiveWallet.Current;
         return maybeWallet.Match(wallet => DoInvest(wallet, project, uiServices),
             () => uiServices.NotificationService.Show("You need to create a Wallet before investing", "No wallet"));
     });

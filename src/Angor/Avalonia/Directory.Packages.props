@@ -28,6 +28,8 @@
     <PackageVersion Include="ReactiveUI.SourceGenerators" Version="2.0.17" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="9.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="SuppaWallet.Application" Version="0.1.18" />
+    <PackageVersion Include="SuppaWallet.Gui.Model" Version="0.1.18" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.1" />
     <PackageVersion Include="Zafiro" Version="14.0.7" />
     <PackageVersion Include="Zafiro.Avalonia" Version="20.0.7" />

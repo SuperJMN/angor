@@ -1,10 +1,12 @@
+using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Input;
-using Angor.UI.Model;
+using System.Threading.Tasks;
 using AngorApp.Sections.Wallet.Operate;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
+using SuppaWallet.Application.Interfaces;
+using SuppaWallet.Gui.Model;
 using Zafiro.CSharpFunctionalExtensions;
 
 namespace AngorApp.Sections.Wallet;
@@ -13,17 +15,39 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
 {
     [ObservableAsProperty] private IWalletViewModel? wallet;
 
-    public WalletSectionViewModel(IWalletFactory walletFactory, IWalletProvider walletProvider, UIServices services)
+    public WalletSectionViewModel(IWalletAppService walletAppService, IWalletBuilder walletBuilder, IWalletFactory walletFactory, UIServices uiServices)
     {
-        CreateWallet = ReactiveCommand.CreateFromTask(walletFactory.Create);
-        RecoverWallet = ReactiveCommand.CreateFromTask(walletFactory.Recover);
+        CreateWallet = ReactiveCommand.CreateFromTask(() => walletFactory.Create());
+        RecoverWallet = ReactiveCommand.CreateFromTask(() => walletFactory.Recover());
 
-        walletHelper = services.ActiveWallet.CurrentChanged
-            .Merge(Observable.Return(services.ActiveWallet.Current).Values())
-            .Select(w => new WalletViewModel(w, services))
+        walletHelper = uiServices.ActiveWallet.CurrentChanged
+            .Merge(Observable.Return(uiServices.ActiveWallet.Current).Values())
+            .Select(w => new WalletViewModel(w, uiServices))
             .ToProperty(this, x => x.Wallet);
+        
+        SetDefaultWallet = ReactiveCommand.CreateFromTask(() => DoSetDefaultWallet(walletAppService, walletBuilder, uiServices));
     }
 
-    public ReactiveCommand<Unit, Maybe<Result<IWallet>>> CreateWallet { get; }
-    public ReactiveCommand<Unit, Maybe<Result<IWallet>>> RecoverWallet { get; }
+    private static async Task DoSetDefaultWallet(IWalletAppService walletAppService, IWalletBuilder walletBuilder, UIServices uiServices)
+    {
+        var result = await walletAppService.GetWallets().Map(tuples => tuples.ToList());
+        if (result.IsFailure)
+        {
+            return;
+        }
+            
+        var walletInfos = result.Value;
+        if (walletInfos.Count == 0 || uiServices.ActiveWallet.Current.HasValue)
+        {
+            return;
+        }
+
+        var walletInfo = walletInfos.First();
+        await walletBuilder.Create(walletInfo.Id)
+            .Tap(w => uiServices.ActiveWallet.Current = w.AsMaybe());
+    }
+
+    public ReactiveCommand<Unit,Unit> SetDefaultWallet { get; }
+    public ReactiveCommand<Unit, Maybe<IWallet>> CreateWallet { get; }
+    public ReactiveCommand<Unit, Maybe<IWallet>> RecoverWallet { get; }
 }

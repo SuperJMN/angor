@@ -24,9 +24,8 @@ public partial class ProjectLookupViewModel : ReactiveObject, IProjectLookupView
 
     public ProjectLookupViewModel(
         IProjectService projectService,
-        IWalletProvider walletProvider,
-        INavigator navigator,
-        UIServices uiServices)
+        UIServices uiServices,
+        INavigator navigator)
     {
         lookupResults = new SafeMaybe<IList<IProjectViewModel>>(Maybe<IList<IProjectViewModel>>.None);
 
@@ -38,7 +37,7 @@ public partial class ProjectLookupViewModel : ReactiveObject, IProjectLookupView
 
                 return maybeProject.Map<IProject, IList<IProjectViewModel>>(project =>
                 {
-                    var vm = new ProjectViewModel(walletProvider, project, navigator, uiServices);
+                    var vm = new ProjectViewModel(project, navigator, uiServices);
                     return new List<IProjectViewModel> { vm };
                 }).AsSafeMaybe();
             }

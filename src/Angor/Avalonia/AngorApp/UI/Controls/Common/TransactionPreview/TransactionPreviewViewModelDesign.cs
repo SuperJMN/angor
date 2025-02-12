@@ -1,13 +1,15 @@
 using System.Reactive.Linq;
-using Angor.UI.Model;
 using AngorApp.Sections.Wallet.Operate;
 using CSharpFunctionalExtensions;
+using SuppaWallet.Domain;
+using SuppaWallet.Gui.Model;
+using Destination = Angor.UI.Model.Destination;
 
 namespace AngorApp.UI.Controls.Common.TransactionPreview;
 
 public class TransactionPreviewViewModelDesign : ITransactionPreviewViewModel
 {
-    public IUnsignedTransaction Transaction { get; set; } = new UnsignedTransactionDesign()
+    public IUnsignedTransaction Transaction { get; } = new UnsignedTransactionDesign()
     {
         TotalFee = 10,
         Address = "Test Address",
@@ -18,11 +20,11 @@ public class TransactionPreviewViewModelDesign : ITransactionPreviewViewModel
         ViewRawJson = "JSON"
     };
     public IObservable<bool> IsBusy { get; set; } = Observable.Return(false);
-    public ReactiveCommand<Unit, Result<IBroadcastedTransaction>> Confirm { get; }
+    public ReactiveCommand<Unit, Result<TxId>> Confirm { get; }
     public ReactiveCommand<Unit, Result<IUnsignedTransaction>> CreateTransaction { get; }
     public IObservable<bool> TransactionConfirmed { get; }
     public Destination Destination { get; } = new("Sample Destination", 1000, "mzHrLAR3WWLE4eCpq82BDCKmLeYRyYXPtm");
-    public long Feerate { get; set; } = 1;
+    public double Feerate { get; set; } = 1;
     public IObservable<bool> IsValid { get; }
     public bool AutoAdvance => false;
 }

@@ -1,34 +1,42 @@
 using System.Threading.Tasks;
-using Angor.UI.Model;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Helpers;
+using SuppaWallet.Application.Interfaces;
+using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
+using SeedWords = Angor.UI.Model.SeedWords;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 
 public partial class SummaryAndCreationViewModel : ReactiveValidationObject, IStep, ISummaryAndCreationViewModel
 {
+    private readonly IWalletImporter walletImporter;
     private readonly IWalletBuilder walletBuilder;
+    private readonly IWalletUnlockHandler unlockHandler;
     private readonly UIServices uiServices;
+    private readonly Func<BitcoinNetwork> getNetwork;
     [ObservableAsProperty] private IWallet? wallet;
 
-    public SummaryAndCreationViewModel(Maybe<string> passphrase, SeedWords seedwords, string encryptionKey,
-        IWalletBuilder walletBuilder, UIServices uiServices)
+    public SummaryAndCreationViewModel(IWalletImporter walletImporter, IWalletUnlockHandler unlockHandler, Maybe<string> passphrase, SeedWords seedwords, string encryptionKey, IWalletBuilder walletBuilder,
+            Action<Result<IWallet>> creationResult)
     {
+        this.walletImporter = walletImporter;
+        this.unlockHandler = unlockHandler;
         this.walletBuilder = walletBuilder;
-        this.uiServices = uiServices;
         Passphrase = passphrase;
-        CreateWallet = ReactiveCommand.CreateFromTask(() => CreateAndSet(seedwords, encryptionKey, encryptionKey));
+        CreateWallet = ReactiveCommand.CreateFromTask(() => Create(seedwords, encryptionKey, encryptionKey));
         walletHelper = CreateWallet.Successes().ToProperty(this, x => x.Wallet);
     }
 
-    private Task<Result<IWallet>> CreateAndSet(SeedWords seedwords, Maybe<string> passphrase, string encryptionKey)
+    private Task<Result<IWallet>> Create(SeedWords seedwords, Maybe<string> passphrase, string encryptionKey)
     {
-        return walletBuilder.Create(seedwords, passphrase, encryptionKey)
+        return walletImporter.ImportWallet("Main", string.Join(" ", seedwords), passphrase, encryptionKey, getNetwork().ToDomain())
+            .Bind(w => walletBuilder.Create(w.Id))
+            .Tap(w => unlockHandler.ConfirmUnlock(w.Id, encryptionKey))
             .Tap(w => uiServices.ActiveWallet.Current = w.AsMaybe());
     }
 

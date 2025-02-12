@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Angor.UI.Model;
 using AngorApp.Sections.Wallet.CreateAndRecover;
 using CSharpFunctionalExtensions;
+using SuppaWallet.Gui.Model;
 
 namespace AngorApp.UI.Services;
 
@@ -16,13 +16,15 @@ public class WalletFactory : IWalletFactory
         this.uiServices = uiServices;
     }
 
-    public Task<Maybe<Result<IWallet>>> Recover()
+    public Task<Maybe<IWallet>> Recover()
     {
-        return new Recover(uiServices, walletBuilder).Start();
+        throw new NotImplementedException();
+        //return new Recover(uiServices, walletBuilder).Start();
     }
 
-    public Task<Maybe<Result<IWallet>>> Create()
+    public Task<Maybe<IWallet>> Create()
     {
-        return new Create(uiServices, walletBuilder).Start();
+        throw new NotImplementedException();
+        //return new Create(uiServices, walletBuilder).Start();
     }
 }

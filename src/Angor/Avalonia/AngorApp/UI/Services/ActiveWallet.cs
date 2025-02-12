@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Angor.UI.Model;
 using CSharpFunctionalExtensions;
+using SuppaWallet.Gui.Model;
 using Zafiro.CSharpFunctionalExtensions;
 
 namespace AngorApp.UI.Services;
