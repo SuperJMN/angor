@@ -16,7 +16,6 @@ public partial class WalletSectionViewModel : ReactiveObject, IWalletSectionView
     public WalletSectionViewModel(IWalletFactory walletFactory, IWalletProvider walletProvider, UIServices services)
     {
         CreateWallet = ReactiveCommand.CreateFromTask(walletFactory.Create);
-        CreateWallet.Values().Successes().Do(walletProvider.SetWallet).Subscribe();
         RecoverWallet = ReactiveCommand.CreateFromTask(walletFactory.Recover);
 
         walletHelper = services.ActiveWallet.CurrentChanged
