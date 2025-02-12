@@ -6,6 +6,7 @@ using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Helpers;
+using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Dialogs;
 using SampleData = AngorApp.Sections.Browse.SampleData;
 

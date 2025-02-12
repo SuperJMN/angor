@@ -8,7 +8,6 @@ using SuppaWallet.Gui.Model;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
 using Zafiro.UI;
-using Destination = Angor.UI.Model.Destination;
 
 namespace AngorApp.UI.Controls.Common.TransactionPreview;
 

@@ -3,6 +3,7 @@ using Angor.UI.Model;
 using AngorApp.Core;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
+using SuppaWallet.Gui.Model;
 using SampleData = AngorApp.Sections.Browse.SampleData;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration;

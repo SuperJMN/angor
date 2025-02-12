@@ -4,6 +4,7 @@ using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Extensions;
 using ReactiveUI.Validation.Helpers;
+using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.RecoverySeedWords;
 

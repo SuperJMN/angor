@@ -3,7 +3,6 @@ using AngorApp.Sections.Wallet.Operate;
 using CSharpFunctionalExtensions;
 using SuppaWallet.Domain;
 using SuppaWallet.Gui.Model;
-using Destination = Angor.UI.Model.Destination;
 
 namespace AngorApp.UI.Controls.Common.TransactionPreview;
 

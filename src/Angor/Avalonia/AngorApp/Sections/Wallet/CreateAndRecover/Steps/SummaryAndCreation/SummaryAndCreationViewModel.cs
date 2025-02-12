@@ -9,7 +9,6 @@ using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
 using BitcoinNetwork = SuppaWallet.Domain.BitcoinNetwork;
-using SeedWords = Angor.UI.Model.SeedWords;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 

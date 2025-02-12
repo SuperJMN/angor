@@ -5,7 +5,6 @@ using AngorApp.Sections.Wallet.Operate;
 using CSharpFunctionalExtensions;
 using SuppaWallet.Domain;
 using SuppaWallet.Gui.Model;
-using BitcoinNetwork = Angor.UI.Model.BitcoinNetwork;
 
 namespace AngorApp.Sections.Wallet;
 

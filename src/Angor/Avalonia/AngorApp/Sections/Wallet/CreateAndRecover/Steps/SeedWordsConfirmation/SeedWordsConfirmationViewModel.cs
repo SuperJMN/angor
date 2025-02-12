@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Angor.UI.Model;
 using CSharpFunctionalExtensions;
 using ReactiveUI.Validation.Extensions;
+using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsConfirmation;
