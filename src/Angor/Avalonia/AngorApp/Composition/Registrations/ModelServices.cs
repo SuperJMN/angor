@@ -1,8 +1,10 @@
 using Angor.UI.Model;
 using Angor.UI.Model.Implementation.Projects;
 using AngorApp.Design;
+using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 using AngorApp.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
+using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Composition.Registrations;
 
@@ -14,6 +16,7 @@ public static class ModelServices
             .AddSingleton<IWalletProvider, WalletProviderDesign>()
             .AddSingleton<IWalletBuilder, WalletBuilderDesign>()
             .AddSingleton<IWalletFactory, WalletFactory>()
+            .AddSingleton<IWalletUnlockHandler, WalletUnlockHandlerDesign>()
             .AddSingleton<IProjectService, ProjectService>();
     }
 }
