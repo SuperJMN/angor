@@ -1,12 +1,13 @@
-namespace Angor.UI.Model;
+namespace Angor.UI.Model.Wallet;
 
 public interface IBroadcastedTransaction
 {
     public string Address { get; }
-    public decimal FeeRate { get; set; }
-    public decimal TotalFee { get; set; }
-    public uint Amount { get; }
+    public decimal FeeRate { get; }
+    public decimal TotalFee { get; }
+    public long Amount { get; }
     public string Path { get; }
     public int UtxoCount { get; }
     public string ViewRawJson { get; }
+    string Id { get; }
 }

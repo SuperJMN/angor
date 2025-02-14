@@ -1,28 +1,19 @@
 using System.Threading.Tasks;
-using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using AngorApp.Sections.Wallet.CreateAndRecover;
 using CSharpFunctionalExtensions;
 
 namespace AngorApp.UI.Services;
 
-public class WalletFactory : IWalletFactory
+public class WalletFactory(Create create, Recover recover) : IWalletFactory
 {
-    private readonly UIServices uiServices;
-    private readonly IWalletBuilder walletBuilder;
-
-    public WalletFactory(IWalletBuilder walletBuilder, UIServices uiServices)
+    public Task<Maybe<IWallet>> Recover()
     {
-        this.walletBuilder = walletBuilder;
-        this.uiServices = uiServices;
+        return recover.Start();
     }
 
-    public Task<Maybe<Result<IWallet>>> Recover()
+    public Task<Maybe<IWallet>> Create()
     {
-        return new Recover(uiServices, walletBuilder).Start();
-    }
-
-    public Task<Maybe<Result<IWallet>>> Create()
-    {
-        return new Create(uiServices, walletBuilder).Start();
+        return create.Start();
     }
 }

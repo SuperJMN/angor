@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using Angor.UI.Model;
+using Angor.UI.Model.Projects;
 
 namespace AngorApp.Sections.Browse.Details;
 

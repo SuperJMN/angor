@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using Angor.Shared.Models;
 using Angor.Shared.Services;
+using Angor.UI.Model.Projects;
 using CSharpFunctionalExtensions;
 using Zafiro.Reactive;
 

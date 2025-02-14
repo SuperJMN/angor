@@ -1,57 +1,46 @@
 using System.Threading.Tasks;
-using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Application;
+using Angor.Wallet.Domain;
+using AngorApp.Sections.Wallet.CreateAndRecover.Steps.CreateWelcome;
+using AngorApp.Sections.Wallet.CreateAndRecover.Steps.EncryptionPassword;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.Passphrase.Create;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsConfirmation;
-using AngorApp.Sections.Wallet.Operate;
+using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration;
+using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 using AngorApp.UI.Controls.Common.Success;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
-using EncryptionPasswordViewModel =
-    AngorApp.Sections.Wallet.CreateAndRecover.Steps.EncryptionPassword.EncryptionPasswordViewModel;
-using SeedWordsViewModel = AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration.SeedWordsViewModel;
-using SummaryAndCreationViewModel =
-    AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation.SummaryAndCreationViewModel;
-using WelcomeViewModel = AngorApp.Sections.Wallet.CreateAndRecover.Steps.CreateWelcome.WelcomeViewModel;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover;
 
-public class Create
+public class Create(UIServices uiServices, IWalletBuilder walletBuilder, IWalletAppService walletAppService, IWalletUnlockHandler walletUnlockHandler, Func<BitcoinNetwork> getNetwork)
 {
-    private readonly UIServices uiServices;
-    private readonly IWalletBuilder walletBuilder;
-
-    public Create(UIServices uiServices, IWalletBuilder walletBuilder)
+    public async Task<Maybe<IWallet>> Start()
     {
-        this.uiServices = uiServices;
-        this.walletBuilder = walletBuilder;
-    }
+        var wallet = Maybe<IWallet>.None;
 
-    public async Task<Maybe<Result<IWallet>>> Start()
-    {
-        var wizardBuilder = WizardBuilder
+        var wizard = WizardBuilder
             .StartWith(() => new WelcomeViewModel())
             .Then(prev => new SeedWordsViewModel(uiServices))
             .Then(prev => new SeedWordsConfirmationViewModel(prev.Words.Value))
             .Then(prev => new PassphraseCreateViewModel(prev.SeedWords))
             .Then(prev => new EncryptionPasswordViewModel(prev.SeedWords, prev.Passphrase!))
             .Then(prev =>
-                new SummaryAndCreationViewModel(prev.Passphrase, prev.SeedWords, prev.Password!, walletBuilder,
-                    uiServices)
+            {
+                var parameters = new WalletSecurityParameters(prev.Passphrase, prev.SeedWords, prev.Password!);
+                return new SummaryAndCreationViewModel(walletAppService, walletUnlockHandler, parameters, walletBuilder, uiServices, getNetwork)
                 {
                     IsRecovery = false
-                })
+                };
+            })
             .Then(_ => new SuccessViewModel("Wallet created successfully!", "Done"))
             .Build();
 
-        var result = await uiServices.Dialog.Show(wizardBuilder, "Create wallet",
-            closeable => wizardBuilder.OptionsForCloseable(closeable));
-        if (result)
-        {
-            return Result.Success<IWallet>(new WalletDesign());
-        }
+        await uiServices.Dialog.Show(wizard, "Create wallet", closeable => wizard.OptionsForCloseable(closeable));
 
-        return Maybe<Result<IWallet>>.None;
+        return wallet;
     }
 }

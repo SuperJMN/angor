@@ -1,4 +1,5 @@
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using CSharpFunctionalExtensions;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;

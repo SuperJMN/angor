@@ -1,3 +1,5 @@
+using Angor.UI.Model.Projects;
+
 namespace Angor.UI.Model.Implementation.Projects;
 
 public class Project : IProject

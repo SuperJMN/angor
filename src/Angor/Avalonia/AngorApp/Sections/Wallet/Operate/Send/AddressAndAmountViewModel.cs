@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using AngorApp.Sections.Browse;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Extensions;

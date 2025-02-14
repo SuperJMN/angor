@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using AngorApp.Core;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;

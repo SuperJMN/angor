@@ -1,15 +1,14 @@
 using System.Collections.ObjectModel;
 using Zafiro.Mixins;
 
-namespace Angor.UI.Model;
-
+namespace Angor.UI.Model.Wallet;
 
 public class SeedWords : Collection<SeedWord>
 {
     public SeedWords()
     {
     }
-    
+
     public SeedWords(IEnumerable<SeedWord> wordList) : base(wordList.ToList())
     {
     }

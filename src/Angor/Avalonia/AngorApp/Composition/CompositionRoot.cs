@@ -13,6 +13,7 @@ public static class CompositionRoot
         AngorServices.Register(services);
         ModelServices.Register(services);
         ViewModels.Register(services);
+        WalletServices.Register(services);
         UIServices.Register(services, topLevelView);
 
         var serviceProvider = services.BuildServiceProvider();

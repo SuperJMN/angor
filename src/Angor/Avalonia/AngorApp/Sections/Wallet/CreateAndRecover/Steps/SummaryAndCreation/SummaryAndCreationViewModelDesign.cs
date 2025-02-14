@@ -1,4 +1,5 @@
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using AngorApp.Sections.Browse;
 using CSharpFunctionalExtensions;
 

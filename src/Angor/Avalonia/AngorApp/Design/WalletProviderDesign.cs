@@ -1,19 +1,10 @@
-using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using CSharpFunctionalExtensions;
 
 namespace AngorApp.Design;
 
 public class WalletProviderDesign : IWalletProvider
 {
-    private Maybe<IWallet> maybeWallet = Maybe<IWallet>.None;
-
-    public Maybe<IWallet> GetWallet()
-    {
-        return maybeWallet;
-    }
-
-    public void SetWallet(IWallet wallet)
-    {
-        this.maybeWallet = wallet.AsMaybe();
-    }
+    public Maybe<IWallet> CurrentWallet { get; set; }
+    public IObservable<IWallet> CurrentWallets { get; }
 }
