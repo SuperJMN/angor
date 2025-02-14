@@ -1,6 +1,6 @@
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Domain;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Domain;
-using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 
 namespace AngorApp.UI.Controls.Common.TransactionPreview;

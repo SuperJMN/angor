@@ -1,5 +1,5 @@
+using Angor.UI.Model.Wallet;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Sections.Wallet;
 

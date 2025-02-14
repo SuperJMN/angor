@@ -1,8 +1,8 @@
 using System.Reactive.Linq;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Domain;
 using AngorApp.Sections.Wallet.Operate;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Domain;
-using SuppaWallet.Gui.Model;
 
 namespace AngorApp.UI.Controls.Common.TransactionPreview;
 

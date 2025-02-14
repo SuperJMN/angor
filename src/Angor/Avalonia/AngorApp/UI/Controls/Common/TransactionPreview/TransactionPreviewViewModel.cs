@@ -1,10 +1,10 @@
 using System.Reactive.Linq;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Domain;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Helpers;
-using SuppaWallet.Domain;
-using SuppaWallet.Gui.Model;
 using Zafiro.CSharpFunctionalExtensions;
 using Zafiro.Reactive;
 using Zafiro.UI;

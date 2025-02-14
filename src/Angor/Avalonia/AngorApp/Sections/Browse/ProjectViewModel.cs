@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using Angor.UI.Model;
+using Angor.UI.Model.Projects;
 using AngorApp.Sections.Browse.Details;
 using AngorApp.UI.Services;
 using Zafiro.Avalonia.Controls.Navigation;

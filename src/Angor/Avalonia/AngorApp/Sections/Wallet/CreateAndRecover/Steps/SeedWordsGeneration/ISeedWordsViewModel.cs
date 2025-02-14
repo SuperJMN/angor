@@ -1,6 +1,6 @@
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using AngorApp.Core;
-using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration;

@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Domain;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Domain;
-using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Sections.Wallet.Operate;
 

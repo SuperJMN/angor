@@ -1,4 +1,7 @@
 using System.Threading.Tasks;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Application;
+using Angor.Wallet.Domain;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.CreateWelcome;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.EncryptionPassword;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.Passphrase.Create;
@@ -8,12 +11,8 @@ using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 using AngorApp.UI.Controls.Common.Success;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Application.Interfaces;
-using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 using Zafiro.Avalonia.Dialogs;
-
-using BitcoinNetwork = SuppaWallet.Domain.BitcoinNetwork;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover;
 

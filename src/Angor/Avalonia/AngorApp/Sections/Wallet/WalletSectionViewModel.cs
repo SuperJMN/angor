@@ -1,12 +1,12 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Application;
 using AngorApp.Sections.Wallet.Operate;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
-using SuppaWallet.Application.Interfaces;
-using SuppaWallet.Gui.Model;
 using Zafiro.CSharpFunctionalExtensions;
 
 namespace AngorApp.Sections.Wallet;

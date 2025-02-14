@@ -1,4 +1,4 @@
-namespace Angor.UI.Model;
+namespace Angor.UI.Model.Projects;
 
 public interface IStage
 {

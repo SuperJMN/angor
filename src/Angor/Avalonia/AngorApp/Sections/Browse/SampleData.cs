@@ -1,6 +1,7 @@
 using System.Linq;
 using Angor.UI.Model;
-using SuppaWallet.Gui.Model;
+using Angor.UI.Model.Projects;
+using Angor.UI.Model.Wallet;
 
 namespace AngorApp.Sections.Browse;
 

@@ -1,8 +1,8 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Gui.Model;
 using Zafiro.CSharpFunctionalExtensions;
 
 namespace AngorApp.UI.Services;

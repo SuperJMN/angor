@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Domain;
 using AngorApp.Sections.Browse;
 using AngorApp.Sections.Wallet.Operate;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Domain;
-using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Sections.Wallet;
 
@@ -26,7 +26,7 @@ public class WalletDesign : IWallet
     public string ReceiveAddress { get; } = SampleData.TestNetBitcoinAddress;
     public ReactiveCommand<Unit, Result<string>> GenerateReceiveAddress { get; }
 
-    public async Task<Result<SuppaWallet.Gui.Model.IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate)
+    public async Task<Result<IUnsignedTransaction>> CreateTransaction(long amount, string address, long feerate)
     {
         await Task.Delay(1000);
 
@@ -42,11 +42,10 @@ public class WalletDesign : IWallet
 
     public Result IsAddressValid(string address)
     {
-        var value = BitcoinAddressValidator.ValidateBitcoinAddress(address, Network);
-        return value.IsValid ? Result.Success() : Result.Failure(value.Message);
+        return Result.Success();
     }
 
-    public SuppaWallet.Gui.Model.BitcoinNetwork Network => SuppaWallet.Gui.Model.BitcoinNetwork.Testnet;
+    public BitcoinNetwork Network => BitcoinNetwork.Testnet;
     public bool IsUnlocked { get; } = true;
     public WalletId Id { get; } = WalletId.New();
 }

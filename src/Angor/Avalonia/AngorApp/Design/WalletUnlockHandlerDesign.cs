@@ -1,8 +1,9 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Angor.UI.Model.Wallet;
+using Angor.Wallet.Domain;
 using AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Domain;
 
 namespace AngorApp.Design;
 

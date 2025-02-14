@@ -1,9 +1,10 @@
 using System.Reactive.Linq;
 using Angor.UI.Model;
+using Angor.UI.Model.Projects;
+using Angor.UI.Model.Wallet;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Extensions;
 using ReactiveUI.Validation.Helpers;
-using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Sections.Browse.Details.Invest.Amount;
 

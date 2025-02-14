@@ -1,7 +1,7 @@
+using Angor.Wallet.Domain;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Domain;
 
-namespace SuppaWallet.Gui.Model;
+namespace Angor.UI.Model.Wallet;
 
 public interface IWalletBuilder
 {

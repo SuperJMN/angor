@@ -1,4 +1,5 @@
 using Angor.UI.Model;
+using Angor.UI.Model.Projects;
 using DynamicData;
 
 namespace AngorApp.Sections.Founder;

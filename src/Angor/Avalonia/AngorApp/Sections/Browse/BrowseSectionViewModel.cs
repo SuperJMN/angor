@@ -1,9 +1,10 @@
 using System.Reactive.Linq;
 using Angor.UI.Model;
+using Angor.UI.Model.Projects;
+using Angor.UI.Model.Wallet;
 using AngorApp.Sections.Browse.ProjectLookup;
 using AngorApp.UI.Services;
 using ReactiveUI.SourceGenerators;
-using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Navigation;
 using Zafiro.Reactive;
 

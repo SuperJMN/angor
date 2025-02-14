@@ -1,9 +1,9 @@
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using AngorApp.Sections.Browse;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Extensions;
 using ReactiveUI.Validation.Helpers;
-using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsConfirmation;
 

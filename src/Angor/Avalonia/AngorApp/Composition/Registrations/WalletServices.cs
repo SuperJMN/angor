@@ -1,8 +1,8 @@
+using Angor.Wallet.Application;
+using Angor.Wallet.Domain;
 using AngorApp.Design;
 using AngorApp.Sections.Wallet.CreateAndRecover;
 using Microsoft.Extensions.DependencyInjection;
-using SuppaWallet.Application.Interfaces;
-using SuppaWallet.Domain;
 
 namespace AngorApp.Composition.Registrations;
 

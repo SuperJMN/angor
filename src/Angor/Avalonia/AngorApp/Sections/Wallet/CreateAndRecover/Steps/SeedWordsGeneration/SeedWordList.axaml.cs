@@ -1,7 +1,7 @@
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using Avalonia;
 using Avalonia.Controls.Primitives;
-using SuppaWallet.Gui.Model;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration;
 

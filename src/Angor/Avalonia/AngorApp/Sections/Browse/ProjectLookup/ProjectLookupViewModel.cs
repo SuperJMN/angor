@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Angor.UI.Model;
+using Angor.UI.Model.Projects;
 using AngorApp.Core;
 using AngorApp.UI.Services;
 using CSharpFunctionalExtensions;

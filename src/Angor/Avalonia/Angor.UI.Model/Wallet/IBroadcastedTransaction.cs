@@ -1,4 +1,4 @@
-namespace SuppaWallet.Gui.Model;
+namespace Angor.UI.Model.Wallet;
 
 public interface IBroadcastedTransaction
 {

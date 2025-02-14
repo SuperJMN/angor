@@ -1,4 +1,5 @@
 using Angor.UI.Model;
+using Angor.UI.Model.Projects;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 
 namespace AngorApp.Sections.Browse.Details.Invest.Amount;

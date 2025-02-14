@@ -1,9 +1,9 @@
 using System.Reactive.Linq;
 using Angor.UI.Model;
+using Angor.UI.Model.Wallet;
 using CSharpFunctionalExtensions;
 using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Helpers;
-using SuppaWallet.Gui.Model;
 using Zafiro.Avalonia.Controls.Wizards.Builder;
 
 namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.Passphrase.Recover;

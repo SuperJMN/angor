@@ -1,8 +1,7 @@
-using System.Threading.Tasks;
+using Angor.Wallet.Domain;
 using CSharpFunctionalExtensions;
-using SuppaWallet.Domain;
 
-namespace AngorApp.Sections.Wallet.CreateAndRecover.Steps.SummaryAndCreation;
+namespace Angor.UI.Model.Wallet;
 
 public interface IWalletUnlockHandler
 {
