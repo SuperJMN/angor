@@ -29,7 +29,7 @@ public partial class TransactionPreviewViewModel : ReactiveValidationObject, ITr
         Confirm.HandleErrorsWith(services.NotificationService, "Could not confirm transaction");
         CreateTransaction.HandleErrorsWith(services.NotificationService, "Could not create transaction");
 
-        this.WhenAnyValue<TransactionPreviewViewModel, double>(x => x.Feerate).ToSignal().InvokeCommand(CreateTransaction);
+        this.WhenAnyValue(x => x.Feerate).ToSignal().InvokeCommand(CreateTransaction);
     }
 
 
