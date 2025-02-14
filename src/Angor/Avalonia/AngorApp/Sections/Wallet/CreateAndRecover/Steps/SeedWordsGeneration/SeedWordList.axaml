@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:browse="clr-namespace:AngorApp.Sections.Browse"
         xmlns:seedWordsGeneration="clr-namespace:AngorApp.Sections.Wallet.CreateAndRecover.Steps.SeedWordsGeneration"
-        xmlns:model="clr-namespace:SuppaWallet.Gui.Model;assembly=SuppaWallet.Gui.Model"
+        xmlns:model1="clr-namespace:SuppaWallet.Gui.Model;assembly=Angor.UI.Model"
         mc:Ignorable="d">
 
     <Design.PreviewWith>
@@ -17,7 +17,7 @@
                 <ControlTemplate>
                     <ItemsControl ItemsSource="{TemplateBinding SeedWords}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="model:SeedWord">
+                            <DataTemplate DataType="model1:SeedWord">
                                 <Border Margin="8" Background="#f8f9fa" BorderBrush="#dee2e6"
                                         BorderThickness="1" CornerRadius="10" Padding="10">
                                     <StackPanel Spacing="5">
