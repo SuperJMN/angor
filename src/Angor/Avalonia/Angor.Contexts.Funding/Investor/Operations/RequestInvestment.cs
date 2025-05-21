@@ -100,7 +100,7 @@ public static class RequestInvestment
                     nostrPubKey,
                     serializedRecoveryRequest);
 
-                var (time, id) = signService.RequestInvestmentSigs(encryptedContent, investorNostrPrivateKeyHex, project.NostrPubKey, _ => { });
+                var (time, id) = signService.PostInvestmentRequest(encryptedContent, investorNostrPrivateKeyHex, project.NostrPubKey, _ => { });
 
                 return Result.Success(id);
             }
