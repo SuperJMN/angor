@@ -1,6 +1,7 @@
 ﻿using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using Angor.Shared.Models;
 using CSharpFunctionalExtensions;
 using Newtonsoft.Json;
@@ -11,58 +12,21 @@ using Nostr.Client.Responses;
 
 namespace Angor.Shared.Services
 {
-    public class KeyIdentifier
+    public class SignService(
+        ISensitiveNostrData sensitiveNostrData,
+        ISerializer serializer,
+        INostrEncryption nostrEncryption,
+        INostrCommunicationFactory communicationFactory,
+        INetworkService networkService,
+        IRelaySubscriptionsHandling subscriptionsHanding,
+        NostrSmart nostrSmart)
+        : ISignService
     {
-        public KeyIdentifier(Guid walletId, string founderPubKey)
-        {
-            WalletId = walletId;
-            FounderPubKey = founderPubKey;
-        }
-
-        public Guid WalletId { get; private set; }
-        public string FounderPubKey { get; private set; }
-    }
-
-    public class SignService : ISignService
-    {
-        private readonly ISensitiveNostrData sensitiveNostrData;
-        private readonly ISerializer serializer;
-        private readonly INostrEncryption nostrEncryption;
-        private readonly INostrQueryClient nostrQueryClient;
-        private readonly INostrCommunicationFactory _communicationFactory;
-        private readonly INetworkService _networkService;
-        private IRelaySubscriptionsHandling _subscriptionsHanding;
-
-        public SignService(ISensitiveNostrData sensitiveNostrData,
-            ISerializer serializer,
-            INostrEncryption nostrEncryption,
-            INostrCommunicationFactory communicationFactory, INetworkService networkService, IRelaySubscriptionsHandling subscriptionsHanding)
-        {
-            this.sensitiveNostrData = sensitiveNostrData;
-            this.serializer = serializer;
-            this.nostrEncryption = nostrEncryption;
-            _communicationFactory = communicationFactory;
-            _networkService = networkService;
-            _subscriptionsHanding = subscriptionsHanding;
-        }
-
-        public IObservable<EventSendResponse> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey)
+        public async Task<Result<EventSendResponse>> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey)
         {
             var key =  sensitiveNostrData.GetNostrPrivateKey(keyIdentifier);
-            
-            if (key.IsSuccess)
-            {
-            
-            }
-            else
-            {
-                //return Result.Failure<>("");
-            }
-            
             var parsedKey = NostrPrivateKey.FromHex(key.Value);
-            
             var jsonContent = serializer.Serialize(content);
-            
             var ev = new NostrEvent
             {
                 Kind = NostrKind.EncryptedDm,
@@ -75,17 +39,9 @@ namespace Angor.Shared.Services
             
             var encryptedEvent = nostrEncryption.Encrypt(ev, key.Value, founderNostrPubKey);
             var signed = encryptedEvent.Sign(parsedKey);
-
-
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
-
-            var okStream = nostrClient
-                .Streams.OkStream
-                .Where(x => x.EventId == signed.Id);
-
-            nostrClient.Send(new NostrEventRequest(signed));
-
-            return okStream.Select(response => new EventSendResponse(response.Accepted, response.EventId, response.Message));
+            
+            return await nostrSmart.Send(signed)
+                .Map(response => new EventSendResponse(response.Accepted, response.EventId, response.Message, response.ReceivedTimestamp));
         }
 
         public (DateTime,string) PostInvestmentRequest(string encryptedContent, string investorNostrPrivateKey, string founderNostrPubKey, Action<NostrOkResponse> okResponse)
@@ -108,10 +64,10 @@ namespace Angor.Shared.Services
 
             var signed = ev.Sign(sender);
 
-            if(!_subscriptionsHanding.TryAddOKAction(signed.Id!,okResponse))
+            if(!subscriptionsHanding.TryAddOKAction(signed.Id!,okResponse))
                 throw new Exception("Failed to add OK action");
             
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
             nostrClient.Send(new NostrEventRequest(signed));
 
             return (signed.CreatedAt!.Value, signed.Id!);
@@ -119,9 +75,9 @@ namespace Angor.Shared.Services
 
         public void GetInvestmentRequestApproval(string investorNostrPubKey, string projectNostrPubKey, DateTime? sigRequestSentTime, string sigRequestEventId, Func<string, Task> action)
         {
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
 
-            if (!_subscriptionsHanding.RelaySubscriptionAdded(projectNostrPubKey))
+            if (!subscriptionsHanding.RelaySubscriptionAdded(projectNostrPubKey))
             {
                 var subscription = nostrClient.Streams.EventStream
                     .Where(_ => _.Subscription == projectNostrPubKey)
@@ -129,7 +85,7 @@ namespace Angor.Shared.Services
                     .Where(_ => _.Event.Tags.FindFirstTagValue("subject") == "Re:Investment offer")
                     .Subscribe(_ => { action.Invoke(_.Event.Content); });
 
-                _subscriptionsHanding.TryAddRelaySubscription(projectNostrPubKey, subscription);
+                subscriptionsHanding.TryAddRelaySubscription(projectNostrPubKey, subscription);
 
             }
 
@@ -147,10 +103,10 @@ namespace Angor.Shared.Services
         public Task GetAllInvestmentRequests(string nostrPubKey, string? senderNpub, DateTime? since,
             Action<string, string, string, DateTime> action, Action onAllMessagesReceived)
         {
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
             var subscriptionKey = nostrPubKey + "sig_req";
 
-            if (!_subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
+            if (!subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
             {
                 var subscription = nostrClient.Streams.EventStream
                     .Where(_ => _.Subscription == subscriptionKey)
@@ -161,10 +117,10 @@ namespace Angor.Shared.Services
                         action.Invoke(nostrEvent.Id, nostrEvent.Pubkey, nostrEvent.Content, nostrEvent.CreatedAt.Value);
                     });
 
-                _subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
+                subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
             }
 
-            _subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
+            subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
 
             var nostrFilter = new NostrFilter
             {
@@ -182,10 +138,10 @@ namespace Angor.Shared.Services
 
         public void GetAllInvestmentRequestApprovals(string nostrPubKey, Action<string, DateTime, string> action, Action onAllMessagesReceived)
         {
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
             var subscriptionKey = nostrPubKey + "sig_res";
 
-            if (!_subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
+            if (!subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
             {
                 var subscription = nostrClient.Streams.EventStream
                     .Where(_ => _.Subscription == subscriptionKey)
@@ -196,10 +152,10 @@ namespace Angor.Shared.Services
                         action.Invoke(nostrEvent.Tags.FindFirstTagValue(NostrEventTag.ProfileIdentifier), nostrEvent.CreatedAt.Value, nostrEvent.Tags.FindFirstTagValue(NostrEventTag.EventIdentifier));
                     });
 
-                _subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
+                subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
             }
 
-            _subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
+            subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
             
             nostrClient.Send(new NostrRequest(subscriptionKey, new NostrFilter
             {
@@ -227,7 +183,7 @@ namespace Angor.Shared.Services
 
             var signed = ev.Sign(nostrPrivateKey);
 
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
             nostrClient.Send(new NostrEventRequest(signed));
 
             return ev.CreatedAt.Value;
@@ -252,7 +208,7 @@ namespace Angor.Shared.Services
 
             var signed = ev.Sign(nostrPrivateKey);
 
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
             nostrClient.Send(new NostrEventRequest(signed));
 
             return ev.CreatedAt.Value;
@@ -260,10 +216,10 @@ namespace Angor.Shared.Services
 
         public void GetInvestmentRevocation(string investorNostrPubKey, string projectNostrPubKey, DateTime? releaseRequestSentTime, string releaseRequestEventId, Action<string> action, Action onAllMessagesReceived)
         {
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
             var subscriptionKey = projectNostrPubKey.Substring(0, 20) + "rel_sigs";
 
-            if (!_subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
+            if (!subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
             {
                 var subscription = nostrClient.Streams.EventStream
                     .Where(_ => _.Subscription == subscriptionKey)
@@ -271,10 +227,10 @@ namespace Angor.Shared.Services
                     .Where(_ => _.Event.Tags.FindFirstTagValue("subject") == "Release transaction signatures")
                     .Subscribe(_ => { action.Invoke(_.Event.Content); });
 
-                _subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
+                subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
             }
 
-            _subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
+            subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
 
             nostrClient.Send(new NostrRequest(subscriptionKey, new NostrFilter
             {
@@ -289,10 +245,10 @@ namespace Angor.Shared.Services
 
         public void GetAllInvestmentRevocations(string projectNostrPubKey, Action<SignServiceLookupItem> action, Action onAllMessagesReceived)
         {
-            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+            var nostrClient = communicationFactory.GetOrCreateClient(networkService);
             var subscriptionKey = projectNostrPubKey.Substring(0, 20) + "sing_sigs";
 
-            if (!_subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
+            if (!subscriptionsHanding.RelaySubscriptionAdded(subscriptionKey))
             {
                 var subscription = nostrClient.Streams.EventStream
                     .Where(_ => _.Subscription == subscriptionKey)
@@ -310,10 +266,10 @@ namespace Angor.Shared.Services
                         });
                     });
 
-                _subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
+                subscriptionsHanding.TryAddRelaySubscription(subscriptionKey, subscription);
             }
 
-            _subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
+            subscriptionsHanding.TryAddEoseAction(subscriptionKey, onAllMessagesReceived);
 
             nostrClient.Send(new NostrRequest(subscriptionKey, new NostrFilterWithSubject
             {
@@ -325,11 +281,11 @@ namespace Angor.Shared.Services
 
         public void CloseConnection()
         {
-            _subscriptionsHanding.Dispose();
+            subscriptionsHanding.Dispose();
         }
     }
 
-    public record EventSendResponse(bool IsAccepted, string? EventId, string? Message);
+    public record EventSendResponse(bool IsAccepted, string? EventId, string? Message, DateTime Received);
 
     public interface INostrQueryClient
     {

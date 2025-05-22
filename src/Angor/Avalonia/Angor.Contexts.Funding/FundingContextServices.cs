@@ -1,6 +1,5 @@
 ﻿using Angor.Client;
 using Angor.Client.Services;
-using Angor.Contests.CrossCutting;
 using Angor.Contexts.Funding.Investor;
 using Angor.Contexts.Funding.Investor.Operations;
 using Angor.Contexts.Funding.Projects.Domain;
@@ -16,8 +15,6 @@ using Angor.Shared.Protocol.TransactionBuilders;
 using Angor.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Nostr.Client.Client;
-using Nostr.Client.Communicator;
 using Serilog;
 using EncryptionService = Angor.Contexts.Funding.Projects.Infrastructure.Impl.EncryptionService;
 
@@ -55,6 +52,13 @@ public static class FundingContextServices
         services.TryAddSingleton<IDerivationOperations, DerivationOperations>();
         services.TryAddSingleton<IHdOperations, HdOperations>();
         services.TryAddSingleton<ISignService, SignService>();
+        services.TryAddSingleton<NostrSmart>(provider =>
+        {
+            var networkService = provider.GetRequiredService<NetworkService>();
+            var communicationFactory = provider.GetRequiredService<NostrCommunicationFactory>();
+            var client = communicationFactory.GetOrCreateClient(networkService);
+            return new NostrSmart(client);
+        });
         services.TryAddSingleton<ISpendingTransactionBuilder, SpendingTransactionBuilder>();
         services.TryAddSingleton<IInvestmentTransactionBuilder, InvestmentTransactionBuilder>();
         services.TryAddSingleton<ITaprootScriptBuilder, TaprootScriptBuilder>();

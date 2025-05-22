@@ -9,10 +9,12 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NBitcoin.Secp256k1;
 using Nostr.Client.Client;
+using Nostr.Client.Communicator;
 using Nostr.Client.Keys;
 using Nostr.Client.Messages;
 using Nostr.Client.Messages.Direct;
 using Nostr.Client.Responses;
+using Serilog;
 
 namespace Angor.Test;
 
@@ -20,6 +22,18 @@ public class SigningTests
 {
     [Fact]
     public async Task Test_something()
+    {
+        var sut = CreateSignService();
+
+        var founderNostrPubKey = NostrPrivateKey.GenerateNew().DerivePublicKey().Hex;
+        var founderPubKey = NostrPrivateKey.GenerateNew().DerivePublicKey().Hex;
+
+        var keyIdenfier = new KeyIdentifier(Guid.Empty, founderPubKey);
+
+        var result = await sut.PostInvestmentRequest2(keyIdenfier, "TEST", founderNostrPubKey);
+    }
+
+    private static SignService CreateSignService()
     {
         var testingNostrSentiveData = new TestingNostrSentiveData();
         var serializer = new Serializer();
@@ -38,21 +52,16 @@ public class SigningTests
         mockNetworkConfiguration.Setup(nc => nc.GetAngorKey()).Returns("dummyAngorKey");
         mockNetworkConfiguration.Setup(nc => nc.GetNetwork()).Returns(Networks.Bitcoin.Testnet);
 
-        var networkService = new NetworkService(mockNetworkStorage.Object, new HttpClient { BaseAddress = new Uri("https://angor.io") }, new NullLogger<NetworkService>(), mockNetworkConfiguration.Object);
+        var networkService = new NetworkService(mockNetworkStorage.Object, new HttpClient { BaseAddress = new Uri("wss://relay.angor.io") }, new NullLogger<NetworkService>(), mockNetworkConfiguration.Object);
         var subscriptionsHanding = new RelaySubscriptionsHandling(new NullLogger<RelaySubscriptionsHandling>(), communicationFactory, networkService);
 
-        var sut = new SignService(testingNostrSentiveData, serializer, testingNotrEncription, communicationFactory, networkService, subscriptionsHanding);
-
-        var founderNostrPubKey = NostrPrivateKey.GenerateNew().DerivePublicKey().Hex;
-        var founderPubKey = NostrPrivateKey.GenerateNew().DerivePublicKey().Hex;
-
-        var keyIdenfier = new KeyIdentifier(Guid.Empty, founderPubKey);
-
-        sut.PostInvestmentRequest2(keyIdenfier, "TEST", founderNostrPubKey)
-            .Timeout(TimeSpan.FromSeconds(2))
-            .Subscribe(response => {});
-
-        await Task.Delay(20000);
+        var nostrWebsocketCommunicator = new NostrWebsocketCommunicator(new Uri("ws://relay.angor.io"));
+        nostrWebsocketCommunicator.Start().Wait();
+        var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog());
+        var logger = loggerFactory.CreateLogger<NostrWebsocketClient>();
+        var nostrSmart = new NostrSmart(new NostrWebsocketClient(nostrWebsocketCommunicator, logger));
+        var sut = new SignService(testingNostrSentiveData, serializer, testingNotrEncription, communicationFactory, networkService, subscriptionsHanding, nostrSmart);
+        return sut;
     }
 }
 

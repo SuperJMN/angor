@@ -1,4 +1,5 @@
 using Angor.Shared.Models;
+using CSharpFunctionalExtensions;
 using Nostr.Client.Responses;
 
 namespace Angor.Shared.Services;
@@ -20,4 +21,5 @@ public interface ISignService
     void GetInvestmentRevocation(string investorNostrPubKey, string projectNostrPubKey, DateTime? releaseRequestSentTime, string releaseRequestEventId, Action<string> action, Action onAllMessagesReceived);
 
     void GetAllInvestmentRevocations(string projectNostrPubKey, Action<SignServiceLookupItem> action, Action onAllMessagesReceived);
+    Task<Result<EventSendResponse>> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey);
 }

@@ -49,7 +49,7 @@ public static class RequestInvestment
             var walletWords = sensitiveDataResult.Value.ToWalletWords();
             var project = projectResult.Value;
 
-            var sendSignatureResult = await SendSignatureRequest(walletWords, project, strippedInvestmentTransaction.ToHex());
+            var sendSignatureResult = await SendSignatureRequest(request.WalletId, walletWords, project, strippedInvestmentTransaction.ToHex());
 
             if (sendSignatureResult.IsFailure)
             {
@@ -69,19 +69,17 @@ public static class RequestInvestment
             throw new NotImplementedException();
         }
 
-        private async Task<Result<string>> SendSignatureRequest(WalletWords walletWords, Project project, string signedTransactionHex)
+        private async Task<Result<EventSendResponse>> SendSignatureRequest(Guid walletId, WalletWords walletWords, Project project, string signedTransactionHex)
         {
             try
             {
-                string nostrPubKey = project.NostrPubKey;
-
                 var investorNostrPrivateKey = await derivationOperations.DeriveProjectNostrPrivateKeyAsync(walletWords, project.FounderKey);
                 var investorNostrPrivateKeyHex = Encoders.Hex.EncodeData(investorNostrPrivateKey.ToBytes());
                 var releaseAddressResult = await GetUnfundedReleaseAddress(walletWords);
 
                 if (releaseAddressResult.IsFailure)
                 {
-                    return Result.Failure<string>(releaseAddressResult.Error);
+                    return Result.Failure<EventSendResponse>(releaseAddressResult.Error);
                 }
                 
                 var releaseAddress = releaseAddressResult.Value;
@@ -97,16 +95,16 @@ public static class RequestInvestment
                 
                 var encryptedContent = await encryptionService.EncryptNostrContentAsync(
                     investorNostrPrivateKeyHex,
-                    nostrPubKey,
+                    project.NostrPubKey,
                     serializedRecoveryRequest);
 
-                var (time, id) = signService.PostInvestmentRequest(encryptedContent, investorNostrPrivateKeyHex, project.NostrPubKey, _ => { });
+                var key = new KeyIdentifier(walletId, project.NostrPubKey);
+                return await signService.PostInvestmentRequest2(key, serializer.Serialize(signRecoveryRequest),  project.NostrPubKey);
 
-                return Result.Success(id);
             }
             catch (Exception ex)
             {
-                return Result.Failure<string>($"Error while sending the signature request {ex.Message}");
+                return Result.Failure<EventSendResponse>($"Error while sending the signature request {ex.Message}");
             }
         }
 
