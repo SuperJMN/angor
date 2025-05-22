@@ -1,4 +1,6 @@
-﻿using System.Reactive.Linq;
+﻿using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Angor.Shared.Models;
 using CSharpFunctionalExtensions;
 using Newtonsoft.Json;
@@ -9,6 +11,18 @@ using Nostr.Client.Responses;
 
 namespace Angor.Shared.Services
 {
+    public class KeyIdentifier
+    {
+        public KeyIdentifier(Guid walletId, string founderPubKey)
+        {
+            WalletId = walletId;
+            FounderPubKey = founderPubKey;
+        }
+
+        public Guid WalletId { get; private set; }
+        public string FounderPubKey { get; private set; }
+    }
+
     public class SignService : ISignService
     {
         private readonly ISensitiveNostrData sensitiveNostrData;
@@ -22,21 +36,19 @@ namespace Angor.Shared.Services
         public SignService(ISensitiveNostrData sensitiveNostrData,
             ISerializer serializer,
             INostrEncryption nostrEncryption,
-            INostrQueryClient nostrQueryClient,
             INostrCommunicationFactory communicationFactory, INetworkService networkService, IRelaySubscriptionsHandling subscriptionsHanding)
         {
             this.sensitiveNostrData = sensitiveNostrData;
             this.serializer = serializer;
             this.nostrEncryption = nostrEncryption;
-            this.nostrQueryClient = nostrQueryClient;
             _communicationFactory = communicationFactory;
             _networkService = networkService;
             _subscriptionsHanding = subscriptionsHanding;
         }
 
-        public Task<Result> PostInvestmentRequest2<T>(T content, Guid walletId, string founderNostrPubKey, string founderPubKey)
+        public IObservable<EventSendResponse> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey)
         {
-            var key =  sensitiveNostrData.GetNostrPrivateKey(walletId, founderPubKey);
+            var key =  sensitiveNostrData.GetNostrPrivateKey(keyIdentifier.WalletId, keyIdentifier.FounderPubKey);
             
             if (key.IsSuccess)
             {
@@ -61,11 +73,19 @@ namespace Angor.Shared.Services
                     new NostrEventTag("subject","Investment offer"))
             };
             
-            var encryptedEvent = nostrEncryption.Encrypt(ev, key.Value);
+            var encryptedEvent = nostrEncryption.Encrypt(ev, key.Value, founderNostrPubKey);
             var signed = encryptedEvent.Sign(parsedKey);
-            
-            
-            return nostrQueryClient.SubmitAndConfirm(signed);
+
+
+            var nostrClient = _communicationFactory.GetOrCreateClient(_networkService);
+
+            var okStream = nostrClient
+                .Streams.OkStream
+                .Where(x => x.EventId == signed.Id);
+
+            nostrClient.Send(new NostrEventRequest(signed));
+
+            return okStream.Select(response => new EventSendResponse(response.Accepted, response.EventId, response.Message));
         }
 
         public (DateTime,string) PostInvestmentRequest(string encryptedContent, string investorNostrPrivateKey, string founderNostrPubKey, Action<NostrOkResponse> okResponse)
@@ -309,14 +329,16 @@ namespace Angor.Shared.Services
         }
     }
 
+    public record EventSendResponse(bool IsAccepted, string? EventId, string? Message);
+
     public interface INostrQueryClient
     {
-        Task<Result> SubmitAndConfirm(NostrEvent signed);
+        Task<Result> Submit(NostrEvent signed);
     }
 
     public interface INostrEncryption
     {
-        NostrEvent Encrypt(NostrEvent ev, Result<string> key);
+        NostrEvent Encrypt(NostrEvent ev, string localPrivateKey, string remotePublicKey);
     }
 
     public interface ISensitiveNostrData

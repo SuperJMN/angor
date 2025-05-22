@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Shared", "..\Shared\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Client", "..\Client\Angor.Client.csproj", "{504F4A1C-AB09-19C9-D3FA-AC18629CEDB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Test", "..\..\Angor.Test\Angor.Test.csproj", "{E0922DA3-01CA-3E1A-4986-B80D7F48B7B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{504F4A1C-AB09-19C9-D3FA-AC18629CEDB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{504F4A1C-AB09-19C9-D3FA-AC18629CEDB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{504F4A1C-AB09-19C9-D3FA-AC18629CEDB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0922DA3-01CA-3E1A-4986-B80D7F48B7B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0922DA3-01CA-3E1A-4986-B80D7F48B7B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0922DA3-01CA-3E1A-4986-B80D7F48B7B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0922DA3-01CA-3E1A-4986-B80D7F48B7B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{8E529B00-5BC0-4EBE-AA5E-6E5C91FA2BEC} = {5B7EE527-242E-4C87-9BB7-AD4E05EABC4C}
 		{CD44C0AB-5492-73B5-DC27-A41ABCCF4388} = {4B0A97D7-BA72-4208-94B6-707935986EDC}
 		{504F4A1C-AB09-19C9-D3FA-AC18629CEDB0} = {4B0A97D7-BA72-4208-94B6-707935986EDC}
+		{E0922DA3-01CA-3E1A-4986-B80D7F48B7B0} = {4B0A97D7-BA72-4208-94B6-707935986EDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83CB65B8-011F-4ED7-BCD3-A6CFA935EF7E}
