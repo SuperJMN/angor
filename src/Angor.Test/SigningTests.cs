@@ -23,7 +23,7 @@ public class SigningTests
     {
         var testingNostrSentiveData = new TestingNostrSentiveData();
         var serializer = new Serializer();
-        var testingNotrEncription = new TestingNotrEncription();
+        var testingNotrEncription = new TestingNostrEncription();
         var communicationFactory = new NostrCommunicationFactory(new NullLogger<NostrWebsocketClient>(), new NullLogger<NostrCommunicationFactory>());
         var mockNetworkConfiguration = new Mock<INetworkConfiguration>();
         var mockNetworkStorage = new Mock<INetworkStorage>();
@@ -56,7 +56,8 @@ public class SigningTests
     }
 }
 
-public class TestingNotrEncription : INostrEncryption
+// TODO: Consider moving this as the real implementation
+public class TestingNostrEncription : INostrEncryption
 {
     public NostrEvent Encrypt(NostrEvent ev, string localPrivateKey, string remotePublicKey)
     {
@@ -69,7 +70,7 @@ public class TestingNotrEncription : INostrEncryption
 
 public class TestingNostrSentiveData : ISensitiveNostrData
 {
-    public Result<string> GetNostrPrivateKey(Guid walletId, string founderPubKey)
+    public Result<string> GetNostrPrivateKey(KeyIdentifier keyIdentifier)
     {
         return NostrPrivateKey.GenerateNew().Hex;
     }

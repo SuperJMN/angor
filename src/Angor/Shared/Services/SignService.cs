@@ -48,7 +48,7 @@ namespace Angor.Shared.Services
 
         public IObservable<EventSendResponse> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey)
         {
-            var key =  sensitiveNostrData.GetNostrPrivateKey(keyIdentifier.WalletId, keyIdentifier.FounderPubKey);
+            var key =  sensitiveNostrData.GetNostrPrivateKey(keyIdentifier);
             
             if (key.IsSuccess)
             {
@@ -343,7 +343,7 @@ namespace Angor.Shared.Services
 
     public interface ISensitiveNostrData
     {
-        Result<string> GetNostrPrivateKey(Guid walletId, string founderPubKey);
+        Result<string> GetNostrPrivateKey(KeyIdentifier keyIdentifier);
     }
 
     public class NostrFilterWithSubject : NostrFilter
