@@ -52,18 +52,22 @@ public static class FundingContextServices
         services.TryAddSingleton<IDerivationOperations, DerivationOperations>();
         services.TryAddSingleton<IHdOperations, HdOperations>();
         services.TryAddSingleton<ISignService, SignService>();
-        services.TryAddSingleton<NostrSmart>(provider =>
-        {
-            var networkService = provider.GetRequiredService<NetworkService>();
-            var communicationFactory = provider.GetRequiredService<NostrCommunicationFactory>();
-            var client = communicationFactory.GetOrCreateClient(networkService);
-            return new NostrSmart(client);
-        });
         services.TryAddSingleton<ISpendingTransactionBuilder, SpendingTransactionBuilder>();
         services.TryAddSingleton<IInvestmentTransactionBuilder, InvestmentTransactionBuilder>();
         services.TryAddSingleton<ITaprootScriptBuilder, TaprootScriptBuilder>();
         services.TryAddSingleton<IWalletOperations, WalletOperations>();
         services.AddHttpClient();
+        
+        // Nostr
+        services.AddSingleton<INostrEncryption, NostrEncryption>();
+        services.AddSingleton<ISensitiveNostrData, SensitiveNostrData>();
+        services.TryAddSingleton<INostrService>(provider =>
+        {
+            var networkService = provider.GetRequiredService<INetworkService>();
+            var communicationFactory = provider.GetRequiredService<INostrCommunicationFactory>();
+            var client = communicationFactory.GetOrCreateClient(networkService);
+            return new NostrService(client);
+        });
 
         return services;
     }

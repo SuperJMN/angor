@@ -3,7 +3,9 @@ using Angor.Contexts.Funding.Investor.Operations;
 using Angor.Contexts.Funding.Projects.Domain;
 using Angor.Contexts.Funding.Shared;
 using Angor.Contexts.Funding.Tests.TestDoubles;
-using Angor.Shared;
+using CSharpFunctionalExtensions;
+using Angor.Contexts.Wallet.Domain;
+using Angor.Contexts.Wallet.Infrastructure.Interfaces;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -21,6 +23,23 @@ public class InvestmentAppServiceTests(ITestOutputHelper output)
         CreateSut();
     }
 
+    
+    [Fact]
+    public void Handlers_can_be_created()
+    {
+        var provider = GetServiceProvider();
+        
+        // Act
+        var handlers = typeof(InvestmentAppService).Assembly.DefinedTypes.Where(t => t.IsClass && t.Name.EndsWith("Handler")).ToList();
+        
+        var result = handlers
+            .Select(typeInfo => Result.Try(() => ActivatorUtilities.CreateInstance(provider, typeInfo))
+                .TapError(err => output.WriteLine($"Handler {typeInfo} failed to create. Please, check {nameof(FundingContextServices)}. Error: {err}")))
+            .Combine();
+        
+        Assert.True(result.IsSuccess);
+    }
+    
     [Fact]
     public async Task Create_investment_draft()
     {
@@ -81,18 +100,24 @@ public class InvestmentAppServiceTests(ITestOutputHelper output)
         // Assert
         Assert.True(approveResult.IsSuccess);
     }
-
+    
     private IInvestmentAppService CreateSut()
+    {
+        var serviceProvider = GetServiceProvider();
+        var projectAppService = serviceProvider.GetRequiredService<IInvestmentAppService>();
+
+        return projectAppService!;
+    }
+
+    private ServiceProvider GetServiceProvider()
     {
         var serviceCollection = new ServiceCollection();
 
         var logger = new LoggerConfiguration().WriteTo.TestOutput(output).CreateLogger();
         FundingContextServices.Register(serviceCollection, logger);
-        serviceCollection.AddSingleton<ISeedwordsProvider>(sp => new TestingSeedwordsProvider("oven suggest panda hip orange cheap kite focus cross never tornado forget", "", sp.GetRequiredService<IDerivationOperations>()));
+        serviceCollection.AddSingleton<ISeedwordsProvider>(sp => new TestingSeedwordsProvider("oven suggest panda hip orange cheap kite focus cross never tornado forget", ""));
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var projectAppService = serviceProvider.GetService<IInvestmentAppService>();
-
-        return projectAppService!;
+        return serviceProvider;
     }
 }

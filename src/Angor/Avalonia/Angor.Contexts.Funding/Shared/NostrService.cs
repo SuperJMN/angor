@@ -1,15 +1,18 @@
 using System.Reactive.Linq;
+using Angor.Shared.Services;
 using CSharpFunctionalExtensions;
 using Nostr.Client.Client;
 using Nostr.Client.Messages;
 using Nostr.Client.Requests;
 using Nostr.Client.Responses;
 
-public class NostrSmart
+namespace Angor.Contexts.Funding.Shared;
+
+public class NostrService : INostrService
 {
     private readonly INostrClient nostrClient;
 
-    public NostrSmart(INostrClient nostrClient)
+    public NostrService(INostrClient nostrClient)
     {
         this.nostrClient = nostrClient;
     }

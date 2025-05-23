@@ -19,31 +19,9 @@ namespace Angor.Shared.Services
         INostrCommunicationFactory communicationFactory,
         INetworkService networkService,
         IRelaySubscriptionsHandling subscriptionsHanding,
-        NostrSmart nostrSmart)
+        INostrService nostrService)
         : ISignService
     {
-        public async Task<Result<EventSendResponse>> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey)
-        {
-            var key =  sensitiveNostrData.GetNostrPrivateKey(keyIdentifier);
-            var parsedKey = NostrPrivateKey.FromHex(key.Value);
-            var jsonContent = serializer.Serialize(content);
-            var ev = new NostrEvent
-            {
-                Kind = NostrKind.EncryptedDm,
-                CreatedAt = DateTime.UtcNow,
-                Content = jsonContent,
-                Tags = new NostrEventTags(
-                    NostrEventTag.Profile(founderNostrPubKey),
-                    new NostrEventTag("subject","Investment offer"))
-            };
-            
-            var encryptedEvent = nostrEncryption.Encrypt(ev, key.Value, founderNostrPubKey);
-            var signed = encryptedEvent.Sign(parsedKey);
-            
-            return await nostrSmart.Send(signed)
-                .Map(response => new EventSendResponse(response.Accepted, response.EventId, response.Message, response.ReceivedTimestamp));
-        }
-
         public (DateTime,string) PostInvestmentRequest(string encryptedContent, string investorNostrPrivateKey, string founderNostrPubKey, Action<NostrOkResponse> okResponse)
         {
             var sender = NostrPrivateKey.FromHex(investorNostrPrivateKey);
@@ -283,24 +261,36 @@ namespace Angor.Shared.Services
         {
             subscriptionsHanding.Dispose();
         }
+
+        public async Task<Result<EventSendResponse>> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey)
+        {
+            var key =  sensitiveNostrData.GetNostrPrivateKey(keyIdentifier);
+            var parsedKey = NostrPrivateKey.FromHex(key.Value);
+            var jsonContent = serializer.Serialize(content);
+            var ev = new NostrEvent
+            {
+                Kind = NostrKind.EncryptedDm,
+                CreatedAt = DateTime.UtcNow,
+                Content = jsonContent,
+                Tags = new NostrEventTags(
+                    NostrEventTag.Profile(founderNostrPubKey),
+                    new NostrEventTag("subject","Investment offer"))
+            };
+            
+            var encryptedEvent = nostrEncryption.Encrypt(ev, key.Value, founderNostrPubKey);
+            var signed = encryptedEvent.Sign(parsedKey);
+            
+            return await nostrService.Send(signed)
+                .Map(response => new EventSendResponse(response.Accepted, response.EventId, response.Message, response.ReceivedTimestamp));
+        }
+    }
+
+    public interface INostrService
+    {
+        Task<Result<NostrOkResponse>> Send(NostrEvent nostrEvent);
     }
 
     public record EventSendResponse(bool IsAccepted, string? EventId, string? Message, DateTime Received);
-
-    public interface INostrQueryClient
-    {
-        Task<Result> Submit(NostrEvent signed);
-    }
-
-    public interface INostrEncryption
-    {
-        NostrEvent Encrypt(NostrEvent ev, string localPrivateKey, string remotePublicKey);
-    }
-
-    public interface ISensitiveNostrData
-    {
-        Result<string> GetNostrPrivateKey(KeyIdentifier keyIdentifier);
-    }
 
     public class NostrFilterWithSubject : NostrFilter
     {

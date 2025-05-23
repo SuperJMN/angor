@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using Angor.Contexts.Funding.Shared;
+using Angor.Contexts.Funding.Tests.TestDoubles;
 using Angor.Shared;
 using Angor.Shared.Models;
 using Angor.Shared.Networks;
@@ -7,16 +8,12 @@ using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using NBitcoin.Secp256k1;
 using Nostr.Client.Client;
 using Nostr.Client.Communicator;
 using Nostr.Client.Keys;
-using Nostr.Client.Messages;
-using Nostr.Client.Messages.Direct;
-using Nostr.Client.Responses;
 using Serilog;
 
-namespace Angor.Test;
+namespace Angor.Contexts.Funding.Tests;
 
 public class SigningTests
 {
@@ -35,9 +32,9 @@ public class SigningTests
 
     private static SignService CreateSignService()
     {
-        var testingNostrSentiveData = new TestingNostrSentiveData();
+        var testingNostrSentiveData = new SensitiveNostrData(new TestingSeedwordsProvider("bla bla bla", "asdf"));
         var serializer = new Serializer();
-        var testingNotrEncription = new TestingNostrEncription();
+        var testingNotrEncription = new NostrEncryption();
         var communicationFactory = new NostrCommunicationFactory(new NullLogger<NostrWebsocketClient>(), new NullLogger<NostrCommunicationFactory>());
         var mockNetworkConfiguration = new Mock<INetworkConfiguration>();
         var mockNetworkStorage = new Mock<INetworkStorage>();
@@ -59,28 +56,8 @@ public class SigningTests
         nostrWebsocketCommunicator.Start().Wait();
         var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog());
         var logger = loggerFactory.CreateLogger<NostrWebsocketClient>();
-        var nostrSmart = new NostrSmart(new NostrWebsocketClient(nostrWebsocketCommunicator, logger));
+        var nostrSmart = new NostrService(new NostrWebsocketClient(nostrWebsocketCommunicator, logger));
         var sut = new SignService(testingNostrSentiveData, serializer, testingNotrEncription, communicationFactory, networkService, subscriptionsHanding, nostrSmart);
         return sut;
-    }
-}
-
-// TODO: Consider moving this as the real implementation
-public class TestingNostrEncription : INostrEncryption
-{
-    public NostrEvent Encrypt(NostrEvent ev, string localPrivateKey, string remotePublicKey)
-    {
-        var privateKey = NostrPrivateKey.FromHex(localPrivateKey);
-        var nostrPubKey = NostrPublicKey.FromHex(remotePublicKey);
-
-        return ev.Encrypt(privateKey, nostrPubKey);
-    }
-}
-
-public class TestingNostrSentiveData : ISensitiveNostrData
-{
-    public Result<string> GetNostrPrivateKey(KeyIdentifier keyIdentifier)
-    {
-        return NostrPrivateKey.GenerateNew().Hex;
     }
 }
