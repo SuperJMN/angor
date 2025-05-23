@@ -27,16 +27,17 @@ public class InvestmentAppServiceTests(ITestOutputHelper output)
     [Fact]
     public void Handlers_can_be_created()
     {
+        // Arrange
         var provider = GetServiceProvider();
-        
-        // Act
         var handlers = typeof(InvestmentAppService).Assembly.DefinedTypes.Where(t => t.IsClass && t.Name.EndsWith("Handler")).ToList();
         
+        // Act
         var result = handlers
             .Select(typeInfo => Result.Try(() => ActivatorUtilities.CreateInstance(provider, typeInfo))
                 .TapError(err => output.WriteLine($"Handler {typeInfo} failed to create. Please, check {nameof(FundingContextServices)}. Error: {err}")))
             .Combine();
         
+        // Asert
         Assert.True(result.IsSuccess);
     }
     
