@@ -18,8 +18,6 @@ public static class RequestInvestment
     public class RequestFounderSignaturesHandler(
         IProjectRepository projectRepository,
         ISeedwordsProvider seedwordsProvider,
-        IDerivationOperations derivationOperations,
-        IEncryptionService encryptionService,
         INetworkConfiguration networkConfiguration,
         ISerializer serializer,
         IWalletOperations walletOperations,
@@ -73,8 +71,6 @@ public static class RequestInvestment
         {
             try
             {
-                var investorNostrPrivateKey = await derivationOperations.DeriveProjectNostrPrivateKeyAsync(walletWords, project.FounderKey);
-                var investorNostrPrivateKeyHex = Encoders.Hex.EncodeData(investorNostrPrivateKey.ToBytes());
                 var releaseAddressResult = await GetUnfundedReleaseAddress(walletWords);
 
                 if (releaseAddressResult.IsFailure)
@@ -90,13 +86,6 @@ public static class RequestInvestment
                     InvestmentTransactionHex = signedTransactionHex,
                     UnfundedReleaseAddress = releaseAddress,
                 };
-
-                var serializedRecoveryRequest = serializer.Serialize(signRecoveryRequest);
-                
-                var encryptedContent = await encryptionService.EncryptNostrContentAsync(
-                    investorNostrPrivateKeyHex,
-                    project.NostrPubKey,
-                    serializedRecoveryRequest);
 
                 var key = new KeyIdentifier(walletId, project.NostrPubKey);
                 return await signService.PostInvestmentRequest2(key, serializer.Serialize(signRecoveryRequest),  project.NostrPubKey);
