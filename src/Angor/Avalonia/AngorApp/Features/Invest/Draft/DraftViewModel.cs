@@ -32,7 +32,7 @@ public partial class DraftViewModel : ReactiveObject, IDraftViewModel
             .ToProperty(this, x => x.Draft);
 
         var canConfirm = this.WhenAnyValue(model => model.Draft).NotNull().CombineLatest(isCalculatingDraft, (hasDraft, calculating) => hasDraft && !calculating);
-        Confirm = ReactiveCommand.CreateFromTask(() => Draft!.Confirm(), canConfirm);
+        Confirm = ReactiveCommand.CreateFromTask(() => Draft!.Confirm().Map(() => Unit.Default), canConfirm);
         IsSending = Confirm.IsExecuting;
 
         IsCalculating = isCalculatingDraft.AsObservable();
@@ -42,7 +42,7 @@ public partial class DraftViewModel : ReactiveObject, IDraftViewModel
 
     public IObservable<bool> IsCalculating { get; }
     public IObservable<bool> IsSending { get; }
-    public ReactiveCommand<Unit, Result<Guid>> Confirm { get; }
+    public ReactiveCommand<Unit, Result<Unit>> Confirm { get; }
     public long SatsToInvest { get; }
     public IFeeCalculator FeeCalculator { get; }
     public IEnumerable<IFeeratePreset> Presets => uiServices.FeeratePresets;

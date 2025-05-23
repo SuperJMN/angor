@@ -21,9 +21,9 @@ public static class RequestInvestment
         INetworkConfiguration networkConfiguration,
         ISerializer serializer,
         IWalletOperations walletOperations,
-        ISignService signService) : IRequestHandler<RequestFounderSignaturesRequest, Result<Guid>>
+        ISignService signService) : IRequestHandler<RequestFounderSignaturesRequest, Result>
     {
-        public async Task<Result<Guid>> Handle(RequestFounderSignaturesRequest request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(RequestFounderSignaturesRequest request, CancellationToken cancellationToken)
         {
             var txnHex = request.Draft.SignedTxHex;
             var network = networkConfiguration.GetNetwork();
@@ -34,37 +34,20 @@ public static class RequestInvestment
 
             if (projectResult.IsFailure)
             {
-                return Result.Failure<Guid>(projectResult.Error);
+                return Result.Failure<EventSendResponse>(projectResult.Error);
             }
 
             var sensitiveDataResult = await seedwordsProvider.GetSensitiveData(request.WalletId);
 
             if (sensitiveDataResult.IsFailure)
             {
-                return Result.Failure<Guid>(sensitiveDataResult.Error);
+                return Result.Failure<EventSendResponse>(sensitiveDataResult.Error);
             }
 
             var walletWords = sensitiveDataResult.Value.ToWalletWords();
             var project = projectResult.Value;
 
-            var sendSignatureResult = await SendSignatureRequest(request.WalletId, walletWords, project, strippedInvestmentTransaction.ToHex());
-
-            if (sendSignatureResult.IsFailure)
-            {
-                return Result.Failure<Guid>(sendSignatureResult.Error);
-            }
-
-            var requestId = sendSignatureResult.Value;
-            // TODO: Don't forget to uncomment. We really need to save info
-            //var saveResult = await Save(requestId, txnHex, requestFounderSignaturesRequest.InvestmentTransaction.InvestorKey, requestFounderSignaturesRequest.ProjectId);
-            //return saveResult.Sats;
-            return Result.Success(Guid.Empty);
-        }
-
-        private async Task<Result<Guid>> Save(string requestId, string transactionHex, string investorKey, ProjectId projectId)
-        {
-            // TODO: Implement the save logic
-            throw new NotImplementedException();
+            return await SendSignatureRequest(request.WalletId, walletWords, project, strippedInvestmentTransaction.ToHex());
         }
 
         private async Task<Result<EventSendResponse>> SendSignatureRequest(Guid walletId, WalletWords walletWords, Project project, string signedTransactionHex)
@@ -109,7 +92,7 @@ public static class RequestInvestment
         }
     }
     
-    public class RequestFounderSignaturesRequest(Guid walletId, ProjectId projectId, CreateInvestment.Draft draft) : IRequest<Result<Guid>>
+    public class RequestFounderSignaturesRequest(Guid walletId, ProjectId projectId, CreateInvestment.Draft draft) : IRequest<Result>
     {
         public ProjectId ProjectId { get; } = projectId;
         public CreateInvestment.Draft Draft { get; } = draft;
