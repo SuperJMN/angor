@@ -18,7 +18,7 @@ namespace Angor.Contexts.Funding.Tests;
 public class SigningTests
 {
     [Fact]
-    public async Task Test_something()
+    public async Task Post_investment_should_return_ok()
     {
         var sut = CreateSignService();
 
@@ -28,6 +28,7 @@ public class SigningTests
         var keyIdenfier = new KeyIdentifier(Guid.Empty, founderPubKey);
 
         var result = await sut.PostInvestmentRequest2(keyIdenfier, "TEST", founderNostrPubKey);
+        Assert.True(result.IsSuccess);
     }
 
     private static SignService CreateSignService()

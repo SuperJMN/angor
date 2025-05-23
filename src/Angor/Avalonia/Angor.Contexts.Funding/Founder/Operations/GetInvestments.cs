@@ -77,7 +77,7 @@ public static class GetInvestments
             {
                 return Observable.Create<ApprovalMessage>(observer =>
                 {
-                    signService.LookupInvestmentRequestApprovals(nostrPubKey,
+                    signService.GetAllInvestmentRequestApprovals(nostrPubKey,
                         (profileIdentifier, created, content) => observer.OnNext(new ApprovalMessage(profileIdentifier, created, content)),
                         observer.OnCompleted
                     );
@@ -97,7 +97,7 @@ public static class GetInvestments
             {
                 return Observable.Create<DirectMessage>(observer =>
                 {
-                    signService.LookupInvestmentRequestsAsync(nostrPubKey, null, null,
+                    signService.GetAllInvestmentRequests(nostrPubKey, null, null,
                         (id, pubKey, content, created) => observer.OnNext(new DirectMessage(id, pubKey, content, created)),
                         observer.OnCompleted
                     );

@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="ReactiveUI"/>
-        <PackageReference Include="CSharpFunctionalExtensions"/>
+        <PackageReference Include="CSharpFunctionalExtensions" />
         <PackageReference Include="ReactiveUI.SourceGenerators"/>
         <PackageReference Include="ReactiveUI.SourceGenerators.Analyzers.CodeFixes"/>
         <PackageReference Include="Zafiro.Avalonia.Dialogs"/>
