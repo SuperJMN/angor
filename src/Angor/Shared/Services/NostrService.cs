@@ -1,21 +1,15 @@
 using System.Reactive.Linq;
-using Angor.Shared.Services;
 using CSharpFunctionalExtensions;
 using Nostr.Client.Client;
 using Nostr.Client.Messages;
 using Nostr.Client.Requests;
 using Nostr.Client.Responses;
 
-namespace Angor.Contexts.Funding.Shared;
+namespace Angor.Shared.Services;
 
-public class NostrService : INostrService
+public class NostrService(INostrCommunicationFactory nostrClient, INetworkService networkService) : INostrService
 {
-    private readonly INostrClient nostrClient;
-
-    public NostrService(INostrClient nostrClient)
-    {
-        this.nostrClient = nostrClient;
-    }
+    private readonly INostrClient nostrClient = nostrClient.GetOrCreateClient(networkService);
 
     public async Task<Result<NostrOkResponse>> Send(NostrEvent nostrEvent)
     {
@@ -30,11 +24,12 @@ public class NostrService : INostrService
 
             nostrClient.Send(new NostrEventRequest(nostrEvent));
 
-            var respuesta = await okStream
+            var firstOkResponse = await okStream
+                .Where(x => x.Accepted)
                 .FirstAsync()
                 .Timeout(TimeSpan.FromSeconds(10));
 
-            return Result.Success(respuesta);
+            return Result.Success(firstOkResponse);
         }
         catch (Exception ex)
         {

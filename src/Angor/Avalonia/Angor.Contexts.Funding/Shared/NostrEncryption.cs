@@ -5,7 +5,7 @@ namespace Angor.Contexts.Funding.Shared;
 
 public class NostrEncryption : INostrEncryption
 {
-    public NostrEvent Encrypt(NostrEvent ev, string localPrivateKey, string remotePublicKey)
+    public async Task<NostrEvent> Encrypt(NostrEvent ev, string localPrivateKey, string remotePublicKey)
     {
         var privateKey = NostrPrivateKey.FromHex(localPrivateKey);
         var nostrPubKey = NostrPublicKey.FromHex(remotePublicKey);

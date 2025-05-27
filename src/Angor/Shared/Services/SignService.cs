@@ -270,18 +270,13 @@ namespace Angor.Shared.Services
                     new NostrEventTag("subject", "Investment offer"))
             };
 
-            var encryptedEvent = nostrEncryption.Encrypt(ev, key.Value, founderNostrPubKey);
+            var encryptedEvent = await nostrEncryption.Encrypt(ev, key.Value, founderNostrPubKey);
             var signed = encryptedEvent.Sign(parsedKey);
 
             return await nostrService.Send(signed)
                 .Ensure(response => response.Accepted, "Failed to send event")
                 .Map(response => new EventSendResponse(response.Accepted, response.EventId, response.Message, response.ReceivedTimestamp));
         }
-    }
-
-    public interface INostrService
-    {
-        Task<Result<NostrOkResponse>> Send(NostrEvent nostrEvent);
     }
 
     public record EventSendResponse(bool IsAccepted, string? EventId, string? Message, DateTime Received);
