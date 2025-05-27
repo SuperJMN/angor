@@ -61,13 +61,7 @@ public static class FundingContextServices
         // Nostr
         services.AddSingleton<INostrEncryption, NostrEncryption>();
         services.AddSingleton<ISensitiveNostrData, SensitiveNostrData>();
-        services.TryAddSingleton<INostrService>(provider =>
-        {
-            var networkService = provider.GetRequiredService<INetworkService>();
-            var communicationFactory = provider.GetRequiredService<INostrCommunicationFactory>();
-            var client = communicationFactory.GetOrCreateClient(networkService);
-            return new NostrService(client);
-        });
+        services.TryAddSingleton<INostrService, NostrService>();
 
         return services;
     }
