@@ -67,37 +67,6 @@ public class SigningTests(ITestOutputHelper output)
         var provider = serviceCollection.BuildServiceProvider();
 
         return provider.GetRequiredService<ISignService>();
-        
-        var networkConfiguration = new TestNetworkConfiguration();
-        var derivationOperations = new DerivationOperations(new HdOperations(), new NullLogger<DerivationOperations>(), networkConfiguration);
-        
-        var testingNostrSentiveData = new SensitiveNostrData(new TestingSeedwordsProvider("bla bla bla", "asdf"), derivationOperations, networkConfiguration);
-        var serializer = new Serializer();
-        var testingNotrEncription = new NostrEncryption();
-        var communicationFactory = new NostrCommunicationFactory(new NullLogger<NostrWebsocketClient>(), new NullLogger<NostrCommunicationFactory>());
-        var mockNetworkConfiguration = new Mock<INetworkConfiguration>();
-        var mockNetworkStorage = new Mock<INetworkStorage>();
-        mockNetworkStorage.Setup(ns => ns.GetSettings()).Returns(new SettingsInfo
-        {
-            Relays = new List<SettingsUrl>
-            {
-                new() { Name = "", Url = "wss://relay.angor.io", IsPrimary = true },
-                //new() { Name = "", Url = "wss://relay2.angor.io", IsPrimary = true },
-            },
-        });
-        mockNetworkConfiguration.Setup(nc => nc.GetAngorKey()).Returns("dummyAngorKey");
-        mockNetworkConfiguration.Setup(nc => nc.GetNetwork()).Returns(Networks.Bitcoin.Testnet);
-
-        var networkService = new NetworkService(mockNetworkStorage.Object, new HttpClient { BaseAddress = new Uri("wss://relay.angor.io") }, new NullLogger<NetworkService>(), mockNetworkConfiguration.Object);
-        var subscriptionsHanding = new RelaySubscriptionsHandling(new NullLogger<RelaySubscriptionsHandling>(), communicationFactory, networkService);
-
-        var nostrWebsocketCommunicator = new NostrWebsocketCommunicator(new Uri("ws://relay.angor.io"));
-        nostrWebsocketCommunicator.Start().Wait();
-        var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog());
-        var logger = loggerFactory.CreateLogger<NostrWebsocketClient>();
-        var nostrSmart = new NostrService(new NostrWebsocketClient(nostrWebsocketCommunicator, logger));
-        var sut = new SignService(testingNostrSentiveData, serializer, testingNotrEncription, communicationFactory, networkService, subscriptionsHanding, nostrSmart);
-        return sut;
     }
 }
 
