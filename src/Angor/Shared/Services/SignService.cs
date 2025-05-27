@@ -257,7 +257,7 @@ namespace Angor.Shared.Services
 
         public async Task<Result<EventSendResponse>> PostInvestmentRequest2<T>(KeyIdentifier keyIdentifier, T content, string founderNostrPubKey)
         {
-            var key = sensitiveNostrData.GetNostrPrivateKey(keyIdentifier);
+            var key = await sensitiveNostrData.GetNostrPrivateKey(keyIdentifier);
             var parsedKey = NostrPrivateKey.FromHex(key.Value);
             var jsonContent = serializer.Serialize(content);
             var ev = new NostrEvent

@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Angor.Contexts.Funding\Angor.Contexts.Funding.csproj" />
+      <ProjectReference Include="..\Angor.Contexts.Integration.WalletFunding\Angor.Contexts.Integration.WalletFunding.csproj" />
     </ItemGroup>
 
 </Project>
