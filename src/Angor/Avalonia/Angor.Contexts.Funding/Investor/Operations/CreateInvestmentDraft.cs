@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Angor.Contexts.Funding.Investor.Operations;
 
-public static class CreateInvestment
+public static class CreateInvestmentDraft
 {
     public class CreateInvestmentTransactionRequest : IRequest<Result<Draft>>
     {

@@ -10,12 +10,12 @@ namespace Angor.Contexts.Funding.Investor;
 
 public class InvestmentAppService(IInvestmentRepository investmentRepository, IMediator mediator) : IInvestmentAppService 
 {
-    public Task<Result<CreateInvestment.Draft>> CreateInvestmentDraft(Guid sourceWalletId, ProjectId projectId, Amount amount)
+    public Task<Result<CreateInvestmentDraft.Draft>> CreateInvestmentRequestDraft(Guid sourceWalletId, ProjectId projectId, Amount amount)
     {
-        return mediator.Send(new CreateInvestment.CreateInvestmentTransactionRequest(sourceWalletId, projectId, amount));
+        return mediator.Send(new CreateInvestmentDraft.CreateInvestmentTransactionRequest(sourceWalletId, projectId, amount));
     }
 
-    public Task<Result<Guid>> Invest(Guid sourceWalletId, ProjectId projectId, CreateInvestment.Draft draft)
+    public Task<Result<Guid>> RequestInvestment(Guid sourceWalletId, ProjectId projectId, CreateInvestmentDraft.Draft draft)
     {
         return mediator.Send(new RequestInvestment.RequestFounderSignaturesRequest(sourceWalletId, projectId, draft));
     }
@@ -25,8 +25,13 @@ public class InvestmentAppService(IInvestmentRepository investmentRepository, IM
         return mediator.Send(new GetInvestments.GetInvestmentsRequest(walletId, projectId));
     }
 
-    public Task<Result> ApproveInvestment(Guid walletId, ProjectId projectId, Investment investment)
+    public Task<Result> ApproveInvestmentRequest(Guid walletId, ProjectId projectId, Investment investment)
     {
-        return mediator.Send(new ApproveInvestment.ApproveInvestmentRequest(walletId, projectId, investment));
+        return mediator.Send(new ApproveInvestmentRequest.Request(walletId, projectId, investment));
+    }
+
+    public Task<Result> Invest(Guid walletId, ProjectId projectId)
+    {
+        return mediator.Send(new Invest.Request(walletId, projectId));
     }
 }

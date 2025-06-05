@@ -5,6 +5,7 @@ using Angor.Contexts.Funding.Shared;
 using Angor.Contexts.Funding.Tests.TestDoubles;
 using Angor.Shared;
 using CSharpFunctionalExtensions;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Xunit.Abstractions;
@@ -22,21 +23,21 @@ public class InvestmentAppServiceTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task Create_investment_draft()
+    public async Task Investor_create_investment_draft()
     {
         // Arrange
         var sut = CreateSut();
         var projectId = new ProjectId("angor1qkmmqqktfhe79wxp20555cdp5gfardr4s26wr00");
         
         // Act
-        var result = await sut.CreateInvestmentDraft(Guid.Empty, projectId, new Amount(12345));
+        var result = await sut.CreateInvestmentRequestDraft(Guid.Empty, projectId, new Amount(12345));
         
         // Assert
         Assert.True(result.IsSuccess, result.IsFailure ? result.Error : string.Empty);
     }
 
     [Fact]
-    public async Task Request_investment_in_project()
+    public async Task Investor_request_investment_in_project()
     {
         // Arrange
         var sut = CreateSut();
@@ -44,10 +45,10 @@ public class InvestmentAppServiceTests(ITestOutputHelper output)
         var investorKey = "03138f2811a0b7589d1b04a34b561f55093965757b31b239b3b201d93825455838";
         var txHex = "010000000001010bd918149ebabf50f237b1a56468275694d8659ba4c027e918b2fdd2daee6ca10000000000ffffffff077b00000000000000160014b6f6005969be7c57182a7d294c3434427a368eb00000000000000000236a2103138f2811a0b7589d1b04a34b561f55093965757b31b239b3b201d938254558380e0c00000000000022512084f0525ebccdfbf25a16c17b80376dee43340abe3ccf16dd469516305f269ae70e0c0000000000002251205aae5213e93335978561dea413cf06d84e50ca3b1c4a2df0032a9f7c07e6bb280e0c000000000000225120b2f7dd8d0e803799cba4197e7c0888985f8ff69113cab0dc273953afab6ab4160e0c000000000000225120fba3b11bb17f310d7cc02b09e911119324e53ce630625297ef021938a3a861644dc933770000000016001441566be59b2062a8cc3eddb528eb027dbbcbb18302483045022100cf44e9d7d793fa549fedd4835e09461538e797245ee662322004b6f69fa2b7d202205269573bbfba88abe0a39893acf9dd074260556a92c55be56cf5fdaca153da1f0121021ffb80288cff7f0c0e8dc30a1658f1f6c54fd89d8d03226acac1e6f733d1a04800000000";
         var txId = "1b55a4706d7315ea32bfe9c004781f0dee1df3ba18fd7d4423ebad2399dcf96a";
-        var draft = new CreateInvestment.Draft(investorKey, txHex, txId, new Amount(0));
+        var draft = new CreateInvestmentDraft.Draft(investorKey, txHex, txId, new Amount(0));
 
         // Act
-        var result = await sut.Invest(Guid.Empty, projectId, draft);
+        var result = await sut.RequestInvestment(Guid.Empty, projectId, draft);
 
         // Assert
         Assert.True(result.IsSuccess, result.IsFailure ? result.Error : string.Empty);
@@ -68,7 +69,7 @@ public class InvestmentAppServiceTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task Approve_investment()
+    public async Task Founder_approve_investment_request()
     {
         // Arrange
         var sut = CreateSut();
@@ -76,10 +77,24 @@ public class InvestmentAppServiceTests(ITestOutputHelper output)
         var pendingInvestmentDto = pendingInvestments.Value.TryFirst().GetValueOrThrow("Failed");
 
         // Act
-        var approveResult = await sut.ApproveInvestment(Guid.Empty, new ProjectId("angor1qatlv9htzte8vtddgyxpgt78ruyzaj57n4l7k46"), pendingInvestmentDto);
+        var approveResult = await sut.ApproveInvestmentRequest(Guid.Empty, new ProjectId("angor1qatlv9htzte8vtddgyxpgt78ruyzaj57n4l7k46"), pendingInvestmentDto);
         
         // Assert
-        Assert.True(approveResult.IsSuccess);
+        approveResult.Should().Succeed();
+    }
+    
+    [Fact]
+    public async Task Investor_invest()
+    {
+        // Arrange
+        var sut = CreateSut();
+        var projectId = new ProjectId("angor1qf54l095jp2kjn2enmc2c3y5tfahz50wyl6e9sv");
+        
+        // Act
+        var result = await sut.Invest(Guid.Empty, projectId);
+        
+        // Assert
+        result.Should().Succeed();
     }
 
     private IInvestmentAppService CreateSut()

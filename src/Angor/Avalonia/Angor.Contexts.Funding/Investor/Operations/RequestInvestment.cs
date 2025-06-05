@@ -122,10 +122,10 @@ public static class RequestInvestment
         }
     }
     
-    public class RequestFounderSignaturesRequest(Guid walletId, ProjectId projectId, CreateInvestment.Draft draft) : IRequest<Result<Guid>>
+    public class RequestFounderSignaturesRequest(Guid walletId, ProjectId projectId, CreateInvestmentDraft.Draft draft) : IRequest<Result<Guid>>
     {
         public ProjectId ProjectId { get; } = projectId;
-        public CreateInvestment.Draft Draft { get; } = draft;
+        public CreateInvestmentDraft.Draft Draft { get; } = draft;
         public Guid WalletId { get; } = walletId;
     }
 }

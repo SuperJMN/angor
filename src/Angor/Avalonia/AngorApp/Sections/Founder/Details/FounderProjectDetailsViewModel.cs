@@ -46,7 +46,7 @@ public class FounderProjectDetailsViewModel : IFounderProjectDetailsViewModel
             return Result.Success(false);
         }
     
-        var approvalResult = await investmentAppService.ApproveInvestment(wallet.Id.Value, project.Id, investment);
+        var approvalResult = await investmentAppService.ApproveInvestmentRequest(wallet.Id.Value, project.Id, investment);
     
         return approvalResult.Map(() => true);
 

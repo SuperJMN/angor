@@ -14,9 +14,9 @@ using MediatR;
 
 namespace Angor.Contexts.Funding.Founder.Operations;
 
-public static class ApproveInvestment
+public static class ApproveInvestmentRequest
 {
-    public record ApproveInvestmentRequest(Guid WalletId, ProjectId ProjectId, Investment InvestmentRequest) : IRequest<Result>;
+    public record Request(Guid WalletId, ProjectId ProjectId, Investment InvestmentRequest) : IRequest<Result>;
 
     public class ApproveInvestmentHandler(
         IProjectRepository projectRepository,
@@ -27,9 +27,9 @@ public static class ApproveInvestment
         ISerializer serializer,
         INetworkConfiguration networkConfiguration,
         IInvestorTransactionActions investorTransactionActions,
-        IFounderTransactionActions founderTransactionActions) : IRequestHandler<ApproveInvestmentRequest, Result>
+        IFounderTransactionActions founderTransactionActions) : IRequestHandler<Request, Result>
     {
-        public async Task<Result> Handle(ApproveInvestmentRequest request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Request request, CancellationToken cancellationToken)
         {
             var signatureItem = new SignatureItem()
             {
