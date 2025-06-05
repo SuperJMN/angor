@@ -30,8 +30,8 @@ public class InvestmentAppService(IInvestmentRepository investmentRepository, IM
         return mediator.Send(new ApproveInvestmentRequest.Request(walletId, projectId, investment));
     }
 
-    public Task<Result> Invest(Guid walletId, ProjectId projectId)
+    public Task<Result> Invest(int requestId)
     {
-        return mediator.Send(new Invest.Request(walletId, projectId));
+        return mediator.Send(new Invest.Request(requestId));
     }
 }

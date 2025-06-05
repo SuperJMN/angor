@@ -8,10 +8,9 @@ namespace Angor.Contexts.Funding.Investor.Operations;
 
 public static class Invest
 {
-    public class Request(Guid walletId, ProjectId projectId) : IRequest<Result>
+    public class Request(int requestId) : IRequest<Result>
     {
-        public Guid WalletId { get; } = walletId;
-        public ProjectId ProjectId { get; } = projectId;
+        public int RequestId { get; } = requestId;
     }
 
     public class Handler(IProjectRepository projectRepository, ISeedwordsProvider seedwordsProvider)
@@ -19,11 +18,8 @@ public static class Invest
     {
         public async Task<Result> Handle(Request request, CancellationToken cancellationToken)
         {
-            var result = await from project in projectRepository.Get(request.ProjectId)
-                from words in seedwordsProvider.GetSensitiveData(request.WalletId)
-                select new { project, words };
-
-            return Result.Success();
+           // we have the request id, so we can get everything for it
+           throw new NotImplementedException();
         }
     }
 }
