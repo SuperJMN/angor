@@ -28,6 +28,7 @@
 
     <Styles.Resources>
         <ControlTheme x:Key="{x:Type a:CardGrid}" TargetType="c:CardGrid">
+            <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border Container.Name="ResponsiveContainer" Container.Sizing="Width" Padding="{TemplateBinding Padding}">
@@ -35,24 +36,26 @@
                             <ContainerQuery Name="ResponsiveContainer" Query="min-width:0">
                                 <Style Selector="UniformGrid">
                                     <Setter Property="Columns" Value="1" />
+                                    <!-- <Setter Property="ColumnSpacing" Value="10" /> -->
                                 </Style>
                             </ContainerQuery>
                             <ContainerQuery Name="ResponsiveContainer" Query="min-width:400">
                                 <Style Selector="UniformGrid">
                                     <Setter Property="Columns" Value="2" />
+                                    <!-- <Setter Property="ColumnSpacing" Value="20" /> -->
                                 </Style>
                             </ContainerQuery>
                             <ContainerQuery Name="ResponsiveContainer" Query="min-width:800">
                                 <Style Selector="UniformGrid">
                                     <Setter Property="Columns" Value="4" />
+                                    <!-- <Setter Property="ColumnSpacing" Value="30" /> -->
                                 </Style>
                             </ContainerQuery>
                         </Border.Styles>
                         <ItemsControl ItemTemplate="{TemplateBinding ItemTemplate}" ItemsSource="{TemplateBinding ItemsSource}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <UniformGrid ColumnSpacing="{Binding $parent[c:CardGrid].ColumnSpacing}" 
-                                                 RowSpacing="{Binding $parent[c:CardGrid].RowSpacing}" />
+                                    <UniformGrid />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>

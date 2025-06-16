@@ -44,7 +44,7 @@
             </Card>
 
             <Loading IsLoading="{Binding IsLoading^}">
-                <a:CardGrid Padding="10" ItemsSource="{Binding Projects}" ColumnSpacing="15" RowSpacing="15">
+                <a:CardGrid ItemsSource="{Binding Projects}">
                     <a:CardGrid.ItemTemplate>
                         <DataTemplate DataType="browse:IProjectViewModel">
                             <OverlayBorder Padding="0" Theme="{StaticResource CardOverlayBorder}">

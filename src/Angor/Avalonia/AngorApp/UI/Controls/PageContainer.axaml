@@ -1,13 +1,13 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:AngorApp.UI.Controls">
+        xmlns:a="using:AngorApp.UI.Controls">
     <Design.PreviewWith>
-        <controls:PageContainer Width="620" Height="200">
-        </controls:PageContainer>
+        <a:PageContainer Width="620" Height="200">
+        </a:PageContainer>
     </Design.PreviewWith>
 
     <Styles.Resources>
-        <ControlTheme TargetType="controls:PageContainer" x:Key="{x:Type controls:PageContainer}">
+        <ControlTheme TargetType="a:PageContainer" x:Key="{x:Type a:PageContainer}">
             <Setter Property="Template">
                 <ControlTemplate>
                     <ScrollViewer>

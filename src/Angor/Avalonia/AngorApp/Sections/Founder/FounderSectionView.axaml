@@ -9,6 +9,7 @@
              xmlns:co="clr-namespace:AngorApp.UI.Controls"
              xmlns:z="clr-namespace:Zafiro.Avalonia.Controls;assembly=Zafiro.Avalonia"
              xmlns:av="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             xmlns:ui="clr-namespace:Zafiro.UI;assembly=Zafiro.UI"
              x:DataType="founder:IFounderSectionViewModel">
 
     <Design.DataContext>
@@ -55,21 +56,20 @@
             <DockPanel>
                 <z:Card Header="Founder" DockPanel.Dock="Top">
                     <z:Card.HeaderEndContent>
-                        <co:IconButton DockPanel.Dock="Right" VerticalAlignment="Top">
+                        <IconButton DockPanel.Dock="Right" VerticalAlignment="Top">
                             CREATE PROJECT
-                            <co:IconButton.Icon>
-                                <i:Icon Value="mdi-plus-box-outline" FontSize="20" />
-                            </co:IconButton.Icon>
-                        </co:IconButton>
+                            <IconButton.Icon>
+                                <ui:Icon Source="mdi-plus-box-outline" />
+                            </IconButton.Icon>
+                        </IconButton>
                     </z:Card.HeaderEndContent>
                     <z:Card.HeaderStartContent>
                         <i:Icon FontSize="40" Value="mdi-shield-account-outline" />
                     </z:Card.HeaderStartContent>
                 </z:Card>
-                <z:Loading LoadingText="Loading projects. Please wait." VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" IsLoading="{Binding LoadProjects.IsExecuting^}">
-                    <co:CardGrid VerticalAlignment="Top" Padding="10" ColumnSpacing="15" RowSpacing="15" ItemsSource="{Binding ProjectsList}" />
+                <z:Loading LoadingText="Loading projects. Please wait." IsLoading="{Binding LoadProjects.IsExecuting^}">
+                    <co:CardGrid ItemsSource="{Binding ProjectsList}" />
                 </z:Loading>
-
             </DockPanel>
         </ScrollViewer>
     </co:PageContainer>
