@@ -9,7 +9,7 @@
              xmlns:a="clr-namespace:AngorApp.UI.Controls"
              xmlns:ui="clr-namespace:Zafiro.UI;assembly=Zafiro.UI"
              xmlns:av="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="700"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="AngorApp.Sections.Browse.BrowseSectionView"
              x:DataType="browse:IBrowseSectionViewModel">
 
@@ -28,15 +28,15 @@
     </UserControl.Styles>
 
     <a:PageContainer>
-        <StackPanel>
+        <DockPanel>
 
-            <Card Header="Browse" Subheader="Browse Projects">
+            <Card Header="Browse" Subheader="Browse Projects" DockPanel.Dock="Top">
                 <Card.HeaderStartContent>
                     <ui:Icon Source="svg:/Assets/browse.svg" />
                 </Card.HeaderStartContent>
             </Card>
 
-            <Card Header="Project lookup" Padding="20 0 20 20">
+            <Card Header="Project lookup" Padding="20 0 20 20" DockPanel.Dock="Top">
                 <Card.Subheader>
                     <TextBlock TextWrapping="Wrap">You can look for a project directly by entering its <Bold>Project Id</Bold> here</TextBlock>
                 </Card.Subheader>
@@ -70,36 +70,12 @@
                                 </Interaction.Behaviors>
 
                             </OverlayBorder>
-                            <!-- <Card Margin="20" -->
-                            <!--                HeaderBackground="{Binding Project.Picture}" -->
-                            <!--                start="{Binding Project.Banner}" -->
-                            <!--                Header="{Binding Project.Name}" -->
-                            <!--                > -->
-                            <!--     <Card.HeaderStartContent> -->
-                            <!--         <ui:Icon Source="fa-wallet" /> -->
-                            <!--     </Card.HeaderStartContent> -->
-                            <!--     <DockPanel> -->
-                            <!--         <a:IconButton DockPanel.Dock="Bottom" Command="{Binding GoToDetails}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Content="VIEW PROJECT"> -->
-                            <!--             <a:IconButton.Icon> -->
-                            <!--                 <i:Icon Value="fa-folder" /> -->
-                            <!--             </a:IconButton.Icon> -->
-                            <!--         </a:IconButton> -->
-                            <!--         <Separator DockPanel.Dock="Bottom" Margin="0 10" /> -->
-                            <!--         <TextBlock Margin="0 20" MaxLines="3" TextWrapping="Wrap" Text="{Binding Project.ShortDescription}" TextTrimming="CharacterEllipsis" /> -->
-                            <!--     </DockPanel> -->
-                            <!-- </Card> -->
                         </DataTemplate>
                     </a:CardGrid.ItemTemplate>
                 </a:CardGrid>
             </Loading>
 
-            <a:IconButton Command="{Binding OpenHub}" Padding="20 10" Background="#A8C4C9" HorizontalAlignment="Center" Content="ANGOR HUB">
-                <a:IconButton.Icon>
-                    <i:Icon Value="fa-magnifying-glass" />
-                </a:IconButton.Icon>
-            </a:IconButton>
-
-        </StackPanel>
+        </DockPanel>
 
     </a:PageContainer>
 
