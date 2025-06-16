@@ -98,11 +98,22 @@
     <Style Selector="avalonia|Icon">
         <Setter Property="Foreground" Value="{StaticResource Level5}" />
     </Style>
-
     
     <Style Selector="views|DialogControl" >
-        <Setter Property="MinWidth" Value="400" />
-        <Setter Property="MinHeight" Value="300" />
+        <Setter Property="MinWidth">
+            <Setter.Value>
+                <OnFormFactor>
+                    <OnFormFactor.Desktop><x:Double>400</x:Double></OnFormFactor.Desktop>
+                </OnFormFactor>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="MinHeight">
+            <Setter.Value>
+                <OnFormFactor>
+                    <OnFormFactor.Desktop><x:Double>300</x:Double></OnFormFactor.Desktop>
+                </OnFormFactor>
+            </Setter.Value>
+        </Setter>
     </Style>
     
     <Style Selector="views|DialogControl slim|SlimWizardControl">

@@ -30,7 +30,7 @@
         <ControlTheme x:Key="{x:Type a:CardGrid}" TargetType="c:CardGrid">
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Border Container.Name="ResponsiveContainer" Container.Sizing="Width">
+                    <Border Container.Name="ResponsiveContainer" Container.Sizing="Width" Padding="{TemplateBinding Padding}">
                         <Border.Styles>
                             <ContainerQuery Name="ResponsiveContainer" Query="min-width:0">
                                 <Style Selector="UniformGrid">
@@ -51,7 +51,8 @@
                         <ItemsControl ItemTemplate="{TemplateBinding ItemTemplate}" ItemsSource="{TemplateBinding ItemsSource}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <UniformGrid />
+                                    <UniformGrid ColumnSpacing="{Binding $parent[c:CardGrid].ColumnSpacing}" 
+                                                 RowSpacing="{Binding $parent[c:CardGrid].RowSpacing}" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>

@@ -7,8 +7,9 @@
              xmlns:designTime="clr-namespace:Zafiro.Avalonia.DesignTime;assembly=Zafiro.Avalonia"
              xmlns:lk="clr-namespace:AngorApp.Sections.Browse.ProjectLookup"
              xmlns:a="clr-namespace:AngorApp.UI.Controls"
-             xmlns:controls1="clr-namespace:Zafiro.Avalonia.Controls;assembly=Zafiro.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="500"
+             xmlns:ui="clr-namespace:Zafiro.UI;assembly=Zafiro.UI"
+             xmlns:av="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="700"
              x:Class="AngorApp.Sections.Browse.BrowseSectionView"
              x:DataType="browse:IBrowseSectionViewModel">
 
@@ -27,44 +28,70 @@
     </UserControl.Styles>
 
     <a:PageContainer>
-        <StackPanel Spacing="20">
+        <StackPanel>
 
-            <a:Pane Title="Browse" IsTitleVisible="True" Subtitle="Browse Projects">
-                <a:Pane.TitleIcon>
-                    <i:Icon Value="fa-wallet" />
-                </a:Pane.TitleIcon>
-            </a:Pane>
+            <Card Header="Browse" Subheader="Browse Projects">
+                <Card.HeaderStartContent>
+                    <ui:Icon Source="svg:/Assets/browse.svg" />
+                </Card.HeaderStartContent>
+            </Card>
 
-            <a:Pane>
+            <Card Header="Project lookup" Padding="20 0 20 20">
+                <Card.Subheader>
+                    <TextBlock TextWrapping="Wrap">You can look for a project directly by entering its <Bold>Project Id</Bold> here</TextBlock>
+                </Card.Subheader>
                 <lk:ProjectLookupView DataContext="{Binding ProjectLookupViewModel}" />
-            </a:Pane>
+            </Card>
 
-            <controls1:Loading IsLoading="{Binding IsLoading^}">
-                <a:CardGrid ItemsSource="{Binding Projects}" Margin="-15  0 -5 0">
+            <Loading IsLoading="{Binding IsLoading^}">
+                <a:CardGrid Padding="10" ItemsSource="{Binding Projects}" ColumnSpacing="15" RowSpacing="15">
                     <a:CardGrid.ItemTemplate>
                         <DataTemplate DataType="browse:IProjectViewModel">
-                            <a:Pane Margin="20" IsHeaderVisible="True" MaxHeight="600"
-                                           HeaderBackground="{Binding Project.Picture}"
-                                           HeaderIcon="{Binding Project.Banner}"
-                                           Title="{Binding Project.Name}"
-                                           IsTitleVisible="True">
-                                <a:Pane.TitleIcon>
-                                    <i:Icon Value="fa-wallet" FontSize="20" />
-                                </a:Pane.TitleIcon>
-                                <DockPanel>
-                                    <a:IconButton DockPanel.Dock="Bottom" Command="{Binding GoToDetails}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Content="VIEW PROJECT">
-                                        <a:IconButton.Icon>
-                                            <i:Icon Value="fa-folder" />
-                                        </a:IconButton.Icon>
-                                    </a:IconButton>
-                                    <Separator DockPanel.Dock="Bottom" Margin="0 10" />
-                                    <TextBlock Margin="0 20" MaxLines="3" TextWrapping="Wrap" Text="{Binding Project.ShortDescription}" TextTrimming="CharacterEllipsis" />
-                                </DockPanel>
-                            </a:Pane>
+                            <OverlayBorder Padding="0" Theme="{StaticResource CardOverlayBorder}">
+                                <Grid RowDefinitions="180 Auto Auto *">
+                                    <Panel>
+                                        <av:AdvancedImage Stretch="UniformToFill" Source="{Binding Project.Picture}" />
+                                        <Panel VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                                            <av:AdvancedImage Width="80" CornerRadius="40" Stretch="UniformToFill"
+                                                               Margin="10" Height="80" Source="{Binding Project.Banner}" />
+                                            <Border CornerRadius="40" Width="80" Height="80" BorderBrush="White" BorderThickness="4" />
+                                        </Panel>
+                                    </Panel>
+                                    <StackPanel Spacing="10" Grid.Row="1" Margin="15">
+                                        <TextBlock Classes="SizeBig" TextAlignment="Center" TextWrapping="Wrap" Grid.Row="1" Text="{Binding Project.Name}" />
+                                        <TextBlock ToolTip.Tip="{Binding $self.Text}" TextTrimming="CharacterEllipsis" TextAlignment="Center" TextWrapping="Wrap" MaxLines="4" Grid.Row="2" Text="{Binding Project.ShortDescription}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Interaction.Behaviors>
+                                    <TappedTrigger>
+                                        <InvokeCommandAction Command="{Binding GoToDetails}" />
+                                    </TappedTrigger>
+                                </Interaction.Behaviors>
+
+                            </OverlayBorder>
+                            <!-- <Card Margin="20" -->
+                            <!--                HeaderBackground="{Binding Project.Picture}" -->
+                            <!--                start="{Binding Project.Banner}" -->
+                            <!--                Header="{Binding Project.Name}" -->
+                            <!--                > -->
+                            <!--     <Card.HeaderStartContent> -->
+                            <!--         <ui:Icon Source="fa-wallet" /> -->
+                            <!--     </Card.HeaderStartContent> -->
+                            <!--     <DockPanel> -->
+                            <!--         <a:IconButton DockPanel.Dock="Bottom" Command="{Binding GoToDetails}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Content="VIEW PROJECT"> -->
+                            <!--             <a:IconButton.Icon> -->
+                            <!--                 <i:Icon Value="fa-folder" /> -->
+                            <!--             </a:IconButton.Icon> -->
+                            <!--         </a:IconButton> -->
+                            <!--         <Separator DockPanel.Dock="Bottom" Margin="0 10" /> -->
+                            <!--         <TextBlock Margin="0 20" MaxLines="3" TextWrapping="Wrap" Text="{Binding Project.ShortDescription}" TextTrimming="CharacterEllipsis" /> -->
+                            <!--     </DockPanel> -->
+                            <!-- </Card> -->
                         </DataTemplate>
                     </a:CardGrid.ItemTemplate>
                 </a:CardGrid>
-            </controls1:Loading>
+            </Loading>
 
             <a:IconButton Command="{Binding OpenHub}" Padding="20 10" Background="#A8C4C9" HorizontalAlignment="Center" Content="ANGOR HUB">
                 <a:IconButton.Icon>

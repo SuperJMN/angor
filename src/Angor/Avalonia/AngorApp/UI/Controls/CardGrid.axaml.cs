@@ -24,4 +24,22 @@ public class CardGrid : TemplatedControl
         get => GetValue(ItemTemplateProperty);
         set => SetValue(ItemTemplateProperty, value);
     }
+
+    public static readonly StyledProperty<double> RowSpacingProperty = AvaloniaProperty.Register<CardGrid, double>(
+        nameof(RowSpacing));
+
+    public double RowSpacing
+    {
+        get => GetValue(RowSpacingProperty);
+        set => SetValue(RowSpacingProperty, value);
+    }
+
+    public static readonly StyledProperty<double> ColumnSpacingProperty = AvaloniaProperty.Register<CardGrid, double>(
+        nameof(ColumnSpacing));
+
+    public double ColumnSpacing
+    {
+        get => GetValue(ColumnSpacingProperty);
+        set => SetValue(ColumnSpacingProperty, value);
+    }
 }

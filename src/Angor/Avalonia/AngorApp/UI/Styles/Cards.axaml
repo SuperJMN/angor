@@ -8,14 +8,18 @@
         <ControlTheme x:Key="{x:Type Card}"
                       TargetType="Card"
                       BasedOn="{StaticResource {x:Type Card}}">
-            <Setter Property="Padding" Value="20 0" />
-            <Setter Property="HeaderPadding" Value="10" />
+            <Setter Property="Padding" Value="20 0 20 20" />
+            <Setter Property="HeaderPadding" Value="10 10 10 10" />
             <Setter Property="HeaderStartContentTemplate">
                 <DataTemplate DataType="x:Object">
                     <ContentPresenter Content="{Binding}">
                         <ContentPresenter.Styles>
                             <Style Selector="pt|Icon">
                                 <Setter Property="FontSize" Value="40" />
+                            </Style>
+                            <Style Selector="Svg">
+                                <Setter Property="Height" Value="40" />
+                                <Setter Property="Width" Value="40" />
                             </Style>
                         </ContentPresenter.Styles>
                     </ContentPresenter>
@@ -137,12 +141,21 @@
     </Styles.Resources>
     
     <Design.PreviewWith>
-        <Grid Height="400" Width="500" RowDefinitions="1*, 2*">
-            <Card>
+        <StackPanel Width="500">
+            <Card Header="Some header" Subheader="Subheader">
+                <Card.Content>
+                    <TextBlock>This is the content</TextBlock>
+                </Card.Content>
                 <Card.HeaderStartContent>
                     <ui:Icon Source="fa-wallet" />
                 </Card.HeaderStartContent>
             </Card>
-        </Grid>
+            <Card Header="Some header" Subheader="Subheader">
+
+                <Card.HeaderStartContent>
+                    <ui:Icon Source="fa-wallet" />
+                </Card.HeaderStartContent>
+            </Card>
+        </StackPanel>
     </Design.PreviewWith>
 </Styles>
