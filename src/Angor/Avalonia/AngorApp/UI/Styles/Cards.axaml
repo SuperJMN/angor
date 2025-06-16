@@ -2,54 +2,74 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:Zafiro.UI;assembly=Zafiro.UI"
         xmlns:pt="https://github.com/projektanker/icons.avalonia">
-    
+
+
     <Styles.Resources>
-        
+
+        <DataTemplate x:Key="BigIcon" DataType="x:Object">
+            <ContentPresenter Content="{Binding}">
+                <ContentPresenter.DataTemplates>
+                    <DataTemplate DataType="ui:Icon">
+                        <Viewbox Height="40" Width="40">
+                            <ContentControl ContentTemplate="{x:Static IconTemplate.Instance}" Content="{Binding }" />
+                        </Viewbox>
+                    </DataTemplate>
+                </ContentPresenter.DataTemplates>
+            </ContentPresenter>
+        </DataTemplate>
+
+        <DataTemplate x:Key="HugeIcon" DataType="x:Object">
+            <ContentPresenter Content="{Binding}">
+                <ContentPresenter.DataTemplates>
+                    <DataTemplate DataType="ui:Icon">
+                        <Viewbox Height="80" Width="80">
+                            <ContentControl ContentTemplate="{x:Static IconTemplate.Instance}" Content="{Binding }" />
+                        </Viewbox>
+                    </DataTemplate>
+                </ContentPresenter.DataTemplates>
+            </ContentPresenter>
+        </DataTemplate>
+
         <ControlTheme x:Key="{x:Type Card}"
                       TargetType="Card"
                       BasedOn="{StaticResource {x:Type Card}}">
             <Setter Property="Padding" Value="20 0 20 20" />
             <Setter Property="HeaderPadding" Value="10 10 10 10" />
-            <Setter Property="HeaderStartContentTemplate">
-                <DataTemplate DataType="x:Object">
-                    <ContentPresenter Content="{Binding}">
-                        <ContentPresenter.Styles>
-                            <Style Selector="pt|Icon">
-                                <Setter Property="FontSize" Value="40" />
-                            </Style>
-                            <Style Selector="Svg">
-                                <Setter Property="Height" Value="40" />
-                                <Setter Property="Width" Value="40" />
-                            </Style>
-                        </ContentPresenter.Styles>
-                    </ContentPresenter>
-                </DataTemplate>
-            </Setter>
         </ControlTheme>
-        
+
+
         <ControlTheme x:Key="InfoCard" TargetType="Card" BasedOn="{StaticResource {x:Type Card}}">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Margin" Value="8" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="HeaderStartContentTemplate" Value="{StaticResource BigIcon}" />
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border x:Name="Root"
-                            Margin="{TemplateBinding Margin}"
                             Background="{TemplateBinding Background}"
                             BoxShadow="{TemplateBinding BoxShadow}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}">
-                        <Grid RowDefinitions="2* 2* 4* Auto Auto"
-                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                              Margin="{TemplateBinding Padding}">
-                            <ContentPresenter x:Name="StartContent" Content="{TemplateBinding HeaderStartContent}" />
-                            <ContentPresenter Grid.Row="1" x:Name="Header" Content="{TemplateBinding Header}" />
-                            <ContentPresenter Grid.Row="2" x:Name="Subheader" Content="{TemplateBinding Subheader}" />
-                            <ContentPresenter Grid.Row="3" x:Name="Content" Content="{TemplateBinding Content}" />
-                            <ContentPresenter Grid.Row="4" x:Name="EndContent" Content="{TemplateBinding HeaderEndContent}" />
-                        </Grid>
+                        <StackPanel
+                            Spacing="10"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Margin="{TemplateBinding Padding}">
+                            <ContentPresenter x:Name="StartContent"
+                                              Content="{TemplateBinding HeaderStartContent}"
+                                              ContentTemplate="{TemplateBinding HeaderStartContentTemplate}" />
+                            <ContentPresenter Grid.Row="1" x:Name="Header" Content="{TemplateBinding Header}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}" />
+                            <ContentPresenter Grid.Row="2" x:Name="Subheader" Content="{TemplateBinding Subheader}"
+                                              ContentTemplate="{TemplateBinding SubheaderTemplate}" />
+                            <ContentPresenter Grid.Row="3" x:Name="Content" Content="{TemplateBinding Content}"
+                                              IsVisible="{Binding $parent[Card].Content, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            <ContentPresenter Grid.Row="4" x:Name="EndContent" Content="{TemplateBinding HeaderEndContent}"
+                                              IsVisible="{Binding $parent[Card].HeaderEndContent, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                              ContentTemplate="{TemplateBinding HeaderEndContentTemplate}" />
+                        </StackPanel>
                     </Border>
                 </ControlTemplate>
             </Setter>
@@ -69,80 +89,48 @@
             <Style Selector="^:pressed /template/ Border#Root">
                 <Setter Property="BoxShadow" Value="0 1 4 0 #0D000000" />
             </Style>
-
-            <Style Selector="^ /template/ ContentPresenter#Header">
-                <Setter Property="TextBlock.FontSize" Value="30" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-            </Style>
-            <Style Selector="^ /template/ ContentPresenter#Subheader">
-                <Setter Property="TextBlock.FontSize" Value="20" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-            </Style>
-
+            
         </ControlTheme>
 
         <ControlTheme x:Key="BigCard" TargetType="Card" BasedOn="{StaticResource InfoCard}">
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border x:Name="Root"
-                            Margin="{TemplateBinding Margin}"
-                            Background="{TemplateBinding Background}"
-                            BoxShadow="{TemplateBinding BoxShadow}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}">
-                        <Grid RowDefinitions="4* Auto 4* Auto Auto"
-                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                              Margin="{TemplateBinding Padding}">
-                            <ContentPresenter x:Name="StartContent" Content="{TemplateBinding HeaderStartContent}" />
-                            <ContentPresenter Grid.Row="1" x:Name="Header" Content="{TemplateBinding Header}" />
-                            <ContentPresenter Grid.Row="2" x:Name="Subheader" Content="{TemplateBinding Subheader}" />
-                            <ContentPresenter Grid.Row="3" x:Name="Content" Content="{TemplateBinding Content}" />
-                            <ContentPresenter Grid.Row="4" x:Name="EndContent" Content="{TemplateBinding HeaderEndContent}" />
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
+            <Setter Property="HeaderStartContentTemplate" Value="{StaticResource HugeIcon}" />
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentControl TextElement.FontSize="30" TextBlock.TextAlignment="Center" Content="{Binding}" />
+                    </DataTemplate>
+                </Setter.Value>
             </Setter>
-
-            <Style Selector="^ /template/ ContentPresenter#Header">
-                <Setter Property="TextBlock.FontSize" Value="30" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                <Setter Property="Margin" Value="10" />
-            </Style>
-            <Style Selector="^ /template/ ContentPresenter#Subheader">
-                <Setter Property="TextBlock.FontSize" Value="20" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                <Setter Property="Margin" Value="10" />
-            </Style>
-
+            <Setter Property="SubheaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentControl TextElement.FontSize="20" TextBlock.TextAlignment="Center" Content="{Binding}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </ControlTheme>
 
         <ControlTheme x:Key="SmallCard" TargetType="Card" BasedOn="{StaticResource InfoCard}">
-            <Style Selector="^ /template/ ContentPresenter#Header">
-                <Setter Property="TextBlock.FontSize" Value="30" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-            </Style>
-            <Style Selector="^ /template/ ContentPresenter#Subheader">
-                <Setter Property="TextBlock.FontSize" Value="20" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-            </Style>
-            <Style Selector="^ /template/ ContentPresenter#Header">
-                <Setter Property="TextBlock.FontSize" Value="20" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                <Setter Property="Margin" Value="10" />
-            </Style>
-            <Style Selector="^ /template/ ContentPresenter#Subheader">
-                <Setter Property="TextBlock.FontSize" Value="15" />
-                <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                <Setter Property="Margin" Value="10" />
-            </Style>
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentControl TextElement.FontSize="20" TextBlock.TextAlignment="Center" Content="{Binding}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="SubheaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentControl TextElement.FontSize="14" TextBlock.TextAlignment="Center" Content="{Binding}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </ControlTheme>
     </Styles.Resources>
-    
+
     <Design.PreviewWith>
         <StackPanel Width="500">
-            <Card Header="Some header" Subheader="Subheader">
+            <Card Header="Card" Subheader="Subheader">
                 <Card.Content>
                     <TextBlock>This is the content</TextBlock>
                 </Card.Content>
@@ -150,12 +138,46 @@
                     <ui:Icon Source="fa-wallet" />
                 </Card.HeaderStartContent>
             </Card>
-            <Card Header="Some header" Subheader="Subheader">
-
+            <Card Header="Card no content" Subheader="Subheader">
                 <Card.HeaderStartContent>
                     <ui:Icon Source="fa-wallet" />
                 </Card.HeaderStartContent>
             </Card>
+            <Card Theme="{StaticResource InfoCard}" Header="InfoCard" Subheader="Subheader">
+                <Card.HeaderStartContent>
+                    <ui:Icon Source="fa-wallet" />
+                </Card.HeaderStartContent>
+            </Card>
+            <Card Header="Big card" Theme="{StaticResource BigCard}" Subheader="Subheader">
+                <Card.Content>
+                    <TextBlock>This is the content</TextBlock>
+                </Card.Content>
+                <Card.HeaderStartContent>
+                    <ui:Icon Source="fa-wallet" />
+                </Card.HeaderStartContent>
+            </Card>
+            <Card Header="Small card" Theme="{StaticResource SmallCard}" Subheader="Subheader">
+                <Card.Content>
+                    <TextBlock>This is the content</TextBlock>
+                </Card.Content>
+                <Card.HeaderStartContent>
+                    <ui:Icon Source="fa-wallet" />
+                </Card.HeaderStartContent>
+            </Card>
+            <!-- <Card Header="Big Card" Theme="{StaticResource BigCard}" Subheader="Subheader"> -->
+            <!--     <Card.HeaderStartContent> -->
+            <!--         <ui:Icon Source="fa-wallet" /> -->
+            <!--     </Card.HeaderStartContent> -->
+            <!-- </Card> -->
+            <!-- <Card Header="Some header" Theme="{StaticResource SmallCard}" Subheader="Subheader"> -->
+            <!--     <Card.Content> -->
+            <!--         <TextBlock>This is the content</TextBlock> -->
+            <!--     </Card.Content> -->
+            <!--     <Card.HeaderStartContent> -->
+            <!--         <ui:Icon Source="fa-wallet" /> -->
+            <!--     </Card.HeaderStartContent> -->
+            <!-- </Card> -->
         </StackPanel>
+
     </Design.PreviewWith>
 </Styles>
