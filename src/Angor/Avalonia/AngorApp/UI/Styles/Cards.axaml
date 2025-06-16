@@ -1,9 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ui="clr-namespace:Zafiro.UI;assembly=Zafiro.UI"
-        xmlns:pt="https://github.com/projektanker/icons.avalonia">
-
-
+        xmlns:ui="clr-namespace:Zafiro.UI;assembly=Zafiro.UI">
+    
     <Styles.Resources>
 
         <DataTemplate x:Key="BigIcon" DataType="x:Object">

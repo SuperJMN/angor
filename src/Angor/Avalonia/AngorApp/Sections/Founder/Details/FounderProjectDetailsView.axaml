@@ -43,7 +43,7 @@
     </Interaction.Behaviors>
 
     <ScrollViewer>
-        <StackPanel Spacing="10" MinWidth="550">
+        <StackPanel Spacing="10">
             <asyncImageLoader:AdvancedImage Height="200" Stretch="UniformToFill" Source="{Binding BannerUrl}" />
             <StackPanel Margin="20" Spacing="10">
                 <TextBlock Classes="SizeBig" Text="{Binding Name}" />

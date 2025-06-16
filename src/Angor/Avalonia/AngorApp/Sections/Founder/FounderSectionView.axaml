@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d" d:DesignWidth="900"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="1000"
              x:Class="AngorApp.Sections.Founder.FounderSectionView"
              xmlns:founder="clr-namespace:AngorApp.Sections.Founder"
              xmlns:co="clr-namespace:AngorApp.UI.Controls"
@@ -48,22 +48,6 @@
 
             </OverlayBorder>
         </DataTemplate>
-
-        <DataTemplate DataType="founder:IFounderProjectViewModel">
-            <Button Padding="0" Margin="10" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Command="{Binding GoToDetails}">
-                <Border ClipToBounds="True" CornerRadius="10">
-                    <Grid RowDefinitions="200 Auto *">
-                        <av:AdvancedImage
-                            Background="Red"
-                            DockPanel.Dock="Top"
-                            Stretch="UniformToFill"
-                            Source="{Binding Banner}" />
-                        <TextBlock Grid.Row="1" Margin="15" TextWrapping="Wrap" DockPanel.Dock="Top" HorizontalAlignment="Center" Classes="SizeBig" Text="{Binding Name}" />
-                        <TextBlock Grid.Row="2" Margin="20 0" TextElement.FontWeight="Normal" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{Binding ShortDescription}" />
-                    </Grid>
-                </Border>
-            </Button>
-        </DataTemplate>
     </UserControl.DataTemplates>
 
     <co:PageContainer>
@@ -83,7 +67,7 @@
                     </z:Card.HeaderStartContent>
                 </z:Card>
                 <z:Loading LoadingText="Loading projects. Please wait." VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" IsLoading="{Binding LoadProjects.IsExecuting^}">
-                    <co:CardGrid Padding="10" ColumnSpacing="15" RowSpacing="15" ItemsSource="{Binding ProjectsList}" />
+                    <co:CardGrid VerticalAlignment="Top" Padding="10" ColumnSpacing="15" RowSpacing="15" ItemsSource="{Binding ProjectsList}" />
                 </z:Loading>
 
             </DockPanel>
