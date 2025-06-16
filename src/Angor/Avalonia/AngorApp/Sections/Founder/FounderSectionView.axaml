@@ -21,14 +21,6 @@
         </DataContextChangedTrigger>
     </Interaction.Behaviors>
 
-    <UserControl.Resources>
-        <ControlTheme TargetType="z:Card" x:Key="RoundPane" BasedOn="{StaticResource {x:Type z:Card}}">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="10" />
-        </ControlTheme>
-    </UserControl.Resources>
-
     <UserControl.DataTemplates>
         <DataTemplate DataType="founder:IFounderProjectViewModel">
             <Button Padding="0" Margin="10" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Command="{Binding GoToDetails}">
@@ -47,36 +39,32 @@
         </DataTemplate>
     </UserControl.DataTemplates>
 
-    <ScrollViewer>
-        <StackPanel Spacing="20">
-            <z:Card Header="Founder">
-                <z:Card.HeaderEndContent>
-                    <co:IconButton DockPanel.Dock="Right" VerticalAlignment="Top">
-                        CREATE PROJECT
-                        <co:IconButton.Icon>
-                            <i:Icon Value="mdi-plus-box-outline" FontSize="20" />
-                        </co:IconButton.Icon>
-                    </co:IconButton>
-                </z:Card.HeaderEndContent>
-                <z:Card.HeaderStartContent>
-                    <i:Icon FontSize="40" Value="mdi-shield-account-outline" />
-                </z:Card.HeaderStartContent>
-            </z:Card>
-            <z:Card Header="Projects">
-                <z:Card.HeaderEndContent>
-                    <Button i:Attached.Icon="fa-arrow-rotate-right" Command="{Binding LoadProjects}" Padding="20 10" Background="#A8C4C9" HorizontalAlignment="Center" />
-                </z:Card.HeaderEndContent>
-                <z:Loading LoadingText="Loading projects. Please wait." VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" IsLoading="{Binding LoadProjects.IsExecuting^}">
-                    <ItemsControl ItemsSource="{Binding ProjectsList}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel ItemWidth="400" ItemHeight="360" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </z:Loading>
-            </z:Card>
+    <co:PageContainer>
+        <ScrollViewer>
+            <StackPanel>
+                <z:Card Header="Founder">
+                    <z:Card.HeaderEndContent>
+                        <co:IconButton DockPanel.Dock="Right" VerticalAlignment="Top">
+                            CREATE PROJECT
+                            <co:IconButton.Icon>
+                                <i:Icon Value="mdi-plus-box-outline" FontSize="20" />
+                            </co:IconButton.Icon>
+                        </co:IconButton>
+                    </z:Card.HeaderEndContent>
+                    <z:Card.HeaderStartContent>
+                        <i:Icon FontSize="40" Value="mdi-shield-account-outline" />
+                    </z:Card.HeaderStartContent>
+                </z:Card>
+                <z:Card Header="Projects">
+                    <z:Card.HeaderEndContent>
+                        <Button i:Attached.Icon="fa-arrow-rotate-right" Command="{Binding LoadProjects}" Padding="20 10" Background="#A8C4C9" HorizontalAlignment="Center" />
+                    </z:Card.HeaderEndContent>
+                    <z:Loading LoadingText="Loading projects. Please wait." VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" IsLoading="{Binding LoadProjects.IsExecuting^}">
+                        <co:CardGrid ItemsSource="{Binding ProjectsList}" />
+                    </z:Loading>
+                </z:Card>
 
-        </StackPanel>
-    </ScrollViewer>
+            </StackPanel>
+        </ScrollViewer>
+    </co:PageContainer>
 </UserControl>
