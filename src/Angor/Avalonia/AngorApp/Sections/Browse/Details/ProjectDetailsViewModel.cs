@@ -23,8 +23,8 @@ public class ProjectDetailsViewModel : ReactiveObject, IProjectDetailsViewModel
         Invest.HandleErrorsWith(uiServices.NotificationService, "Investment failed");
     }
 
-    public object Icon => project.Banner;
-    public object Picture => project.Picture;
+    public object Icon => project.Picture;
+    public object Picture => project.Banner;
 
     public ReactiveCommand<Unit, Result> Invest { get; }
 
