@@ -4,7 +4,7 @@
              xmlns:password="clr-namespace:Angor.UI.Model.Implementation.Wallet.Password;assembly=Angor.UI.Model.Implementation"
              xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
              x:Class="AngorApp.App"
-             RequestedThemeVariant="Light">
+             RequestedThemeVariant="Dark">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
@@ -16,10 +16,70 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light"
+                                       Accent="#086c81"
+                                       AltHigh="White"
+                                       AltLow="White"
+                                       AltMedium="White"
+                                       AltMediumHigh="White"
+                                       AltMediumLow="White"
+                                       BaseHigh="#FF022229"
+                                       BaseLow="#FFE6F1F2"
+                                       BaseMedium="#FF93BCC1"
+                                       BaseMediumHigh="#FF669CA1"
+                                       BaseMediumLow="#FFBAD5D9"
+                                       ChromeAltLow="#FF669CA1"
+                                       ChromeBlackHigh="Black"
+                                       ChromeBlackLow="#FFE6F1F2"
+                                       ChromeBlackMedium="#FF669CA1"
+                                       ChromeBlackMediumLow="#FF93BCC1"
+                                       ChromeDisabledHigh="#FFE6F1F2"
+                                       ChromeDisabledLow="#FF93BCC1"
+                                       ChromeGray="#FFBAD5D9"
+                                       ChromeHigh="#FFE6F1F2"
+                                       ChromeLow="#FFF2F8F9"
+                                       ChromeMedium="#FFEAF2F3"
+                                       ChromeMediumLow="#FFF2F8F9"
+                                       ChromeWhite="White"
+                                       ListLow="#FFEAF2F3"
+                                       ListMedium="#FFE6F1F2"
+                                       RegionColor="#FFF9FCFD" />
+
+                <ColorPaletteResources x:Key="Dark"
+                                       Accent="#FF089199"
+                                       AltHigh="#FF0E3236"
+                                       AltLow="Black"
+                                       AltMedium="Black"
+                                       AltMediumHigh="Black"
+                                       AltMediumLow="Black"
+                                       BaseHigh="White"
+                                       BaseLow="#FF022229"
+                                       BaseMedium="#FF2A7F89"
+                                       BaseMediumHigh="#FF4FA1A8"
+                                       BaseMediumLow="#FF1D5A61"
+                                       ChromeAltLow="#FF4FA1A8"
+                                       ChromeBlackHigh="Black"
+                                       ChromeBlackLow="#FF4FA1A8"
+                                       ChromeBlackMedium="Black"
+                                       ChromeBlackMediumLow="Black"
+                                       ChromeDisabledHigh="#FF022229"
+                                       ChromeDisabledLow="#FF2A7F89"
+                                       ChromeGray="#FF447379"
+                                       ChromeHigh="#FF447379"
+                                       ChromeLow="#FF000E10"
+                                       ChromeMedium="#FF041A1C"
+                                       ChromeMediumLow="#FF0A2B2E"
+                                       ChromeWhite="White"
+                                       ListLow="#FF041A1C"
+                                       ListMedium="#FF022229"
+                                       RegionColor="#FF000506" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         
         <StyleInclude Source="UI/Styles/Themes/Light.axaml" />
-        
+
         <StyleInclude Source="avares://Zafiro.Avalonia/Styles.axaml" />
         <StyleInclude Source="avares://Zafiro.Avalonia.Dialogs/Styles.axaml" />
         <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
@@ -39,10 +99,19 @@
     </Application.Styles>
 
     <Application.Resources>
+        
         <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <ImageBrush x:Key="AppBackground" Source="avares://AngorApp/Assets/darkbg.jpg" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <ImageBrush Stretch="UniformToFill" x:Key="AppBackground" Source="avares://AngorApp/Assets/darkbg.jpg" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="avares://FluentAvalonia/Styling/ControlThemes/FAControls/ProgressRingStyles.axaml"/>
-                <ResourceInclude Source="avares://FluentAvalonia/Styling/ControlThemes/FAControls/NumberBoxStyles.axaml"/>
+                <ResourceInclude Source="avares://FluentAvalonia/Styling/ControlThemes/FAControls/ProgressRingStyles.axaml" />
+                <ResourceInclude Source="avares://FluentAvalonia/Styling/ControlThemes/FAControls/NumberBoxStyles.axaml" />
                 <MergeResourceInclude Source="UI/Controls/Header.axaml" />
                 <MergeResourceInclude Source="UI/Controls/SectionItem.axaml" />
                 <MergeResourceInclude Source="UI/Resources/Icons.axaml" />

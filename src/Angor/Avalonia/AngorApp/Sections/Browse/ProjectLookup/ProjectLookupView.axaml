@@ -57,7 +57,7 @@
                     <Binding Path="ProjectId" Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
                 </MultiBinding>
             </Popup.IsOpen>
-            <Border x:Name="PopupBorder" Background="White" ClipToBounds="True" BorderThickness="1 0 1 1 " BorderBrush="{StaticResource Level3}" CornerRadius="0 0 10 10">
+            <Border x:Name="PopupBorder" Background="White" ClipToBounds="True" BorderThickness="1 0 1 1 " CornerRadius="0 0 10 10">
                 <Panel>
                     <Panel>
                         <TextBlock Margin="20">

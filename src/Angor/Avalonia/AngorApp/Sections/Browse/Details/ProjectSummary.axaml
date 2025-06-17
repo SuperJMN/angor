@@ -37,7 +37,7 @@
                     <Setter Property="StrokeThickness" Value="16" />
                     <Setter Property="Foreground" Value="Orange" />
                     <Setter Property="Margin" Value="30" />
-                    <Setter Property="Background" Value="{StaticResource Level4}" />
+                    <!-- <Setter Property="Background" Value="{StaticResource Level4}" /> -->
                 </Style>
             </DockPanel.Styles>
             <UniformGrid Columns="1" Width="300">
