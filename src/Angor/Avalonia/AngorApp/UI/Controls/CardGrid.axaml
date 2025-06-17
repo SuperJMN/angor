@@ -38,12 +38,17 @@
                                     <Setter Property="Columns" Value="1" />
                                 </Style>
                             </ContainerQuery>
-                            <ContainerQuery Name="ResponsiveContainer" Query="min-width:400">
+                            <ContainerQuery Name="ResponsiveContainer" Query="min-width:500">
                                 <Style Selector="UniformGrid">
                                     <Setter Property="Columns" Value="2" />
                                 </Style>
                             </ContainerQuery>
-                            <ContainerQuery Name="ResponsiveContainer" Query="min-width:800">
+                            <ContainerQuery Name="ResponsiveContainer" Query="min-width:750">
+                                <Style Selector="UniformGrid">
+                                    <Setter Property="Columns" Value="3" />
+                                </Style>
+                            </ContainerQuery>
+                            <ContainerQuery Name="ResponsiveContainer" Query="min-width:1000">
                                 <Style Selector="UniformGrid">
                                     <Setter Property="Columns" Value="4" />
                                 </Style>
