@@ -23,6 +23,8 @@ public class ShellDesign : IShell
         ];
     }
 
+    public IObservable<object?> Content { get; }
+
     public void GoToSection(string sectionName)
     {
         throw new NotImplementedException();
