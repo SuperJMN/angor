@@ -15,14 +15,13 @@ public static class ViewModels
     public static IServiceCollection Register(this IServiceCollection services)
     {
         return services
-            .AddScoped<Lazy<IMainViewModel>>(sp => new Lazy<IMainViewModel>(sp.GetRequiredService<IMainViewModel>))
-            .AddScoped<IHomeSectionViewModel, HomeSectionViewModel>()
-            .AddScoped<IWalletSectionViewModel, WalletSectionViewModel>()
-            .AddScoped<IBrowseSectionViewModel, BrowseSectionViewModel>()
-            .AddScoped<IPortfolioSectionViewModel, PortfolioSectionViewModel>()
-            .AddScoped<IFounderSectionViewModel, FounderSectionViewModel>()
-            .AddScoped<Func<ProjectDto, IFounderProjectViewModel>>(provider => dto => ActivatorUtilities.CreateInstance<FounderProjectViewModel>(provider, dto))
-            .AddScoped<Func<ProjectDto, IFounderProjectDetailsViewModel>>(provider => dto => ActivatorUtilities.CreateInstance<FounderProjectDetailsViewModel>(provider, dto))
-            .AddScoped<IMainViewModel, MainViewModel>();
+            .AddSingleton<IHomeSectionViewModel, HomeSectionViewModel>()
+            .AddSingleton<IWalletSectionViewModel, WalletSectionViewModel>()
+            .AddSingleton<IBrowseSectionViewModel, BrowseSectionViewModel>()
+            .AddSingleton<IPortfolioSectionViewModel, PortfolioSectionViewModel>()
+            .AddSingleton<IFounderSectionViewModel, FounderSectionViewModel>()
+            .AddSingleton<Func<ProjectDto, IFounderProjectViewModel>>(provider => dto => ActivatorUtilities.CreateInstance<FounderProjectViewModel>(provider, dto))
+            .AddSingleton<Func<ProjectDto, IFounderProjectDetailsViewModel>>(provider => dto => ActivatorUtilities.CreateInstance<FounderProjectDetailsViewModel>(provider, dto))
+            .AddSingleton<IMainViewModel, MainViewModel>();
     }
 }

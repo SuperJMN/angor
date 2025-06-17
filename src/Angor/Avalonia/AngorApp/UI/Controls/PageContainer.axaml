@@ -20,7 +20,7 @@
 
             <ContainerQuery Name="Root" Query="min-width:0">
                 <Style Selector="ContentPresenter#ContentPresenter">
-                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Margin" Value="8" />
                 </Style>
             </ContainerQuery>
             <ContainerQuery Name="Root" Query="min-width:600">
