@@ -101,13 +101,13 @@
     </Application.Resources>
     
     <Application.DataTemplates>
+        <DataTemplate DataType="ui:IIcon">
+            <ContentControl ContentTemplate="{StaticResource IconDataTemplate}" Content="{Binding }" />
+        </DataTemplate>
         <misc:NamingConventionViewLocator />
         <misc:DataTemplateInclude Source="avares://Zafiro.Avalonia/DataTemplates.axaml" />
         <DataTemplate DataType="password:IIcon">
             <avalonia:Icon FontSize="40" VerticalAlignment="Center" Value="{Binding Key}" />
-        </DataTemplate>
-        <DataTemplate DataType="ui:IIcon">
-            <ContentControl ContentTemplate="{StaticResource IconDataTemplate}" Content="{Binding }" />
         </DataTemplate>
     </Application.DataTemplates>
     

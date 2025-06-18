@@ -37,7 +37,7 @@
             <StackPanel IsVisible="{Binding IsBusy^}" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock TextAlignment="Center">We are loading your wallet</TextBlock>
                 <TextBlock TextAlignment="Center">Please, wait</TextBlock>
-                <c:ProgressRing IsIndeterminate="True" Height="100" Width="100" />
+                <c:ProgressRing Foreground="{DynamicResource SystemAccentColor}" IsIndeterminate="True" Height="100" Width="100" />
             </StackPanel>
         </Panel>
     </a:PageContainer>
