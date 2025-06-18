@@ -45,7 +45,7 @@
                     <StackPanel HorizontalAlignment="Center" Spacing="20">
                         <PathIcon Height="100" Width="200" Data="{StaticResource ShieldStar}" />
                         <TextBlock Text="Seize the opportunity to invest in this project" TextAlignment="Center" />
-                        <Button HorizontalAlignment="Center" Command="{Binding Invest}">INVEST NOW</Button>
+                        <ReactiveButton HorizontalAlignment="Center" Command="{Binding Invest}">INVEST NOW</ReactiveButton>
                     </StackPanel>
                 </OverlayBorder>
                 <dt:ProjectSummary />

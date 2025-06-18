@@ -71,14 +71,14 @@
                             <ContentPresenter x:Name="StartContent"
                                               Content="{TemplateBinding HeaderStartContent}"
                                               ContentTemplate="{TemplateBinding HeaderStartContentTemplate}" />
-                            <ContentPresenter Grid.Row="1" x:Name="Header" Content="{TemplateBinding Header}"
+                            <ContentPresenter x:Name="Header" Content="{TemplateBinding Header}"
                                               ContentTemplate="{TemplateBinding HeaderTemplate}" />
-                            <ContentPresenter Grid.Row="2" x:Name="Subheader" Content="{TemplateBinding Subheader}"
+                            <ContentPresenter x:Name="Subheader" Content="{TemplateBinding Subheader}"
                                               ContentTemplate="{TemplateBinding SubheaderTemplate}" />
-                            <ContentPresenter Grid.Row="3" x:Name="Content" Content="{TemplateBinding Content}"
+                            <ContentPresenter x:Name="Content" Content="{TemplateBinding Content}"
                                               IsVisible="{Binding $parent[Card].Content, Converter={x:Static ObjectConverters.IsNotNull}}"
                                               ContentTemplate="{TemplateBinding ContentTemplate}" />
-                            <ContentPresenter Grid.Row="4" x:Name="EndContent" Content="{TemplateBinding HeaderEndContent}"
+                            <ContentPresenter x:Name="EndContent" Content="{TemplateBinding HeaderEndContent}"
                                               IsVisible="{Binding $parent[Card].HeaderEndContent, Converter={x:Static ObjectConverters.IsNotNull}}"
                                               ContentTemplate="{TemplateBinding HeaderEndContentTemplate}" />
                         </StackPanel>
@@ -115,8 +115,10 @@
             </Setter>
             <Setter Property="SubheaderTemplate">
                 <Setter.Value>
-                    <DataTemplate>
-                        <ContentControl TextElement.FontSize="20" TextBlock.TextAlignment="Center" Content="{Binding}" />
+                    <DataTemplate DataType="x:Object">
+                        <ContentControl Opacity="0.8"
+                                        TextElement.Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                        TextElement.FontSize="20" TextBlock.TextAlignment="Center" Content="{Binding}" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
@@ -125,7 +127,7 @@
         <ControlTheme x:Key="SmallCard" TargetType="Card" BasedOn="{StaticResource InfoCard}">
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
-                    <DataTemplate>
+                    <DataTemplate DataType="x:Object">
                         <ContentControl TextElement.FontSize="20" TextBlock.TextAlignment="Center" Content="{Binding}" />
                     </DataTemplate>
                 </Setter.Value>
@@ -133,7 +135,9 @@
             <Setter Property="SubheaderTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <ContentControl TextElement.FontSize="14" TextBlock.TextAlignment="Center" Content="{Binding}" />
+                        <ContentControl TextElement.FontSize="14"
+                                        TextElement.Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                        Opacity="0.8" TextBlock.TextAlignment="Center" Content="{Binding}" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
