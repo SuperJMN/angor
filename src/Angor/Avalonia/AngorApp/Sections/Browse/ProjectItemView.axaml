@@ -30,8 +30,6 @@
                 <av:AdvancedImage Stretch="UniformToFill" Source="{Binding Project.Banner}" />
             </Panel>
             <StackPanel Grid.Row="1" Spacing="15">
-                <!-- <av:AdvancedImage Width="60" CornerRadius="30" Stretch="UniformToFill" -->
-                <!--                   Height="60" Source="{Binding Project.Picture}" /> -->
                 <StackPanel Spacing="10" Grid.Row="1" Margin="15 0">
                     <TextBlock Classes="SizeBig" Text="{Binding Project.Name}" />
                     <Separator>
