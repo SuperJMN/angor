@@ -11,7 +11,7 @@
     <Design.DataContext>
         <shell:MainViewModelDesign />
     </Design.DataContext>
-
+    
     <zs:ShellView OpenPaneLength="200" MobileColumns="5" Shell="{Binding Shell}" />
     
 </UserControl>

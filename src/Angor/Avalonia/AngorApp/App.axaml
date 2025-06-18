@@ -16,6 +16,7 @@
     </Application.DataTemplates>
 
     <Application.Styles>
+
         <FluentTheme>
             <FluentTheme.Palettes>
                 <ColorPaletteResources x:Key="Light"
@@ -48,36 +49,20 @@
                                        RegionColor="#FFF9FCFD" />
 
                 <ColorPaletteResources x:Key="Dark"
-                                       Accent="#FF089199"
-                                       AltHigh="#FF0E3236"
-                                       AltLow="Black"
-                                       AltMedium="Black"
-                                       AltMediumHigh="Black"
-                                       AltMediumLow="Black"
-                                       BaseHigh="White"
-                                       BaseLow="#FF022229"
-                                       BaseMedium="#FF2A7F89"
-                                       BaseMediumHigh="#FF4FA1A8"
-                                       BaseMediumLow="#FF1D5A61"
-                                       ChromeAltLow="#FF4FA1A8"
-                                       ChromeBlackHigh="Black"
-                                       ChromeBlackLow="#FF4FA1A8"
-                                       ChromeBlackMedium="Black"
-                                       ChromeBlackMediumLow="Black"
-                                       ChromeDisabledHigh="#FF022229"
-                                       ChromeDisabledLow="#FF2A7F89"
-                                       ChromeGray="#FF447379"
-                                       ChromeHigh="#FF447379"
-                                       ChromeLow="#FF000E10"
-                                       ChromeMedium="#FF041A1C"
-                                       ChromeMediumLow="#FF0A2B2E"
-                                       ChromeWhite="White"
-                                       ListLow="#FF041A1C"
-                                       ListMedium="#FF022229"
-                                       RegionColor="#FF000506" />
+                                       Accent="#ffcbdde1"
+                                       AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff046479" BaseMedium="#ff75b5c2"
+                                       BaseMediumHigh="#ff91c9d4" BaseMediumLow="#ff3c8c9d" ChromeAltLow="#ff91c9d4" ChromeBlackHigh="Black" 
+                                       ChromeBlackLow="#ff91c9d4" 
+                                       ChromeBlackMedium="Black" ChromeBlackMediumLow="Black"
+                                       ChromeDisabledHigh="#ff046479" ChromeDisabledLow="#ff75b5c2" ChromeGray="#ff59a1b0" 
+                                       ChromeHigh="#ff59a1b0" ChromeLow="#ff013147" ChromeMedium="#ff023e54" 
+                                       ChromeMediumLow="#083B46"
+                                       ChromeWhite="White" 
+                                       ListLow="#083B46" ListMedium="#ff046479" RegionColor="#ff022229" />
             </FluentTheme.Palettes>
+
         </FluentTheme>
-        
+
         <StyleInclude Source="UI/Styles/Themes/Light.axaml" />
 
         <StyleInclude Source="avares://Zafiro.Avalonia/Styles.axaml" />
@@ -99,7 +84,7 @@
     </Application.Styles>
 
     <Application.Resources>
-        
+
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
