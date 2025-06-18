@@ -9,7 +9,7 @@
                 <ContentPresenter.DataTemplates>
                     <DataTemplate DataType="ui:Icon">
                         <Viewbox Height="30" Width="30">
-                            <ContentControl ContentTemplate="{x:Static IconTemplate.Instance}" Content="{Binding }" />
+                            <ContentControl ContentTemplate="{StaticResource IconDataTemplate}" Content="{Binding }" />
                         </Viewbox>
                     </DataTemplate>
                 </ContentPresenter.DataTemplates>
@@ -21,7 +21,7 @@
                 <ContentPresenter.DataTemplates>
                     <DataTemplate DataType="ui:Icon">
                         <Viewbox Height="40" Width="40">
-                            <ContentControl ContentTemplate="{x:Static IconTemplate.Instance}" Content="{Binding }" />
+                            <ContentControl ContentTemplate="{StaticResource IconDataTemplate}" Content="{Binding }" />
                         </Viewbox>
                     </DataTemplate>
                 </ContentPresenter.DataTemplates>
@@ -33,7 +33,7 @@
                 <ContentPresenter.DataTemplates>
                     <DataTemplate DataType="ui:Icon">
                         <Viewbox Height="80" Width="80">
-                            <ContentControl ContentTemplate="{x:Static IconTemplate.Instance}" Content="{Binding }" />
+                            <ContentControl ContentTemplate="{StaticResource IconDataTemplate}" Content="{Binding }" />
                         </Viewbox>
                     </DataTemplate>
                 </ContentPresenter.DataTemplates>

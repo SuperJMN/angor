@@ -5,7 +5,9 @@
         xmlns:zafiro="clr-namespace:Zafiro.Avalonia.Controls;assembly=Zafiro.Avalonia"
         xmlns:views="clr-namespace:Zafiro.Avalonia.Dialogs.Views;assembly=Zafiro.Avalonia.Dialogs"
         xmlns:slim="clr-namespace:Zafiro.Avalonia.Controls.Wizards.Slim;assembly=Zafiro.Avalonia"
-        xmlns:classic="clr-namespace:Zafiro.Avalonia.Controls.Wizards.Classic;assembly=Zafiro.Avalonia">
+        xmlns:classic="clr-namespace:Zafiro.Avalonia.Controls.Wizards.Classic;assembly=Zafiro.Avalonia"
+        xmlns:controls="clr-namespace:Zafiro.Avalonia.Controls"
+        xmlns:ui="clr-namespace:AngorApp.UI">
 
     <Styles.Resources>
        
@@ -147,10 +149,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-    
-    <Style Selector="Svg">
-        <Setter Property="Css" Value="{x:Static ColorChanger.Instance}" />
     </Style>
 
     <Design.PreviewWith>

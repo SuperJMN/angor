@@ -3,17 +3,11 @@
              xmlns:misc="clr-namespace:Zafiro.Avalonia.Misc;assembly=Zafiro.Avalonia"
              xmlns:password="clr-namespace:Angor.UI.Model.Implementation.Wallet.Password;assembly=Angor.UI.Model.Implementation"
              xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
+             xmlns:ui="clr-namespace:Zafiro.UI;assembly=Zafiro.UI"
+             xmlns:f="clr-namespace:AngorApp.UI"
              x:Class="AngorApp.App"
              RequestedThemeVariant="Dark">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
-    <Application.DataTemplates>
-        <misc:NamingConventionViewLocator />
-        <misc:DataTemplateInclude Source="avares://Zafiro.Avalonia/DataTemplates.axaml" />
-        <DataTemplate DataType="password:IIcon">
-            <avalonia:Icon FontSize="40" VerticalAlignment="Center" Value="{Binding Key}" />
-        </DataTemplate>
-    </Application.DataTemplates>
 
     <Application.Styles>
 
@@ -84,8 +78,10 @@
     </Application.Styles>
 
     <Application.Resources>
-
         <ResourceDictionary>
+            
+            <IconDataTemplate x:Key="IconDataTemplate" Converter="{x:Static f:AngorIconConverter.Instance}" />
+
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <ImageBrush x:Key="AppBackground" Source="avares://AngorApp/Assets/darkbg.jpg" />
@@ -103,4 +99,16 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
+    
+    <Application.DataTemplates>
+        <misc:NamingConventionViewLocator />
+        <misc:DataTemplateInclude Source="avares://Zafiro.Avalonia/DataTemplates.axaml" />
+        <DataTemplate DataType="password:IIcon">
+            <avalonia:Icon FontSize="40" VerticalAlignment="Center" Value="{Binding Key}" />
+        </DataTemplate>
+        <DataTemplate DataType="ui:IIcon">
+            <ContentControl ContentTemplate="{StaticResource IconDataTemplate}" Content="{Binding }" />
+        </DataTemplate>
+    </Application.DataTemplates>
+    
 </Application>
