@@ -1,4 +1,4 @@
 {
   "$schema": "build.schema.json",
-  "Solution": "../Avalonia/AngorApp.sln"
+  "Solution": "../Avalonia/Angor.Avalonia.sln"
 }
