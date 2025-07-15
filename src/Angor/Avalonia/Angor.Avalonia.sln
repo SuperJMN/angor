@@ -43,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Angor.Client", "..\Client\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngorApp.Android", "AngorApp.Android\AngorApp.Android.csproj", "{5B0BF8AB-14C3-4F52-8CE8-13AF71E8F1A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{46D47013-42A6-4930-9010-21CB0D24A4F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "..\..\..\build\_build.csproj", "{706BE321-0713-4D10-A171-C57D74CFB67B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,8 +51,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{46D47013-42A6-4930-9010-21CB0D24A4F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46D47013-42A6-4930-9010-21CB0D24A4F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{706BE321-0713-4D10-A171-C57D74CFB67B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{706BE321-0713-4D10-A171-C57D74CFB67B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94E52338-4818-4683-BC62-CB6B38402324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{94E52338-4818-4683-BC62-CB6B38402324}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94E52338-4818-4683-BC62-CB6B38402324}.Release|Any CPU.ActiveCfg = Release|Any CPU

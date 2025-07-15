@@ -1,0 +1,4 @@
+{
+  "$schema": "build.schema.json",
+  "Solution": "src/Angor/Avalonia/Angor.Avalonia.sln"
+}
