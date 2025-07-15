@@ -1,5 +1,5 @@
 @echo off
 pushd subdir
-call build.cmd %*
+call src/Angor/Avalonia/build.cmd %*
 popd
 
