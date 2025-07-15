@@ -7,7 +7,13 @@ steps:
   - checkout: self
     submodules: true
 
-  - powershell: .\src\Angor\Avalonia\build.ps1
+  - task: UseDotNet@2
+    displayName: 'Install .NET SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.310'
+
+  - pwsh: ./src/Angor/Avalonia/build.ps1  # Use pwsh for cross-platform
     env:
       GitHubApiKey: $(GitHubApiKey)
       AndroidBase64Keystore: $(AndroidBase64Keystore)
