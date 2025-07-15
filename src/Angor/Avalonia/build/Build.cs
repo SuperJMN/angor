@@ -6,19 +6,12 @@ using DotnetPackaging.Deployment;
 using DotnetPackaging.Deployment.Core;
 using DotnetPackaging.Deployment.Platforms.Android;
 using Nuke.Common;
-using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.GitVersion;
 using Serilog;
 using Zafiro.DivineBytes;
 
-[AzurePipelines(
-    AzurePipelinesImage.UbuntuLatest,
-    InvokedTargets = [nameof(Publish)], AutoGenerate = false,
-    ImportSecrets = [nameof(GitHubApiKey), nameof(AndroidBase64Keystore), nameof(AndroidSigningKeyAlias), nameof(AndroidSigningStorePass), nameof(AndroidSigningKeyPass)],
-    FetchDepth = 0, ImportVariableGroups = ["api-keys"])
-]
 class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.Publish);
