@@ -48,3 +48,7 @@ stages:
               script: './build.cmd Publish --skip'
             env:
               GitHubApiKey: $(GitHubApiKey)
+              AndroidBase64Keystore: $(AndroidBase64Keystore)
+              AndroidSigningKeyAlias: $(AndroidSigningKeyAlias)
+              AndroidSigningStorePass: $(AndroidSigningStorePass)
+              AndroidSigningKeyPass: $(AndroidSigningKeyPass)

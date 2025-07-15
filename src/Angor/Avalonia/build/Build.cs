@@ -16,7 +16,7 @@ using Zafiro.DivineBytes;
 [AzurePipelines(
     AzurePipelinesImage.UbuntuLatest,
     InvokedTargets = [nameof(Publish)], AutoGenerate = true,
-    ImportSecrets = ["GitHubApiKey"],
+    ImportSecrets = [nameof(GitHubApiKey), nameof(AndroidBase64Keystore), nameof(AndroidSigningKeyAlias), nameof(AndroidSigningStorePass), nameof(AndroidSigningKeyPass)],
     FetchDepth = 0, ImportVariableGroups = ["api-keys"])
 ]
 class Build : NukeBuild

@@ -98,6 +98,10 @@
   "allOf": [
     {
       "properties": {
+        "AndroidBase64Keystore": {
+          "type": "string",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
         "AndroidSigningKeyAlias": {
           "type": "string",
           "default": "Secrets must be entered via 'nuke :secrets [profile]'"
@@ -107,10 +111,6 @@
           "default": "Secrets must be entered via 'nuke :secrets [profile]'"
         },
         "AndroidSigningStorePass": {
-          "type": "string",
-          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
-        },
-        "Base64Keystore": {
           "type": "string",
           "default": "Secrets must be entered via 'nuke :secrets [profile]'"
         },
