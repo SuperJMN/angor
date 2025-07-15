@@ -43,7 +43,7 @@ class Build : NukeBuild
         .Requires(() => AndroidSigningKeyAlias)
         .Requires(() => AndroidSigningKeyPass)
         .Requires(() => AndroidBase64Keystore)
-        .OnlyWhenStatic(() => Repository.IsOnMainOrMasterBranch() || Force)
+        //.OnlyWhenStatic(() => Repository.IsOnMainOrMasterBranch() || Force)
         .Executes(async () =>
         {
             Log.Information("Starting publish process for Angor app...");
