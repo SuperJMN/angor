@@ -45,7 +45,7 @@ stages:
           - task: CmdLine@2
             displayName: 'Run: Publish'
             inputs:
-              script: './build.cmd Publish --skip'
+              script: './src/Angor/Avalonia/build.cmd Publish --skip'
             env:
               GitHubApiKey: $(GitHubApiKey)
               AndroidBase64Keystore: $(AndroidBase64Keystore)
