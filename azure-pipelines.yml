@@ -23,7 +23,6 @@ stages:
             inputs:
               packageType: 'sdk'
               version: '9.0.x'
-              includePreview: true
 
           # 2) Checkout del código con todo el historial
           - checkout: self
