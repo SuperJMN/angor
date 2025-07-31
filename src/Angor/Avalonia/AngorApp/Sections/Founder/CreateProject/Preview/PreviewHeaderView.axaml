@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:preview="clr-namespace:AngorApp.Sections.Founder.CreateProject.Preview"
+            xmlns:preview="clr-namespace:AngorApp.Sections.Founder.CreateProject.Preview"
              mc:Ignorable="d" d:DesignWidth="800"
              x:Class="AngorApp.Sections.Founder.CreateProject.Preview.PreviewHeaderView"
              x:DataType="preview:PreviewHeaderViewModel">
@@ -11,7 +11,7 @@
         <Button.Flyout>
             <Flyout>
                 <Flyout.FlyoutPresenterTheme>
-                    <ControlTheme TargetType="FlyoutPresenter" 
+                    <ControlTheme TargetType="FlyoutPresenter"
                                   BasedOn="{StaticResource {x:Type FlyoutPresenter}}">
                         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
                     </ControlTheme>
