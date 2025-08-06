@@ -40,13 +40,18 @@
                 </Card>
 
                 <Loading IsLoading="{Binding IsLoading^}">
-                    <CardGrid ItemsSource="{Binding Projects}">
-                        <CardGrid.ItemTemplate>
+                    <ItemsControl ItemsSource="{Binding Projects}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <a:FlexPanel Wrap="True" Spacing="20" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="browse:IProjectViewModel">
                                 <browse:ProjectItemView />
                             </DataTemplate>
-                        </CardGrid.ItemTemplate>
-                    </CardGrid>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Loading>
 
             </DockPanel>
