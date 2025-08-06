@@ -43,7 +43,7 @@
                     <ItemsControl ItemsSource="{Binding Projects}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <a:FlexPanel Wrap="True" Spacing="20" />
+                                <a:FlexPanel Wrap="True" Spacing="20" MinItemSize="300" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>

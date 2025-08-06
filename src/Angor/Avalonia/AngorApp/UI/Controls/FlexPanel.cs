@@ -73,15 +73,39 @@ public class FlexPanel : Panel
         set => SetValue(AlignItemsProperty, value);
     }
 
+    public static readonly StyledProperty<double> MinItemSizeProperty =
+        AvaloniaProperty.Register<FlexPanel, double>(nameof(MinItemSize), 300);
+
+    public double MinItemSize
+    {
+        get => GetValue(MinItemSizeProperty);
+        set => SetValue(MinItemSizeProperty, value);
+    }
+
     protected override Size MeasureOverride(Size availableSize)
     {
         var children = Children.Where(c => c.IsVisible).ToList();
-        foreach (var child in children)
+        var minItem = MinItemSize;
+        var availableMain = MainValue(availableSize);
+
+        if (double.IsInfinity(availableMain))
         {
-            child.Measure(availableSize);
+            availableMain = minItem * children.Count + Spacing * Math.Max(0, children.Count - 1);
         }
 
-        var lines = BuildLines(children, MainValue(availableSize));
+        var itemsPerLine = Math.Max(1, (int)Math.Floor((availableMain + Spacing) / (minItem + Spacing)));
+        var itemMain = (availableMain - Spacing * (itemsPerLine - 1)) / itemsPerLine;
+
+        foreach (var child in children)
+        {
+            var childAvailable = Orientation == Orientation.Horizontal
+                ? new Size(itemMain, double.PositiveInfinity)
+                : new Size(double.PositiveInfinity, itemMain);
+
+            child.Measure(childAvailable);
+        }
+
+        var lines = BuildLines(children, availableMain);
 
         var main = lines.Any() ? lines.Max(l => l.Main) : 0;
         var cross = lines.Sum(l => l.Cross) + Spacing * Math.Max(0, lines.Count - 1);
