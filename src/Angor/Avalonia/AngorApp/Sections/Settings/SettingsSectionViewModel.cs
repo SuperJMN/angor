@@ -31,23 +31,16 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
         this.uiServices = uiServices;
 
         var settings = networkStorage.GetSettings();
-        Explorers = new ObservableCollection<SettingsUrl>(settings.Explorers);
-        Indexers = new ObservableCollection<SettingsUrl>(settings.Indexers);
-        Relays = new ObservableCollection<SettingsUrl>(settings.Relays);
+        Explorers = new ObservableCollection<SettingsUrlViewModel>(settings.Explorers.Select(CreateExplorer));
+        Indexers = new ObservableCollection<SettingsUrlViewModel>(settings.Indexers.Select(CreateIndexer));
+        Relays = new ObservableCollection<SettingsUrlViewModel>(settings.Relays.Select(CreateRelay));
 
         currentNetwork = networkStorage.GetNetwork();
         Network = currentNetwork;
 
         AddExplorer = ReactiveCommand.Create(AddExplorerImpl, this.WhenAnyValue(x => x.NewExplorer, url => !string.IsNullOrWhiteSpace(url)));
-        RemoveExplorer = ReactiveCommand.Create<SettingsUrl>(RemoveExplorerImpl);
-        SetPrimaryExplorer = ReactiveCommand.Create<SettingsUrl>(SetPrimaryExplorerImpl);
-
         AddIndexer = ReactiveCommand.Create(AddIndexerImpl, this.WhenAnyValue(x => x.NewIndexer, url => !string.IsNullOrWhiteSpace(url)));
-        RemoveIndexer = ReactiveCommand.Create<SettingsUrl>(RemoveIndexerImpl);
-        SetPrimaryIndexer = ReactiveCommand.Create<SettingsUrl>(SetPrimaryIndexerImpl);
-
         AddRelay = ReactiveCommand.Create(AddRelayImpl, this.WhenAnyValue(x => x.NewRelay, url => !string.IsNullOrWhiteSpace(url)));
-        RemoveRelay = ReactiveCommand.Create<SettingsUrl>(RemoveRelayImpl);
 
         networkChanged = this.WhenAnyValue(x => x.Network)
             .Skip(1)
@@ -76,28 +69,19 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
 
         Save = ReactiveCommand.Create(SaveSettings);
 
-        this.WhenAnyObservable(x => x.AddExplorer, x => x.RemoveExplorer, x => x.SetPrimaryExplorer,
-            x => x.AddIndexer, x => x.RemoveIndexer, x => x.SetPrimaryIndexer,
-            x => x.AddRelay, x => x.RemoveRelay)
+        this.WhenAnyObservable(x => x.AddExplorer, x => x.AddIndexer, x => x.AddRelay)
             .InvokeCommand(Save);
     }
 
-    public ObservableCollection<SettingsUrl> Explorers { get; }
-    public ObservableCollection<SettingsUrl> Indexers { get; }
-    public ObservableCollection<SettingsUrl> Relays { get; }
+    public ObservableCollection<SettingsUrlViewModel> Explorers { get; }
+    public ObservableCollection<SettingsUrlViewModel> Indexers { get; }
+    public ObservableCollection<SettingsUrlViewModel> Relays { get; }
 
     public IReadOnlyList<string> Networks { get; } = new[] { "Angornet", "Mainnet" };
 
     public ReactiveCommand<Unit, Unit> AddExplorer { get; }
-    public ReactiveCommand<SettingsUrl, Unit> RemoveExplorer { get; }
-    public ReactiveCommand<SettingsUrl, Unit> SetPrimaryExplorer { get; }
-
     public ReactiveCommand<Unit, Unit> AddIndexer { get; }
-    public ReactiveCommand<SettingsUrl, Unit> RemoveIndexer { get; }
-    public ReactiveCommand<SettingsUrl, Unit> SetPrimaryIndexer { get; }
-
     public ReactiveCommand<Unit, Unit> AddRelay { get; }
-    public ReactiveCommand<SettingsUrl, Unit> RemoveRelay { get; }
 
     public ReactiveCommand<Unit, Unit> Save { get; }
 
@@ -127,12 +111,30 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
 
     void AddExplorerImpl()
     {
-        Explorers.Add(new SettingsUrl { Url = NewExplorer, IsPrimary = Explorers.Count == 0 });
+        Explorers.Add(CreateExplorer(new SettingsUrl { Url = NewExplorer, IsPrimary = Explorers.Count == 0 }));
         NewExplorer = string.Empty;
         Refresh(Explorers);
     }
 
-    void RemoveExplorerImpl(SettingsUrl url)
+    void AddIndexerImpl()
+    {
+        Indexers.Add(CreateIndexer(new SettingsUrl { Url = NewIndexer, IsPrimary = Indexers.Count == 0 }));
+        NewIndexer = string.Empty;
+        Refresh(Indexers);
+    }
+
+    void AddRelayImpl()
+    {
+        Relays.Add(CreateRelay(new SettingsUrl { Url = NewRelay }));
+        NewRelay = string.Empty;
+        Refresh(Relays);
+    }
+
+    SettingsUrlViewModel CreateExplorer(SettingsUrl url) => new(url.Url, url.IsPrimary, RemoveExplorerImpl, SetPrimaryExplorerImpl);
+    SettingsUrlViewModel CreateIndexer(SettingsUrl url) => new(url.Url, url.IsPrimary, RemoveIndexerImpl, SetPrimaryIndexerImpl);
+    SettingsUrlViewModel CreateRelay(SettingsUrl url) => new(url.Url, url.IsPrimary, RemoveRelayImpl);
+
+    void RemoveExplorerImpl(SettingsUrlViewModel url)
     {
         var wasPrimary = url.IsPrimary;
         Explorers.Remove(url);
@@ -143,7 +145,7 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
         Refresh(Explorers);
     }
 
-    void SetPrimaryExplorerImpl(SettingsUrl url)
+    void SetPrimaryExplorerImpl(SettingsUrlViewModel url)
     {
         foreach (var e in Explorers)
         {
@@ -153,14 +155,7 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
         Refresh(Explorers);
     }
 
-    void AddIndexerImpl()
-    {
-        Indexers.Add(new SettingsUrl { Url = NewIndexer, IsPrimary = Indexers.Count == 0 });
-        NewIndexer = string.Empty;
-        Refresh(Indexers);
-    }
-
-    void RemoveIndexerImpl(SettingsUrl url)
+    void RemoveIndexerImpl(SettingsUrlViewModel url)
     {
         var wasPrimary = url.IsPrimary;
         Indexers.Remove(url);
@@ -171,7 +166,7 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
         Refresh(Indexers);
     }
 
-    void SetPrimaryIndexerImpl(SettingsUrl url)
+    void SetPrimaryIndexerImpl(SettingsUrlViewModel url)
     {
         foreach (var e in Indexers)
         {
@@ -181,20 +176,13 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
         Refresh(Indexers);
     }
 
-    void AddRelayImpl()
-    {
-        Relays.Add(new SettingsUrl { Url = NewRelay });
-        NewRelay = string.Empty;
-        Refresh(Relays);
-    }
-
-    void RemoveRelayImpl(SettingsUrl url)
+    void RemoveRelayImpl(SettingsUrlViewModel url)
     {
         Relays.Remove(url);
         Refresh(Relays);
     }
 
-    void Refresh<T>(ObservableCollection<T> collection)
+    static void Refresh(ObservableCollection<SettingsUrlViewModel> collection)
     {
         for (var i = 0; i < collection.Count; i++)
         {
@@ -207,9 +195,9 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
     {
         var info = new SettingsInfo
         {
-            Explorers = new List<SettingsUrl>(Explorers),
-            Indexers = new List<SettingsUrl>(Indexers),
-            Relays = new List<SettingsUrl>(Relays)
+            Explorers = Explorers.Select(x => x.ToModel()).ToList(),
+            Indexers = Indexers.Select(x => x.ToModel()).ToList(),
+            Relays = Relays.Select(x => x.ToModel()).ToList()
         };
         networkStorage.SetSettings(info);
     }
@@ -217,13 +205,8 @@ public partial class SettingsSectionViewModel : ReactiveObject, ISettingsSection
     public void Dispose()
     {
         AddExplorer.Dispose();
-        RemoveExplorer.Dispose();
-        SetPrimaryExplorer.Dispose();
         AddIndexer.Dispose();
-        RemoveIndexer.Dispose();
-        SetPrimaryIndexer.Dispose();
         AddRelay.Dispose();
-        RemoveRelay.Dispose();
         Save.Dispose();
         networkChanged.Dispose();
     }

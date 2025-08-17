@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:AngorApp.UI.Controls"
              xmlns:settings="clr-namespace:AngorApp.Sections.Settings"
-             xmlns:model="clr-namespace:Angor.Shared.Models;assembly=Angor.Shared"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="AngorApp.Sections.Settings.SettingsSectionView"
              x:DataType="settings:ISettingsSectionViewModel"
@@ -26,15 +25,11 @@
                     <StackPanel>
                         <ItemsControl Items="{Binding Explorers}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="model:SettingsUrl">
+                                <DataTemplate x:DataType="settings:SettingsUrlViewModel">
                                     <DockPanel Margin="0,5">
-                                        <RadioButton GroupName="Explorers" IsChecked="{Binding IsPrimary}"
-                                                     Command="{Binding DataContext.SetPrimaryExplorer, Source={x:Reference root}}"
-                                                     CommandParameter="{Binding}" />
+                                        <RadioButton GroupName="Explorers" IsChecked="{Binding IsPrimary}" Command="{Binding SetPrimary}" />
                                         <TextBox Text="{Binding Url}" Margin="5,0" Width="300" />
-                                        <Button Content="Delete"
-                                                Command="{Binding DataContext.RemoveExplorer, Source={x:Reference root}}"
-                                                CommandParameter="{Binding}" />
+                                        <Button Content="Delete" Command="{Binding Remove}" />
                                     </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -49,15 +44,11 @@
                     <StackPanel>
                         <ItemsControl Items="{Binding Indexers}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="model:SettingsUrl">
+                                <DataTemplate x:DataType="settings:SettingsUrlViewModel">
                                     <DockPanel Margin="0,5">
-                                        <RadioButton GroupName="Indexers" IsChecked="{Binding IsPrimary}"
-                                                     Command="{Binding DataContext.SetPrimaryIndexer, Source={x:Reference root}}"
-                                                     CommandParameter="{Binding}" />
+                                        <RadioButton GroupName="Indexers" IsChecked="{Binding IsPrimary}" Command="{Binding SetPrimary}" />
                                         <TextBox Text="{Binding Url}" Margin="5,0" Width="300" />
-                                        <Button Content="Delete"
-                                                Command="{Binding DataContext.RemoveIndexer, Source={x:Reference root}}"
-                                                CommandParameter="{Binding}" />
+                                        <Button Content="Delete" Command="{Binding Remove}" />
                                     </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -72,12 +63,10 @@
                     <StackPanel>
                         <ItemsControl Items="{Binding Relays}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="model:SettingsUrl">
+                                <DataTemplate x:DataType="settings:SettingsUrlViewModel">
                                     <DockPanel Margin="0,5">
                                         <TextBox Text="{Binding Url}" Width="300" />
-                                        <Button Content="Delete" Margin="5,0,0,0"
-                                                Command="{Binding DataContext.RemoveRelay, Source={x:Reference root}}"
-                                                CommandParameter="{Binding}" />
+                                        <Button Content="Delete" Margin="5,0,0,0" Command="{Binding Remove}" />
                                     </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
