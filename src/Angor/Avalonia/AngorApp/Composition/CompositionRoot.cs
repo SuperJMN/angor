@@ -70,9 +70,15 @@ public static class CompositionRoot
 
     private static void RegisterWalletServices(ServiceCollection services, Logger logger)
     {
-        // TODO: Set network from configuration
-        WalletContextServices.Register(services, logger, BitcoinNetwork.Testnet)
-            .AddSingleton<IStore>(new FileStore("Angor"));
+        var store = new FileStore("Angor");
+        var networkStorage = new NetworkStorage(store);
+        var network = networkStorage.GetNetwork() switch
+        {
+            "Mainnet" => BitcoinNetwork.Mainnet,
+            _ => BitcoinNetwork.Testnet
+        };
+        WalletContextServices.Register(services, logger, network)
+            .AddSingleton<IStore>(store);
     }
 
     private static void RegisterLogger(ServiceCollection services, Logger logger)
