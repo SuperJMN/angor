@@ -8,7 +8,7 @@ namespace AngorApp.Sections.Founder.CreateProject.FundingStructure;
 public partial class FundingStructureViewModel : ReactiveValidationObject, IFundingStructureViewModel
 {
     [Reactive] private long? sats;
-    [Reactive] private int? penaltyDays = 60;
+    [Reactive] private int? penaltyDays = 100;
     [Reactive] private DateTime? endDate;
     [Reactive] private DateTime? expiryDate;
     [ObservableAsProperty] private IAmountUI targetAmount;
