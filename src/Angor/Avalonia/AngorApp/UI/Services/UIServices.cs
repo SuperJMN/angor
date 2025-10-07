@@ -1,3 +1,5 @@
+using System;
+using System.Reactive.Linq;
 using AngorApp.Core;
 using AngorApp.UI.Controls;
 using AngorApp.UI.Controls.Feerate;
@@ -33,9 +35,11 @@ public partial class UIServices : ReactiveObject
         WalletRoot = walletRoot;
         Validations = validations;
         InstancePrefix = instanceProfile.Value;
+        var application = Application.Current ?? throw new InvalidOperationException("Application.Current cannot be null.");
+
         this.WhenAnyValue(services => services.IsDarkThemeEnabled)
-            .Do(isDarkTheme => Application.Current.RequestedThemeVariant = isDarkTheme ? ThemeVariant.Dark : ThemeVariant.Light)
-            .Subscribe();
+            .Select(isDarkTheme => isDarkTheme ? ThemeVariant.Dark : ThemeVariant.Light)
+            .BindTo(application, app => app.RequestedThemeVariant);
     }
 
     public IEnumerable<IFeeratePreset> FeeratePresets
