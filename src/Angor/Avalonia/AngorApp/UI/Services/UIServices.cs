@@ -1,3 +1,4 @@
+using AngorApp.Core;
 using AngorApp.UI.Controls;
 using AngorApp.UI.Controls.Feerate;
 using Avalonia;
@@ -21,8 +22,9 @@ public partial class UIServices : ReactiveObject
     
     public UIServices(ILauncherService launcherService, IDialog dialog, INotificationService notificationService,
         IActiveWallet activeWallet,
-        IWalletRoot walletRoot, 
-        IValidations validations)
+        IWalletRoot walletRoot,
+        IValidations validations,
+        InstanceProfile instanceProfile)
     {
         LauncherService = launcherService;
         Dialog = dialog;
@@ -30,6 +32,7 @@ public partial class UIServices : ReactiveObject
         ActiveWallet = activeWallet;
         WalletRoot = walletRoot;
         Validations = validations;
+        InstancePrefix = instanceProfile.Value;
         this.WhenAnyValue(services => services.IsDarkThemeEnabled)
             .Do(isDarkTheme => Application.Current.RequestedThemeVariant = isDarkTheme ? ThemeVariant.Dark : ThemeVariant.Light)
             .Subscribe();
@@ -49,4 +52,5 @@ public partial class UIServices : ReactiveObject
     }
 
     public IValidations Validations { get; }
+    public string InstancePrefix { get; }
 }
