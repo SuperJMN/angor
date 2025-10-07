@@ -1,4 +1,5 @@
 using AngorApp.Composition;
+using AngorApp.Core;
 using AngorApp.Sections.Shell;
 using Avalonia;
 using Avalonia.Markup.Xaml;
@@ -35,7 +36,8 @@ public partial class App : Application
             .Register<MaterialDesignIconProvider>()
             .RegisterPathStringIconProvider("path");
 
-        this.Connect(() => new MainView(), CompositionRoot.CreateMainViewModel, () => new MainWindow());
+        var instanceProfile = InstanceProfileProvider.Current;
+        this.Connect(() => new MainView(), control => CompositionRoot.CreateMainViewModel(control, instanceProfile), () => new MainWindow());
 
         base.OnFrameworkInitializationCompleted();
     }

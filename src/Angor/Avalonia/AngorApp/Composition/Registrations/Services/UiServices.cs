@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Angor.Shared;
+using AngorApp.Core;
 using AngorApp.Sections.Shell;
 using AngorApp.UI.Services;
 using Avalonia.Controls.Notifications;
@@ -17,7 +18,7 @@ namespace AngorApp.Composition.Registrations.Services;
 public static class UiServices
 {
     // Registers UI-level services, dialogs, shell and notifications
-    public static IServiceCollection AddUiServices(this IServiceCollection services, Control parent)
+    public static IServiceCollection AddUiServices(this IServiceCollection services, Control parent, InstanceProfile instanceProfile)
     {
         var topLevel = TopLevel.GetTopLevel(parent);
         
@@ -39,6 +40,7 @@ public static class UiServices
             .AddSingleton<IWalletRoot, WalletRoot>()
             .AddSingleton<IValidations, Validations>()
             .AddSingleton<INotificationService>(_ => notificationService)
+            .AddSingleton(instanceProfile)
             .AddSingleton<UIServices>();
     }
     
