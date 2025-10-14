@@ -2,7 +2,6 @@ using AngorApp.Sections.Founder.ProjectDetails.MainView.Approve;
 using AngorApp.Sections.Founder.ProjectDetails.MainView.Claim;
 using AngorApp.Sections.Founder.ProjectDetails.MainView.ReleaseFunds;
 using AngorApp.Sections.Founder.ProjectDetails.Statistics;
-using AngorApp.Sections.Portfolio;
 
 namespace AngorApp.Sections.Founder.ProjectDetails.MainView;
 
@@ -13,4 +12,5 @@ public interface IProjectMainViewModel : IProjectViewModel
     IApproveInvestmentsViewModel ApproveInvestmentsViewModel { get; }
     IProjectStatisticsViewModel ProjectStatisticsViewModel { get; }
     ProjectStatus Status { get; }
+    public IFullProject FullProject { get; } 
 }

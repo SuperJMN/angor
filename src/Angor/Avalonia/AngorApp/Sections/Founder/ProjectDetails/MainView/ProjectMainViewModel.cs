@@ -1,10 +1,10 @@
 using Angor.Contexts.Funding.Founder;
 using Angor.UI.Model.Implementation.Projects;
+using AngorApp.Sections.Browse.Details;
 using AngorApp.Sections.Founder.ProjectDetails.MainView.Approve;
 using AngorApp.Sections.Founder.ProjectDetails.MainView.Claim;
 using AngorApp.Sections.Founder.ProjectDetails.MainView.ReleaseFunds;
 using AngorApp.Sections.Founder.ProjectDetails.Statistics;
-using AngorApp.Sections.Portfolio;
 using AngorApp.UI.Services;
 
 namespace AngorApp.Sections.Founder.ProjectDetails.MainView;
@@ -25,6 +25,7 @@ public class ProjectMainViewModel : IProjectMainViewModel
 
     public IProjectStatisticsViewModel ProjectStatisticsViewModel { get; }
     public ProjectStatus Status { get; }
+    public IFullProject FullProject { get; } = new FullProjectDesign();
     public Uri? Avatar => project.Info.Avatar;
     public string Name => project.Info.Name;
     public string ShortDescription => project.Info.ShortDescription;

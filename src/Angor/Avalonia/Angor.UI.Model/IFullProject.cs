@@ -22,4 +22,5 @@ public interface IFullProject
     public Uri? Avatar { get; }
     public string ShortDescription { get; }
     public Uri? Banner { get; }
+    public string FounderPubKey { get; }
 }
