@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:AngorApp.UI.Controls"
              xmlns:pr="clr-namespace:AngorApp.Sections.Founder.ProjectDetails"
              xmlns:mainView="clr-namespace:AngorApp.Sections.Founder.ProjectDetails.MainView"
+             xmlns:model="clr-namespace:Angor.UI.Model;assembly=Angor.UI.Model"
              mc:Ignorable="d" d:DesignWidth="1200"
              x:Class="AngorApp.Sections.Founder.ProjectDetails.FounderProjectDetailsView" x:DataType="pr:IFounderProjectDetailsViewModel">
 
@@ -40,6 +41,26 @@
                         </Badge>
                     </Panel>
                     <mainView:ProjectMainView />
+                    <Card Header="More info" DataContext="{Binding FullProject}">
+                        <StackPanel x:DataType="model:IFullProject" Grid.IsSharedSizeScope="True">
+                            <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Founder Public Key" EndContent="{Binding FounderPubKey}" />
+                            <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Nostr Pub Key (NPUB)" EndContent="{Binding NostrNpubKeyHex}" />
+                            <HeaderedContainer Header="Stages">
+                                <HeaderedContainer.Content>
+                                    <SlimDataGrid ItemsSource="{Binding Stages}">
+                                        <SlimDataGrid.Columns>
+                                            <Column Header="" Binding="{Binding Index}" />
+                                            <Column Header="Amount" Binding="{Binding AmountUI.ShortDecimalString}" />
+                                            <Column Header="%" Binding="{Binding RatioOfTotal, StringFormat=P2}" />
+                                        </SlimDataGrid.Columns>
+                                    </SlimDataGrid>
+                                </HeaderedContainer.Content>
+                            </HeaderedContainer>
+                            <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Target Amount" EndContent="{Binding TargetAmount.ShortDecimalString}" />
+                            <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Raised Amount" EndContent="{Binding RaisedAmount.ShortDecimalString}" />
+                            <Button Content="See nsec" />
+                        </StackPanel>
+                    </Card>
                 </StackPanel>
             </Loading>
         </ScrollViewer>
