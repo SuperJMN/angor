@@ -42,7 +42,12 @@
                     </Panel>
                     <mainView:ProjectMainView />
                     <Card Header="More info" DataContext="{Binding FullProject}">
-                        <StackPanel x:DataType="model:IFullProject" Grid.IsSharedSizeScope="True">
+                        <StackPanel x:DataType="model:IFullProject" Grid.IsSharedSizeScope="True" Classes="BigGap">
+                            <StackPanel.Styles>
+                                <Style Selector="ContentControl#StartContent">
+                                    <Setter Property="TextBlock.FontWeight" Value="Bold"></Setter>
+                                </Style>
+                            </StackPanel.Styles>
                             <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Founder Public Key" EndContent="{Binding FounderPubKey}" />
                             <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Nostr Pub Key (NPUB)" EndContent="{Binding NostrNpubKeyHex}" />
                             <HeaderedContainer Header="Stages">
@@ -51,14 +56,20 @@
                                         <SlimDataGrid.Columns>
                                             <Column Header="" Binding="{Binding Index}" />
                                             <Column Header="Amount" Binding="{Binding AmountUI.ShortDecimalString}" />
-                                            <Column Header="%" Binding="{Binding RatioOfTotal, StringFormat=P2}" />
+                                            <Column Header="Percentage" Binding="{Binding RatioOfTotal, StringFormat=P2}" />
                                         </SlimDataGrid.Columns>
                                     </SlimDataGrid>
                                 </HeaderedContainer.Content>
                             </HeaderedContainer>
                             <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Target Amount" EndContent="{Binding TargetAmount.ShortDecimalString}" />
                             <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Raised Amount" EndContent="{Binding RaisedAmount.ShortDecimalString}" />
-                            <Button Content="See nsec" />
+                            <Button Content="See NSEC">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        Not available yet
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
                         </StackPanel>
                     </Card>
                 </StackPanel>
