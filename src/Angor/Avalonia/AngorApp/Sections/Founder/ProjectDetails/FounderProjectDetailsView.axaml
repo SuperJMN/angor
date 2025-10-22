@@ -47,6 +47,15 @@
                                 <Style Selector="ContentControl#StartContent">
                                     <Setter Property="TextBlock.FontWeight" Value="Bold"></Setter>
                                 </Style>
+                                <Style Selector="EdgePanel">
+                                    <Setter Property="EndContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <SelectableTextBlock Text="{Binding }" />
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
                             </StackPanel.Styles>
                             <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Founder Public Key" EndContent="{Binding FounderPubKey}" />
                             <EdgePanel Theme="{StaticResource PropertyEdgePanel}" StartContent="Nostr Pub Key (NPUB)" EndContent="{Binding NostrNpubKeyHex}" />
