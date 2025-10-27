@@ -81,6 +81,34 @@ public partial class UIServices : ReactiveObject
             });
     }
 
+    internal UIServices(
+        IDialog dialog,
+        INotificationService notificationService,
+        IValidations validations,
+        ISettings<UIPreferences> preferences,
+        string profileName = "Test",
+        ILauncherService? launcherService = null)
+    {
+        if (string.IsNullOrWhiteSpace(profileName))
+        {
+            throw new ArgumentException("Profile name cannot be null or whitespace.", nameof(profileName));
+        }
+
+        this.preferences = preferences ?? throw new ArgumentNullException(nameof(preferences));
+        Dialog = dialog ?? throw new ArgumentNullException(nameof(dialog));
+        NotificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+        Validations = validations ?? throw new ArgumentNullException(nameof(validations));
+        LauncherService = launcherService ?? new NoopLauncherService();
+        ProfileName = profileName;
+
+        var loadResult = this.preferences.Get();
+        if (loadResult.IsSuccess)
+        {
+            IsBitcoinPreferred = loadResult.Value.IsBitcoinPreferred;
+            IsDarkThemeEnabled = loadResult.Value.IsDarkThemeEnabled;
+        }
+    }
+
     public IEnumerable<IFeeratePreset> FeeratePresets
     {
         get
