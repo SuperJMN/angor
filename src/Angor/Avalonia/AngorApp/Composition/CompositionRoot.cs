@@ -40,6 +40,7 @@ public static class CompositionRoot
         services.AddLiteDbDocumentStorage(profileContext);
         services.AddKeyedSingleton<IStore>("file", store);
         services.AddSingleton<IStore>(provider => provider.GetKeyedService<IStore>("file")!);
+        services.AddSingleton<IMachineIdProvider, MachineIdProvider>();
         LoggingConfigurator.RegisterLogger(services, logger);
 
         services.AddSingleton<Func<BitcoinNetwork>>(sp => () =>
