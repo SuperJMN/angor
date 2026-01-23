@@ -11,7 +11,7 @@ public record TransactionDetails(IAmountUI AmountToInvest, IAmountUI MinerFee, I
 
 public interface IInvestViewModel
 {
-    long? Amount { get; set; }
+    decimal? Amount { get; set; }
     
     IEnumerable<Breakdown> StageBreakdowns { get; }
     
@@ -29,4 +29,6 @@ public interface IInvestViewModel
     
     // Validation
     IObservable<bool> IsValid { get; }
+    IEnumerable<IAmountUI> AmountPresets { get; }
+    IAmountUI SelectedAmountPreset { get; set; }
 }

@@ -32,7 +32,7 @@ public class InvestViewModelSample : ReactiveValidationObject, IInvestViewModel
         SelectAmount = ReactiveCommand.Create<long>(a => Amount = a);
     }
 
-    public long? Amount { get; set; }
+    public decimal? Amount { get; set; }
     public IEnumerable<Breakdown> StageBreakdowns { get; }
     public TransactionDetails? TransactionDetails { get; }
     public ICommand Invest { get; }
@@ -41,4 +41,6 @@ public class InvestViewModelSample : ReactiveValidationObject, IInvestViewModel
     public string ProjectName { get; }
     public string ProjectId { get; }
     public IObservable<bool> IsValid => Observable.Return(true);
+    public IEnumerable<IAmountUI> AmountPresets { get; } = [AmountUI.FromBtc(0.001), AmountUI.FromBtc(0.01), AmountUI.FromBtc(0.1), AmountUI.FromBtc(0.5)];
+    public IAmountUI SelectedAmountPreset { get; set; }
 }

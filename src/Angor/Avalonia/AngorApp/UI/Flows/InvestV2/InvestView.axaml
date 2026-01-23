@@ -2,14 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:investV2="clr-namespace:AngorApp.UI.Flows.InvestV2"
+             xmlns:l="clr-namespace:AngorApp.UI.Flows.InvestV2"
              xmlns:controls="clr-namespace:AngorApp.UI.Shared.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="AngorApp.UI.Flows.InvestV2.InvestView"
-             x:DataType="investV2:IInvestViewModel">
+             x:DataType="l:IInvestViewModel">
 
     <Design.DataContext>
-        <investV2:InvestViewModelSample />
+        <l:InvestViewModelSample />
     </Design.DataContext>
 
     <UserControl.Styles>
@@ -88,15 +88,40 @@
                     </HeaderedContainer.Header>
                     <StackPanel Spacing="20">
                         <TextBlock Text="Amount (BTC)" FontWeight="SemiBold" />
-                        <TextBox Text="{Binding Amount}" Watermark="0.0000" />
+                        <NumericUpDown Value="{Binding Amount, Mode=TwoWay, Converter={x:Static controls:AngorConverters.BtcToAmountUI}}"
+                                       FormatString="0.########"
+                                       Minimum="0.001"
+                                       Increment="0.01"
+                                       x:Name="AmountBox"
+                                       Watermark="0.00">
+                            <NumericUpDown.InnerRightContent>
+                                <TextBlock VerticalAlignment="Center"  Classes="Weight-Bold" Foreground="{DynamicResource Labels}" 
+                                           Margin="0 0 12 0">
+                                    BTC
+                                </TextBlock>
+                            </NumericUpDown.InnerRightContent>
+                        </NumericUpDown>
+                        
                         <TextBlock Text="Minimum investment: 0.001 BTC" FontSize="12" Foreground="Gray" />
-
-                        <WrapPanel Orientation="Horizontal">
-                            <Button Command="{Binding SelectAmount}" CommandParameter="100000" Content="0.001 BTC" Margin="0 0 10 10" />
-                            <Button Command="{Binding SelectAmount}" CommandParameter="1000000" Content="0.01 BTC" Margin="0 0 10 10" />
-                            <Button Command="{Binding SelectAmount}" CommandParameter="10000000" Content="0.1 BTC" Margin="0 0 10 10" />
-                            <Button Command="{Binding SelectAmount}" CommandParameter="50000000" Content="0.5 BTC" Margin="0 0 10 10" />
-                        </WrapPanel>
+                        <ListBox ItemsSource="{Binding AmountPresets}"
+                                 HorizontalAlignment="Right"
+                                 Background="Transparent"
+                                 SelectedItem="{Binding SelectedAmountPreset, Mode=TwoWay}"
+                                 ItemContainerTheme="{StaticResource ButtonizedListBoxItem}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <BalancedWrapGrid />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel HorizontalAlignment="Center" Classes="TinyGap">
+                                        <TextBlock Classes="Center Bold" Text="{Binding  Btc}" />
+                                        <TextBlock Classes="Center Tiny" Text="BTC" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </StackPanel>
                 </HeaderedContainer>
 
@@ -108,7 +133,7 @@
                             <ItemsControl ItemsSource="{Binding StageBreakdowns}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Spacing="10" />
+                                        <StackPanel Classes="BigGap" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
@@ -133,12 +158,6 @@
                                                         <TextBlock Text="{Binding ReleaseDate, StringFormat='d'}" Classes="Size-XS Weight-Light Dimmed"></TextBlock>
                                                     </EdgePanel.StartContent>
                                                 </EdgePanel>
-                                                <!-- <TextBlock Grid.Column="0" Text="{Binding Index, StringFormat='Stage {0}'}" FontWeight="Bold" Width="70" /> -->
-                                                <!-- <StackPanel Grid.Column="1" Spacing="4"> -->
-                                                <!--     <TextBlock Text="{Binding ReleaseDate, StringFormat='Release: {0:d}'}" FontSize="12" /> -->
-                                                <!--     <TextBlock Text="{Binding ReleaseDate, Converter={x:Static controls:AngorConverters.HumanizeDateTimeOffset}}" FontSize="11" Foreground="Gray" /> -->
-                                                <!-- </StackPanel> -->
-                                                <!-- <TextBlock Grid.Column="2" Text="{Binding Amount.DecimalString}" FontWeight="SemiBold" VerticalAlignment="Center" /> -->
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
