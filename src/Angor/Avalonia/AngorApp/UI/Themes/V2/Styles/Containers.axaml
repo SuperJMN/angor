@@ -1,6 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+
     <Design.PreviewWith>
         <ScrollViewer>
             <StackPanel Spacing="20" Width="500">
@@ -9,42 +9,46 @@
                     <Border Padding="20" Background="{DynamicResource AppBackground}">
                         <StackPanel Spacing="15">
                             <TextBlock FontWeight="Bold" FontSize="16">Light Theme</TextBlock>
-                            
+
                             <HeaderedContainer Header="WizardSection" Content="Default section style" Classes="WizardSection" />
-                            
+
                             <HeaderedContainer Header="Translucid" Content="Accent translucent style" Classes="Translucid" />
-                            
+
                             <HeaderedContainer Header="WizardHighlight" Content="Bitcoin accent style" Classes="WizardHighlight" />
-                            
+
                             <HeaderedContainer Header="BlueThreshold" Classes="BlueThreshold">
                                 <EdgePanel StartContent="Label" EndContent="Value" />
                             </HeaderedContainer>
-                            
+
+                            <HeaderedContainer Header="StagesCard" Classes="StagesCard">
+                                <EdgePanel StartContent="Label" EndContent="Value" />
+                            </HeaderedContainer>
+
                             <HeaderedContainer Classes="WizardSection">
                                 <HeaderedContainer.Header>
                                     <EdgePanel StartContent="{Icon fa-wallet}" Content="With Icon" EndContent="$1,234" />
                                 </HeaderedContainer.Header>
                             </HeaderedContainer>
-                            
+
                             <Border Classes="Translucid">
                                 <TextBlock>Border.Translucid</TextBlock>
                             </Border>
                         </StackPanel>
                     </Border>
                 </ThemeVariantScope>
-                
+
                 <!-- Dark Theme -->
                 <ThemeVariantScope RequestedThemeVariant="Dark">
                     <Border Padding="20" Background="{DynamicResource AppBackground}">
                         <StackPanel Spacing="15">
                             <TextBlock FontWeight="Bold" FontSize="16" Foreground="White">Dark Theme</TextBlock>
-                            
+
                             <HeaderedContainer Header="WizardSection" Content="Default section style" Classes="WizardSection" />
-                            
+
                             <HeaderedContainer Header="Translucid" Content="Accent translucent style" Classes="Translucid" />
-                            
+
                             <HeaderedContainer Header="WizardHighlight" Content="Bitcoin accent style" Classes="WizardHighlight" />
-                            
+
                             <HeaderedContainer Header="BlueThreshold" Classes="BlueThreshold">
                                 <EdgePanel StartContent="Label" EndContent="Value" />
                             </HeaderedContainer>
@@ -172,16 +176,31 @@
         <Setter Property="Background" Value="{DynamicResource BlueThreshold.ContainerBackground}" />
     </Style>
 
-    <Style Selector="HeaderedContainer.BlueThreshold /template/ ContentPresenter#Header">
-        <Setter Property="FontSize" Value="18" />
-        <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Background" Value="{DynamicResource BlueThreshold.IconBackground}" />
-    </Style>
+    <Style Selector="HeaderedContainer.StagesCard">
+        <Style.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.ThemeDictionaries>
+                    <ResourceDictionary x:Key="Light">
+                        <SolidColorBrush x:Key="StagesCard.Border" Color="#e5e7eb" />
+                        <LinearGradientBrush x:Key="StagesCard.Background" StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Offset="0" Color="#f9fafb" />
+                            <GradientStop Offset="1" Color="#f3f4f6" />
+                        </LinearGradientBrush>
+                    </ResourceDictionary>
+                    <ResourceDictionary x:Key="Dark">
+                        <SolidColorBrush x:Key="StagesCard.Background" Color="#bfdbfe" />
+                    </ResourceDictionary>
+                </ResourceDictionary.ThemeDictionaries>
+            </ResourceDictionary>
+        </Style.Resources>
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="BorderThickness" Value="1" />
 
-    <Style Selector="HeaderedContainer.BlueThreshold EdgePanel ContentControl#StartContent">
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="Foreground" Value="{DynamicResource BlueThreshold.LabelForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StagesCard.Border}" />
+        <Setter Property="Background" Value="{DynamicResource StagesCard.Background}" />
+        <Setter Property="HeaderPadding" Value="24" />
+        <Setter Property="ContentPadding" Value="24 0 24 24" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBlack}" />
     </Style>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
