@@ -12,6 +12,7 @@ using AngorApp.UI.TransactionDrafts.DraftTypes.Investment;
 using AngorApp.UI.Shared.Controls.Common.Success;
 using Zafiro.Avalonia.Dialogs.Wizards.Slim;
 using Zafiro.CSharpFunctionalExtensions;
+using Zafiro.UI.Wizards.Slim;
 using Zafiro.UI.Wizards.Slim.Builder;
 using AmountViewModel = AngorApp.UI.Flows.Invest.Amount.AmountViewModel;
 using ITransactionDraftViewModel = AngorApp.UI.TransactionDrafts.DraftTypes.ITransactionDraftViewModel;

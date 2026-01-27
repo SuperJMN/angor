@@ -7,6 +7,7 @@ using AngorApp.UI.Sections.Wallet.CreateAndImport.Steps.RecoverySeedWords;
 using AngorApp.UI.Sections.Wallet.CreateAndImport.Steps.Summary;
 using AngorApp.UI.Shared.Controls.Common.Success;
 using Zafiro.Avalonia.Dialogs.Wizards.Slim;
+using Zafiro.UI.Wizards.Slim;
 using Zafiro.UI.Wizards.Slim.Builder;
 
 namespace AngorApp.UI.Sections.Wallet.CreateAndImport;

@@ -2,6 +2,7 @@ using Angor.Sdk.Wallet.Application;
 using AngorApp.Model.Contracts.Flows;
 using AngorApp.UI.Shared.Controls.Common.Success;
 using Zafiro.Avalonia.Dialogs.Wizards.Slim;
+using Zafiro.UI.Wizards.Slim;
 using Zafiro.UI.Wizards.Slim.Builder;
 using AddressAndAmountViewModel = AngorApp.UI.Flows.SendWalletMoney.AddressAndAmount.AddressAndAmountViewModel;
 using TransactionDraftViewModel = AngorApp.UI.Flows.SendWalletMoney.TransactionDraft.TransactionDraftViewModel;

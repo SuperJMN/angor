@@ -127,38 +127,38 @@
     </Style>
 
 
-    <Style Selector="Frame">
-        <Setter Property="Template">
-            <ControlTemplate>
-                <DockPanel VerticalSpacing="25">
-                    <EnhancedButton Command="{Binding $parent[Frame].Navigator.Back}"
-                                    Margin="20"
-                                    x:Name="BackButton"
-                                    Classes="Outline"
-                                    DockPanel.Dock="Top"
-                                    Content="{TemplateBinding BackButtonContent}">
-                        <Button.IsVisible>
-                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                <Binding Path="$parent[Frame].IsBackButtonVisible" />
-                                <Binding Path="$self.IsEffectivelyEnabled" />
-                            </MultiBinding>
-                        </Button.IsVisible>
-                    </EnhancedButton>
-                    <ContentControl Margin="{TemplateBinding Padding}" Content="{Binding $parent[Frame].Navigator.Content^,  FallbackValue='No content', TargetNullValue='Navigator.Content is a null'}" />
-                </DockPanel>
-            </ControlTemplate>
-        </Setter>
-        <Setter Property="BackButtonContent">
-            <Setter.Value>
-                <Template>
-                    <DockPanel HorizontalSpacing="8">
-                        <ContentControl Content="{Icon fa-angle-left}" />
-                        <TextBlock VerticalAlignment="Center">Back</TextBlock>
-                    </DockPanel>
-                </Template>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    <!-- <Style Selector="Frame"> -->
+    <!--     <Setter Property="Template"> -->
+    <!--         <ControlTemplate> -->
+    <!--             <DockPanel VerticalSpacing="25"> -->
+    <!--                 <EnhancedButton Command="{Binding $parent[Frame].Navigator.Back}" -->
+    <!--                                 Margin="20" -->
+    <!--                                 x:Name="BackButton" -->
+    <!--                                 Classes="Outline" -->
+    <!--                                 DockPanel.Dock="Top" -->
+    <!--                                 Content="{TemplateBinding BackButtonContent}"> -->
+    <!--                     <Button.IsVisible> -->
+    <!--                         <MultiBinding Converter="{x:Static BoolConverters.And}"> -->
+    <!--                             <Binding Path="$parent[Frame].IsBackButtonVisible" /> -->
+    <!--                             <Binding Path="$self.IsEffectivelyEnabled" /> -->
+    <!--                         </MultiBinding> -->
+    <!--                     </Button.IsVisible> -->
+    <!--                 </EnhancedButton> -->
+    <!--                 <ContentControl Margin="{TemplateBinding Padding}" Content="{Binding $parent[Frame].Navigator.Content^,  FallbackValue='No content', TargetNullValue='Navigator.Content is a null'}" /> -->
+    <!--             </DockPanel> -->
+    <!--         </ControlTemplate> -->
+    <!--     </Setter> -->
+    <!--     <Setter Property="BackButtonContent"> -->
+    <!--         <Setter.Value> -->
+    <!--             <Template> -->
+    <!--                 <DockPanel HorizontalSpacing="8"> -->
+    <!--                     <ContentControl Content="{Icon fa-angle-left}" /> -->
+    <!--                     <TextBlock VerticalAlignment="Center">Back</TextBlock> -->
+    <!--                 </DockPanel> -->
+    <!--             </Template> -->
+    <!--         </Setter.Value> -->
+    <!--     </Setter> -->
+    <!-- </Style> -->
 
     <Style Selector="ComboBox">
         <Setter Property="Background" Value="{DynamicResource Surface}" />
