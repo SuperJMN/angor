@@ -34,7 +34,7 @@ public class WalletImportWizard(UIServices uiServices, IWalletProvider walletPro
                 IsRecovery = true
             }, "Summary").NextCommand(model => model.CreateWallet.Enhance("Import Wallet"))
             .Then(_ => new SuccessViewModel("Wallet imported successfully"), "Wallet Recovery").Next(_ => Unit.Default, "Close").Always()
-            .WithCompletionFinalStep();
+            .Build(StepKind.Completion);
 
         return await uiServices.Dialog.ShowWizard(wizard, "Recover wallet").Map(_ => Unit.Default);
     }
