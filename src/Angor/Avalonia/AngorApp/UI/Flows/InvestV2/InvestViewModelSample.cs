@@ -43,4 +43,9 @@ public class InvestViewModelSample : ReactiveValidationObject, IInvestViewModel
     public IObservable<bool> IsValid => Observable.Return(true);
     public IEnumerable<IAmountUI> AmountPresets { get; } = [AmountUI.FromBtc(0.001), AmountUI.FromBtc(0.01), AmountUI.FromBtc(0.1), AmountUI.FromBtc(0.5)];
     public IAmountUI SelectedAmountPreset { get; set; }
+    public string ProjectTitle { get; } = "Angor UX";
+    public decimal Progress { get; } = 0.21m;
+    public IAmountUI Raised { get; } = AmountUI.FromBtc(0.1234m);
+    public IAmountUI AmountToInvest { get; } = AmountUI.FromBtc(0.001m);
+    public int NumberOfReleases { get; } = 3;
 }

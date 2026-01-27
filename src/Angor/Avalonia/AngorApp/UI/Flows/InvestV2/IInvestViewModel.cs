@@ -31,4 +31,9 @@ public interface IInvestViewModel
     IObservable<bool> IsValid { get; }
     IEnumerable<IAmountUI> AmountPresets { get; }
     IAmountUI SelectedAmountPreset { get; set; }
+    public string ProjectTitle { get; }
+    public decimal Progress { get; }
+    public IAmountUI Raised { get; }
+    public IAmountUI AmountToInvest { get; }
+    public int NumberOfReleases { get; }
 }

@@ -14,16 +14,7 @@
 
     <controls:ScrollableView>
         <Grid RowDefinitions="Auto, *, Auto">
-
-            <!-- Header -->
-            <Border Grid.Row="0" Margin="0 0 0 20">
-                <StackPanel Spacing="10">
-                    <Button Command="{Binding Cancel}" Content="Back" Classes="Text" HorizontalAlignment="Left" />
-                    <TextBlock Text="{Binding ProjectName}" FontSize="24" FontWeight="Bold" />
-                    <TextBlock Text="{Binding ProjectId}" FontSize="12" Foreground="{DynamicResource TextMuted}" />
-                </StackPanel>
-            </Border>
-
+            
             <!-- Main Content -->
             <BalancedWrapGrid MinItemWidth="346" Grid.Row="1" HorizontalSpacing="24" VerticalSpacing="24">
 
@@ -131,19 +122,6 @@
                 </HeaderedContainer>
 
             </BalancedWrapGrid>
-
-            <!-- Footer -->
-            <Border Grid.Row="2" Margin="0 20 0 0" Padding="20" Background="{DynamicResource SurfaceSubtler}" CornerRadius="10">
-                <DockPanel LastChildFill="False">
-                    <StackPanel Orientation="Horizontal" Spacing="20" DockPanel.Dock="Left" VerticalAlignment="Center">
-                        <TextBlock Text="Total Investment:" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding TransactionDetails.Total.DecimalString}" FontWeight="Bold" FontSize="18" />
-                    </StackPanel>
-
-                    <EnhancedButton Command="{Binding Invest}" DockPanel.Dock="Right" Classes="Outline" Icon="{Icon fa-chart-line}" Content="Invest Now" />
-                </DockPanel>
-            </Border>
-
         </Grid>
     </controls:ScrollableView>
 </UserControl>
