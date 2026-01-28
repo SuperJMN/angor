@@ -16,6 +16,7 @@ using IWalletSectionViewModel = AngorApp.UI.Sections.Wallet.Main.IWalletSectionV
 using ShellViewModel = AngorApp.UI.Shell.ShellViewModel;
 using WalletSectionViewModel = AngorApp.UI.Sections.Wallet.Main.WalletSectionViewModel;
 using Angor.Sdk.Funding.Projects.Dtos;
+using AngorApp.UI.Flows.InvestV2;
 
 namespace AngorApp.Composition.Registrations.ViewModels;
 
@@ -37,6 +38,8 @@ public static class ViewModels
                 .AddTransient<IFounderSectionViewModel, FounderSectionViewModel>()
                 .AddTransient<ISettingsSectionViewModel, SettingsSectionViewModel>()
                 .AddScoped<IPenaltiesViewModel, PenaltiesViewModel>()
+                .AddScoped<IInvestViewModel, InvestViewModel>()
+                .AddScoped<IPaymentSelectorViewModel, PaymentSelectorViewModel>()
                 .AddScoped<IRecoverViewModel, RecoverViewModel>()
                 .AddSingleton<IShellViewModel, ShellViewModel>();
     }

@@ -19,7 +19,6 @@ public interface IInvestViewModel
     
     ICommand Invest { get; }
     
-    ICommand Cancel { get; }
     
     ICommand SelectAmount { get; }
     

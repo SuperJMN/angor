@@ -3,6 +3,7 @@ using AngorApp.Model.Contracts.Amounts;
 using AngorApp.UI.Flows.Invest.Amount;
 using ReactiveUI;
 using ReactiveUI.Validation.Helpers;
+using Zafiro.UI.Shell.Utils;
 
 namespace AngorApp.UI.Flows.InvestV2;
 
