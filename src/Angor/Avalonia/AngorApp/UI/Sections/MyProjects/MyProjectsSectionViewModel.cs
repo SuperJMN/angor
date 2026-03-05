@@ -1,7 +1,4 @@
 using System.Reactive.Disposables;
-using System.Reactive.Subjects;
-using Angor.Sdk.Funding.Projects;
-using AngorApp.Core.Factories;
 using AngorApp.Model.ProjectsV2;
 using AngorApp.Model.ProjectsV2.FundProject;
 using AngorApp.Model.ProjectsV2.InvestmentProject;
@@ -16,34 +13,20 @@ namespace AngorApp.UI.Sections.MyProjects;
 public partial class MyProjectsSectionViewModel : ReactiveObject, IMyProjectsSectionViewModel, IDisposable
 {
     private readonly CompositeDisposable disposable = new();
-    private readonly IProjectAppService projectAppService;
-    private readonly IProjectFactory projectFactory;
-    private readonly IWalletContext walletContext;
-    private readonly BehaviorSubject<int> projectStatsLoadTotalCount = new(0);
-    private readonly BehaviorSubject<int> projectStatsLoadCompletedCount = new(0);
 
     public MyProjectsSectionViewModel(
         UIServices uiServices,
-        IProjectAppService projectAppService,
-        IProjectFactory projectFactory,
-        ICreateProjectFlow createProjectFlow,
-        IWalletContext walletContext)
+        IWalletPortfolio walletPortfolio,
+        ICreateProjectFlow createProjectFlow)
     {
-        this.projectAppService = projectAppService;
-        this.projectFactory = projectFactory;
-        this.walletContext = walletContext;
-
-        var projectsCollection = RefreshableCollection.Create(DoLoadProjects, item => item.Id).DisposeWith(disposable);
-
-        LoadProjects = projectsCollection.Refresh;
+        LoadProjects = walletPortfolio.RefreshFoundedProjects;
         LoadProjects.HandleErrorsWith(uiServices.NotificationService, "Failed to load projects").DisposeWith(disposable);
 
-        var projectChanges = projectsCollection.Changes;
-        Projects = projectsCollection.Items;
+        Projects = walletPortfolio.FoundedProjects;
 
-        ActiveProjectsCount = projectChanges.FilterOnObservable(IsActive).Count();
+        ActiveProjectsCount = walletPortfolio.FoundedProjectChanges.FilterOnObservable(IsActive).Count();
 
-        TotalRaised = projectChanges.TransformOnObservable(item =>
+        TotalRaised = walletPortfolio.FoundedProjectChanges.TransformOnObservable(item =>
                                     {
                                         if (item is IInvestmentProject inv)
                                             return inv.Raised;
@@ -74,14 +57,6 @@ public partial class MyProjectsSectionViewModel : ReactiveObject, IMyProjectsSec
         return Observable.Return(false);
     }
 
-    private async Task<Result<IEnumerable<IProject>>> DoLoadProjects()
-    {
-        return await walletContext
-            .Require()
-            .Bind(wallet => projectAppService.GetFounderProjects(wallet.Id))
-            .Map(response => response.Projects.Select(projectFactory.Create));
-    }
-
     public IReadOnlyCollection<IProject> Projects { get; }
     public IEnhancedCommand<Result<IEnumerable<IProject>>> LoadProjects { get; }
     public IEnhancedCommand<Result<Maybe<string>>> Create { get; }
@@ -90,8 +65,6 @@ public partial class MyProjectsSectionViewModel : ReactiveObject, IMyProjectsSec
 
     public void Dispose()
     {
-        projectStatsLoadTotalCount.Dispose();
-        projectStatsLoadCompletedCount.Dispose();
         disposable.Dispose();
     }
 }

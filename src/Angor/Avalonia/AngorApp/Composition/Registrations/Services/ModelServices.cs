@@ -1,3 +1,4 @@
+using AngorApp.Core;
 using AngorApp.Design;
 using AngorApp.Model.Wallet.Simple;
 using AngorApp.UI.Flows.CreateProject;
@@ -22,6 +23,7 @@ public static class ModelServices
             .AddScoped<ICreateProjectFlow, CreateProjectFlow>()
             .AddScoped<ISendMoneyFlow, SendMoneyFlow>()
             .AddSingleton<IFeeCalculator, FeeCalculatorDesignTime>()
+            .AddScoped<IWalletPortfolio, WalletPortfolio>()
             ;
     }
 }
